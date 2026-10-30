@@ -1,0 +1,4 @@
+'use client';
+import {useState} from 'react';
+import {Printer,Copy,ArrowRight} from 'lucide-react';
+export default function ReceiptActions(){const [copied,setCopied]=useState(false),[error,setError]=useState(false);return <div className="document-actions no-print"><button className="button button-orange" onClick={()=>window.print()}><Printer size={18}/>چاپ / ذخیره PDF</button><button className="button button-outline" onClick={async()=>{try{await navigator.clipboard.writeText(window.location.href);setCopied(true);setError(false);}catch{setError(true);}}}><Copy size={17}/>{copied?'پیوند کپی شد':'کپی پیوند پیگیری'}</button><a href="/" className="button button-outline"><ArrowRight size={17}/>بازگشت به فروشگاه</a>{error&&<p role="alert">کپی خودکار در این مرورگر مجاز نیست؛ نشانی صفحه را از نوار آدرس کپی کنید.</p>}</div>;}
