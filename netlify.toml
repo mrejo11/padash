@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[context.production.environment]
+  PADASH_STORE_NAMESPACE = "production"
+
+[context.deploy-preview.environment]
+  PADASH_STORE_NAMESPACE = "preview"
+
+[context.branch-deploy.environment]
+  PADASH_STORE_NAMESPACE = "preview"

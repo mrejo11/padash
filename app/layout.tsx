@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 export const metadata: Metadata = {
-  metadataBase: new URL('https://padash-thermal-trade-29.secretsnipe8.chatgpt.site'),
+  metadataBase: new URL(process.env.URL || 'https://padashco.netlify.app'),
   title: 'بازرگانی پاداش | انتخاب هوشمند عایق',
   description: 'انتخاب، مقایسه و استعلام عایق‌های حرارتی و برودتی برای تأسیسات، ساختمان و صنعت. کاتالوگ تخصصی بازرگانی پاداش.',
   icons: { icon: '/favicon.svg' },
