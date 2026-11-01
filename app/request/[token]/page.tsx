@@ -4,7 +4,7 @@ import {products,fa,type QuoteItem} from '../../../lib/catalog';
 import {statusLabels} from '../../../lib/quote-validation';
 import ReceiptActions from './receipt-actions';
 export const dynamic='force-dynamic';
-export const metadata={title:'پیگیری درخواست | بازرگانی پاداش',robots:{index:false,follow:false}};
+export const metadata={title:'پیگیری درخواست',robots:{index:false,follow:false}};
 export default async function RequestPage({params}:{params:Promise<{token:string}>}){
  const {token}=await params;
  if(!/^[0-9a-f-]{36}$/i.test(token))notFound();

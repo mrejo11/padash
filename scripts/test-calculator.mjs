@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import ts from 'typescript';
+const source = await readFile(new URL('../lib/roll-estimate.ts', import.meta.url), 'utf8');
+const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
+const { calculateRolls } = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
+const input = overrides => ({ geometry: { kind: 'area', area: 120, layers: 1 }, rollWidth: 1, rollLength: 10, extraArea: 0, wastePercent: 10, ...overrides });
+const sample = calculateRolls(input());
+assert.equal(sample.requiredArea, 132);
+assert.equal(sample.areaRolls, 14);
+assert.equal(sample.purchaseArea, 140);
+assert.equal(sample.surplusArea, 8);
+assert.equal(calculateRolls(input({ rollLength: 6 })).areaRolls, 22);
+const rectangle = calculateRolls(input({ geometry: { kind: 'rectangle', width: 2.5, length: 4.2, count: 3, layers: 2 }, rollWidth: 1.2, extraArea: 1.5, wastePercent: 5 }));
+assert.equal(rectangle.netArea, 63);
+assert.equal(rectangle.requiredArea, 67.725);
+assert.equal(rectangle.areaRolls, 6);
+assert.equal(rectangle.surplusArea, 4.275);
+assert.equal(calculateRolls(input({ geometry: { kind: 'area', area: .3, layers: 1 }, rollWidth: .1, rollLength: 3, wastePercent: 0 })).areaRolls, 1, 'decimal boundary must not add a spurious roll');
+assert.equal(calculateRolls(input({ geometry: { kind: 'area', area: 1.001, layers: 1 }, rollWidth: 1, rollLength: 1, wastePercent: 0 })).areaRolls, 2, 'genuine small excess must round up');
+const pipe = calculateRolls(input({ geometry: { kind: 'pipe', wrapLength: .65, pipeLength: 20 } }));
+assert.equal(pipe.netArea, 13);
+assert.deepEqual(pipe.pipePlan, { possible: true, segments: 20, piecesPerRoll: 15, baseRolls: 2, reserveRolls: 1, totalRolls: 3 });
+assert.equal(calculateRolls(input({ geometry: { kind: 'pipe', wrapLength: 12, pipeLength: 2 } })).pipePlan.possible, false);
+for (const overrides of [{ rollWidth: 0 }, { rollLength: -1 }, { extraArea: -1 }, { wastePercent: 51 }, { wastePercent: NaN }, { rollWidth: Infinity }, { rollWidth: .0001 }, { geometry: { kind: 'area', area: 10, layers: 1.5 } }, { geometry: { kind: 'rectangle', width: 2, length: 4, count: 0, layers: 1 } }]) assert.throws(() => calculateRolls(input(overrides)));
+for (let i = 1; i <= 250; i++) {
+  const result = calculateRolls(input({ geometry: { kind: 'area', area: i / 10, layers: i % 3 + 1 }, rollWidth: .3, rollLength: i % 11 + 1, wastePercent: i % 21, extraArea: .1 }));
+  assert(result.purchaseArea + 1e-10 >= result.requiredArea, 'purchased area covers computed demand');
+  assert((result.areaRolls - 1) * result.rollArea < result.requiredArea, 'area count is the minimum integral count');
+}
+console.log('PASS: exact decimal roll rounding, geometry, layers, reserve, units, measured pipe cut plan, invalid inputs and 250 coverage invariants.');

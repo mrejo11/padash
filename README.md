@@ -25,11 +25,16 @@ npm.cmd run dev
 
 [راهنمای دیپلوی و ذخیره اطلاعات](NETLIFY.md)
 
+[راهنمای پنل مدیریت، سفارش‌ها، مشاوره و پیگیری مشتریان](docs/management.md)
+
+[راهنمای محاسبه‌گر، مقالات مستند، مدیریت اخبار و سئوی سایت](docs/seo.md)
+
 ## بررسی
 
 ```powershell
 npm.cmd run build
 npm.cmd run typecheck
+npm.cmd run test:calculator
 npm.cmd run test:integration
 ```
 

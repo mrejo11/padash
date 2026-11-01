@@ -11,4 +11,3 @@ export const products:Product[] = [
 export type QuoteItem = {productId:string; thickness:number; quantity:number; note:string};
 export const fa = (n:number) => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:1}).format(n);
 export const normalizeDigits = (s:string) => s.replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠١٢٣٤٥٦٧٨٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
-export const estimateRolls = (area:number, waste:number, width:number, length:number) => Math.ceil(area*(1+waste/100)/(width*length));

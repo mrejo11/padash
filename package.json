@@ -12,6 +12,7 @@
     "start": "node scripts/next-local.mjs start",
     "typecheck": "tsc --noEmit",
     "test:integration": "node scripts/test-integration.mjs",
+    "test:calculator": "node scripts/test-calculator.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
