@@ -6,7 +6,7 @@ import { absoluteUrl, organization, pageMetadata, SITE_NAME } from '../lib/seo';
 import './storefront-theme.css';
 import './content.css';
 export const dynamic = 'force-dynamic';
-export const metadata = { ...pageMetadata('تأمین عایق حرارتی و برودتی', 'بازرگانی پاداش؛ انتخاب و استعلام عایق الاستومری، پشم سنگ، پشم شیشه و پلی‌اتیلن، محاسبه مقدار عایق و تماس با مهندس فرجی و مهندس پاداشی.', '/'), title: { absolute: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی' } };
+export const metadata = { ...pageMetadata('تأمین عایق حرارتی و برودتی', 'بازرگانی پاداش؛ انتخاب و استعلام عایق الاستومری، پشم سنگ، پشم شیشه و پلی‌اتیلن، محاسبه مقدار عایق و تماس با مهندس پاداشی و مهندس فرجی.', '/'), title: { absolute: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی' } };
 export default async function Home() {
   let news: PublicNews[] = [];
   let newsUnavailable = false;

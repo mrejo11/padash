@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink, FileText, LoaderCircle, Plus, RefreshCw, Save
 import type { NewsFields, NewsRecord } from '../../../lib/news';
 import { fa } from '../../../lib/catalog';
 import AdminLogin from '../admin-login';
+import Brand from '../../../components/brand';
 const blank: NewsFields = { title: '', summary: '', body: '', kind: 'news', status: 'draft', event_date: '' };
 
 export default function NewsManager() {
@@ -55,7 +56,7 @@ export default function NewsManager() {
     finally { setBusy(false); }
   }
   function field(key: keyof NewsFields, value: string) { setFields(previous => ({ ...previous, [key]: value })); setMessage(''); }
-  return <main className="news-admin"><header className="news-admin-header"><a href="/management" className="button button-outline"><ArrowRight size={16}/>مدیریت درخواست‌ها</a><a href="/news" target="_blank" rel="noreferrer">مشاهده بخش اخبار<ExternalLink size={15}/></a></header>
+  return <main className="news-admin"><div className="news-admin-brand"><Brand subtitle="مدیریت محتوای پاداش"/></div><header className="news-admin-header"><a href="/management" className="button button-outline"><ArrowRight size={16}/>مدیریت درخواست‌ها</a><a href="/news" target="_blank" rel="noreferrer">مشاهده بخش اخبار<ExternalLink size={15}/></a></header>
     <div className="admin-page-heading"><div><span className="admin-eyebrow">محتوای رسمی بازرگانی پاداش</span><h1>مدیریت اخبار و رویدادها</h1><p>خبر واقعی را پیش‌نویس کنید و پس از بازبینی منتشر کنید.</p></div><button className="button button-outline" onClick={refresh} disabled={loading || busy}><RefreshCw size={16}/>به‌روزرسانی</button></div>
     {error && <p className="form-error" role="alert">{error}</p>}
     {!authenticated ? <section className="admin-login-panel">{loading ? <LoaderCircle className="spin"/> : <><h2>ورود مدیر</h2>{code === 'not_configured' ? <p>رمز مدیریت روی سرور تنظیم نشده است.</p> : code === 'signin' ? <AdminLogin onSuccess={refresh}/> : <p>دریافت وضعیت دسترسی انجام نشد. دوباره تلاش کنید.</p>}</>}</section> : <>

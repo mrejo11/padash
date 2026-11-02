@@ -6,3 +6,171 @@
 @media(max-width:850px){.storefront .estimator-detailed{grid-template-columns:1fr;gap:30px}.estimator-detailed .estimator-copy{position:static}.storefront .estimator-detailed .estimator-copy>p{max-width:600px}.storefront .estimator-detailed .estimator-note{max-width:none;margin-top:17px;padding-top:15px}.roll-breakdown{grid-template-columns:1fr 1fr}.product-detail-page{grid-template-columns:1fr}.product-detail-art{position:static;max-width:450px;width:100%;margin:auto}.product-detail-art .product-art{max-height:230px}.home-news-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.public-header{padding:18px 0}.public-header>.container{display:block}.public-header .brand small{font-size:7px}.public-header nav{max-width:none;justify-content:start;margin-top:22px;font-size:10px;gap:10px 17px}.public-main{padding-block:27px 45px}.content-heading h1{font-size:25px;line-height:1.9}.content-heading>p{font-size:12px;line-height:2.2}.content-grid{grid-template-columns:1fr;gap:15px}.content-card{padding:22px;gap:13px}.content-card h2{font-size:17px}.article-meta{font-size:9px;gap:7px 15px}.reading-article h2{font-size:19px}.reading-article p,.news-body p{font-size:12px;line-height:2.5}.article-toc{font-size:11px;padding:17px 20px}.reading-article>section{margin-top:27px}.article-note{font-size:10px;padding:14px 16px}.article-sources li{font-size:11px}.inline-sources{font-size:9px}.public-footer>.container{display:block}.public-footer-contacts{margin-top:20px;min-width:0}.public-footer-contacts a{font-size:11px}.public-footer b{font-size:15px}.article-related>a{font-size:10px}.product-detail-page h1{font-size:26px}.product-spec-list>div{font-size:11px}.product-checks{font-size:11px}.news-admin{padding:20px 16px}.news-admin-header{align-items:start;gap:10px;margin-bottom:25px}.news-admin-header .button{font-size:10px;min-height:39px;padding:8px 11px;gap:7px}.news-admin-header>a:last-child{font-size:9px;padding-top:10px}.news-admin-summary{font-size:10px}.news-admin-summary .button{font-size:10px;gap:6px;min-height:40px;padding:9px 12px}.news-admin-list>article{padding:18px;gap:12px}.news-admin-list h2{font-size:15px}.news-admin-list p{font-size:11px}.news-admin-list .button{font-size:10px;min-height:34px;padding:7px 10px}.news-editor{padding:20px}.news-editor h2{font-size:18px}.news-editor .document-actions .button{font-size:11px;padding-inline:13px}.roll-breakdown{grid-template-columns:1fr 1fr;gap:10px 15px}.roll-breakdown>div{display:block}.roll-breakdown dd{font-size:11px}.storefront .roll-calculator .calculator-top>span:first-child{font-size:11px}.storefront .roll-calculator .mini-label{font-size:8px}.storefront .roll-modes button{font-size:10px}.storefront .roll-calculator .calc-inputs{gap:13px}.storefront .roll-calculator .calc-inputs label{font-size:10px}.storefront .roll-calculator .roll-note{font-size:9px}.roll-source-links{font-size:9px}.roll-preset{font-size:10px}.roll-preset select{font-size:9px}.home-news-grid{grid-template-columns:1fr}.home-news-card{padding:20px}.home-news-card h3{font-size:15px}.home-news-empty{padding:22px 18px;gap:14px;align-items:start}.home-news-empty>svg{width:24px;margin-top:3px}.home-news-empty h3{font-size:12px}.home-news-empty p{font-size:10px}.storefront .product-full-guide{font-size:8px}.storefront .nav>a,.storefront .nav>button{font-size:13px}.content-empty{padding:30px 20px}.content-empty h2{font-size:17px}}
 @media(max-width:380px){.storefront .roll-calculator{padding:17px}.storefront .roll-calculator .calculator-top>.mini-label{display:none}.roll-breakdown dt{font-size:8px}.roll-formula{font-size:9px}.public-header nav{gap:10px 13px}}
+
+/* Public reading pages and calculator use the same brand and spacing scale. */
+.storefront :is(.hero > div,.solutions-inner > div,.estimator > div,.footer-main > div,.catalog-tools > div) { min-width:0; }
+.public-main { padding-block:44px 80px; }
+.content-heading { padding-top:12px; }
+.content-heading h1 { color:var(--brand-navy); font-weight:800; font-size:36px; }
+.content-heading > p { font-size:15px; }
+.content-card { border-radius:17px; padding:28px; border-top:3px solid #b5dced; }
+.content-card > svg { color:var(--brand-blue); }
+.content-card h2 { font-size:20px; }
+.content-card p { font-size:14px; }
+.content-card > .text-button { color:var(--brand-blue); font-size:13px; min-height:44px; }
+.content-card time,.content-card > small { font-size:12px; }
+.content-breadcrumb { font-size:12px; gap:8px 12px; }
+.content-breadcrumb a { min-height:32px; display:inline-flex; align-items:center; }
+.content-empty { padding:45px 30px; border-color:#b7d6e8; background:#f2f9fd; }
+.content-empty p { color:#4c7188; font-size:14px; }
+.content-empty .text-button { color:var(--brand-blue); }
+.reading-article { background:#fff; border:1px solid #dbe8f0; border-radius:20px; padding:42px; max-width:930px; }
+.reading-article > section { scroll-margin-top:115px; }
+.reading-article p,.news-body p { color:#3e6077; font-size:15px; line-height:2.5; }
+.article-meta { font-size:12px; color:#57778c; }
+.article-toc { background:#edf7fc; border-color:#cde5f2; gap:5px; }
+.article-toc a { min-height:36px; padding-block:4px; }
+.article-note { background:#fff5e4; border-color:var(--brand-amber); color:#795116; font-size:13px; }
+.inline-sources { font-size:12px; }
+.inline-sources a { padding-block:4px; overflow-wrap:anywhere; }
+.article-sources li { font-size:13px; }
+.article-sources li > span { font-size:11px; background:#e8f5fb; color:#2c6e93; }
+.article-sources a { overflow-wrap:anywhere; }
+.article-related > a { font-size:12px; min-height:44px; border-color:#c2dcea; }
+.article-related > a:hover { color:var(--brand-blue); border-color:var(--brand-blue); }
+.public-footer { background:#063959; color:#e2f1fa; border-top:4px solid #0089bb; }
+.public-footer .brand { display:inline-flex; margin:0; }
+.public-footer .padash-brand .brand-text b { font-size:20px; }
+.public-footer .padash-brand .brand-text small,.public-footer p { color:#b9d3e4; }
+.public-footer p { font-size:13px; }
+.public-footer a:not(.brand) { min-height:44px; }
+.public-footer-contacts { min-width:310px; }
+.public-footer-contacts a { border-color:#305e7b; font-size:13px; min-height:52px; }
+.public-footer-contacts bdi { font-size:18px; color:white; }
+.public-footer-contacts svg { color:var(--brand-amber); }
+.product-detail-page > div { min-width:0; }
+.product-detail-art { background:#fff; border-radius:18px; top:125px; }
+.product-detail-art > small { font-size:12px; }
+.product-spec-list > div { grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); font-size:14px; }
+.product-spec-list dd { overflow-wrap:anywhere; }
+.product-checks { font-size:14px; color:#4b6e85; }
+.product-detail-page .button { white-space:normal; }
+.storefront .estimator-detailed { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); }
+.storefront .estimator-guide-link { color:var(--brand-blue); font-size:12px; min-height:44px; }
+.storefront .roll-calculator .calculator-top { align-items:start; flex-wrap:wrap; gap:10px; }
+.storefront .roll-calculator .calculator-top > span:first-child { font-size:15px; }
+.storefront .roll-calculator .mini-label { font-size:10px; }
+.storefront .roll-modes { background:#eaf4fa; padding:5px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+.storefront .roll-modes button { min-height:48px; font-size:12px; color:#426c86; padding:8px; }
+.storefront .roll-modes button.active { background:var(--brand-blue); color:#fff; }
+.storefront .roll-calculator .calc-inputs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:17px; }
+.storefront .roll-calculator .calc-inputs label { font-size:12px; }
+.storefront .roll-calculator .calc-inputs > label > span { font-size:11px; color:#54758b; }
+.storefront .roll-calculator .calc-inputs input { font-size:15px; min-height:46px; }
+.storefront .roll-calculator .roll-note { font-size:12px; color:#4f7188; }
+.roll-preset { font-size:13px; }
+.roll-preset select { font-size:13px; min-height:46px; border-color:#c7dfec; text-overflow:ellipsis; }
+.roll-breakdown { grid-template-columns:repeat(2,minmax(0,1fr)); border-color:#cfe4ef; gap:13px 18px; }
+.roll-breakdown > div { display:block; min-width:0; }
+.roll-breakdown dt { font-size:12px; color:#4c7087; }
+.roll-breakdown dd { white-space:normal; overflow-wrap:anywhere; font-size:14px; color:var(--brand-navy); }
+.roll-cut-plan { border-color:#c4e0ef; background:#eef7fc; font-size:13px; }
+.roll-cut-plan p { font-size:12px; color:#4a6e86; }
+.roll-formula { font-size:12px; color:#4b7088; }
+.roll-source-links { color:var(--brand-blue); font-size:11px; gap:4px 15px; }
+.roll-source-links a { min-height:36px; padding-block:5px; }
+.storefront .home-news { padding-top:0; }
+.home-news-card { border-radius:16px; padding:26px; }
+.home-news-card h3 { font-size:19px; }
+.home-news-card p { font-size:13px; }
+.home-news-card time { font-size:11px; }
+.home-news-card .text-button { color:var(--brand-blue); min-height:44px; font-size:12px; }
+.home-news-empty { background:#eff7fc; border-color:#bcd7e8; border-radius:15px; }
+.home-news-empty > svg { color:var(--brand-blue); }
+.home-news-empty h3 { font-size:17px; }
+.home-news-empty p { font-size:13px; }
+.news-admin-brand { padding-bottom:26px; margin-bottom:25px; border-bottom:1px solid var(--line); }
+.news-admin-header > a:last-child { color:#426c87; font-size:12px; min-height:44px; }
+.news-admin-list > article { border-color:#cbdfea; border-radius:15px; }
+.news-admin-list p,.news-admin-list small { color:#4e7188; }
+.news-admin-list p { font-size:13px; }
+.news-admin-list small { font-size:11px; }
+.news-admin-list > article > div { min-width:0; }
+.news-editor { border-color:#c9dfec; border-top:4px solid var(--brand-blue); border-radius:17px; }
+.news-editor .field { font-size:13px; }
+@media (max-width:1050px) {
+  .storefront .estimator-detailed { gap:30px; }
+  .content-heading h1 { font-size:32px; }
+}
+@media (max-width:850px) {
+  .storefront .estimator-detailed { grid-template-columns:minmax(0,1fr); }
+  .reading-article { padding:32px; }
+  .public-footer > .container { flex-wrap:wrap; }
+}
+@media (max-width:700px) {
+  .public-main { padding-block:25px 48px; }
+  .content-heading h1 { font-size:28px; line-height:1.8; }
+  .content-heading > p { font-size:14px; }
+  .content-card { padding:24px; }
+  .content-card h2 { font-size:20px; }
+  .content-card p { font-size:14px; }
+  .content-empty { padding:30px 22px; }
+  .content-empty h2 { font-size:20px; }
+  .reading-article { padding:23px 18px; border-radius:14px; }
+  .reading-article > section { scroll-margin-top:100px; }
+  .reading-article h2 { font-size:22px; }
+  .reading-article p,.news-body p { font-size:14px; line-height:2.4; }
+  .article-meta { font-size:11px; gap:7px 14px; }
+  .article-toc { padding:17px; font-size:13px; }
+  .article-toc a { min-height:44px; }
+  .article-note { font-size:12px; padding:17px; }
+  .article-sources li { font-size:12px; flex-wrap:wrap; }
+  .inline-sources { font-size:11px; }
+  .article-related > a { font-size:12px; }
+  .public-footer-contacts { min-width:0; }
+  .public-footer-contacts a { font-size:13px; }
+  .public-footer-contacts bdi { font-size:17px; }
+  .product-spec-list { padding-inline:13px; }
+  .product-spec-list > div { font-size:13px; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:10px; }
+  .product-checks { font-size:13px; }
+  .storefront .roll-calculator .calculator-top > span:first-child { font-size:14px; }
+  .storefront .roll-calculator .mini-label { display:inline-block; font-size:10px; }
+  .storefront .roll-modes button { font-size:12px; padding:8px 4px; }
+  .storefront .roll-calculator .calc-inputs { gap:14px; }
+  .storefront .roll-calculator .calc-inputs label { font-size:12px; }
+  .storefront .roll-calculator .roll-note { font-size:12px; }
+  .roll-preset { font-size:13px; }
+  .roll-breakdown { gap:12px; }
+  .roll-breakdown dt { font-size:11px; }
+  .roll-breakdown dd { font-size:13px; }
+  .roll-formula { font-size:11px; }
+  .roll-source-links { font-size:11px; }
+  .home-news-empty { align-items:start; padding:24px 20px; }
+  .home-news-empty h3 { font-size:16px; }
+  .home-news-empty p { font-size:13px; }
+  .home-news-card h3 { font-size:18px; }
+  .home-news-card p { font-size:13px; }
+  .news-admin-header { flex-wrap:wrap; }
+  .news-admin-header .button { min-height:44px; font-size:12px; }
+  .news-admin-summary { align-items:start; flex-direction:column; gap:15px; font-size:13px; }
+  .news-admin-summary .button { min-height:46px; font-size:13px; }
+  .news-admin-list > article { flex-direction:column; padding:21px; }
+  .news-admin-list h2 { font-size:18px; }
+  .news-admin-list p { font-size:13px; }
+  .news-admin-list .button { min-height:44px; font-size:13px; width:100%; }
+  .news-editor { padding:20px 17px; }
+  .news-editor .field-grid { grid-template-columns:minmax(0,1fr); }
+  .news-editor .document-actions { display:grid; grid-template-columns:minmax(0,1fr); }
+  .news-editor .document-actions .button { font-size:13px; white-space:normal; }
+}
+@media (max-width:360px) {
+  .storefront .roll-calculator .calc-inputs { grid-template-columns:minmax(0,1fr); }
+  .storefront .roll-modes button { font-size:11px; }
+  .reading-article { padding-inline:15px; }
+  .public-footer-contacts a { font-size:12px; gap:7px; }
+  .public-footer-contacts bdi { font-size:15px; }
+}
+
+/* These links also appear inside the compact product cards. */
+.storefront .product-full-guide { color:var(--brand-blue); font-size:11px; min-height:40px; }
+@media (max-width:700px) { .storefront .product-full-guide { min-height:44px; } }

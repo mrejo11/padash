@@ -1,6 +1,6 @@
 const managers = [
-  { name: 'مهندس فرجی', phone: '09112286151' },
   { name: 'مهندس پاداشی', phone: '09112243632' },
+  { name: 'مهندس فرجی', phone: '09112286151' },
 ] as const;
 
 export const businessContacts = managers.map(manager => ({

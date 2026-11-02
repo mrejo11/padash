@@ -8,13 +8,13 @@ export const absoluteUrl = (path = '/') => new URL(path, SITE_URL).toString();
 export function pageMetadata(title: string, description: string, path: string): Metadata {
   return { title, description, alternates: { canonical: absoluteUrl(path) },
     openGraph: { title: `${title} | ${SITE_NAME}`, description, url: absoluteUrl(path), siteName: SITE_NAME,
-      type: 'website', locale: 'fa_IR', images: [{ url: absoluteUrl('/images/insulation-hero.png'), alt: 'عایق‌های حرارتی و برودتی بازرگانی پاداش' }] },
-    twitter: { card: 'summary_large_image', title: `${title} | ${SITE_NAME}`, description, images: [absoluteUrl('/images/insulation-hero.png')] },
+      type: 'website', locale: 'fa_IR', images: [{ url: absoluteUrl('/images/padash-logo.png'), width: 1000, height: 1000, alt: 'نشان بازرگانی پاداش؛ عایق حرارتی و برودتی' }] },
+    twitter: { card: 'summary', title: `${title} | ${SITE_NAME}`, description, images: [absoluteUrl('/images/padash-logo.png')] },
   };
 }
 export const organization = {
   '@type': 'Organization', '@id': absoluteUrl('/#organization'), name: SITE_NAME,
-  url: SITE_URL, logo: absoluteUrl('/favicon.svg'),
+  url: SITE_URL, logo: absoluteUrl('/images/padash-logo.png'),
   description: 'انتخاب، مقایسه، مشاوره و استعلام تأمین عایق‌های حرارتی و برودتی برای ساختمان، تأسیسات و صنعت.',
   contactPoint: businessContacts.map(contact => ({ '@type': 'ContactPoint', name: contact.name,
     telephone: contact.href.slice(4), contactType: 'sales', availableLanguage: 'Persian' })),

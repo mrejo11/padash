@@ -1,4 +1,5 @@
 'use client';
+import Brand from '../../components/brand';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, CalendarClock, ChevronLeft, ChevronRight, ClipboardList, Download, Inbox, LayoutDashboard, LoaderCircle, LockKeyhole, LogOut, MessageSquareText, Package, RefreshCw, Search, SlidersHorizontal, TrendingUp, X } from 'lucide-react';
@@ -116,7 +117,7 @@ export default function Management() {
   const totalPages = Math.max(1, Math.ceil((data?.total || 0) / (data?.pageSize || 20)));
   return <main className="admin-shell">
     <aside className="admin-sidebar">
-      <a href="/" className="brand admin-brand"><img src="/favicon.svg" alt="" width={42} height={42}/><span><b>پاداش<span className="brand-dot">.</span></b><small>سامانه مدیریت فروش</small></span></a>
+      <Brand className="admin-brand" subtitle="سامانه مدیریت فروش"/>
       <div className="admin-sidebar-label">فضای مدیریت</div>
       <a href="#dashboard" className="admin-sidebar-link active"><LayoutDashboard size={19}/>نمای کلی و درخواست‌ها</a>
       <a href="/management/news" className="admin-sidebar-link"><ClipboardList size={19}/>اخبار و رویدادها</a>
@@ -154,12 +155,12 @@ export default function Management() {
             <div className="admin-results-info"><span>{loading ? <><LoaderCircle className="spin" size={14}/>در حال دریافت...</> : <><SlidersHorizontal size={14}/>{fa(data!.total)} درخواست{activeFilters ? ' مطابق فیلترها' : ' ثبت‌شده'}</>}</span>{activeFilters && <button onClick={() => { setSearch(''); setFilters(emptyFilters); setPage(1); }}>پاک کردن فیلترها<X size={13}/></button>}</div>
             {rows.length ? <div className="admin-table-scroll"><table className="admin-requests-table"><thead><tr><th>مشتری / کد پیگیری</th><th>نوع و اقلام</th><th>مقدار درخواستی</th><th>وضعیت</th><th>پیگیری بعدی</th><th>زمان ثبت</th><th><span className="admin-sr-only">جزئیات</span></th></tr></thead>
               <tbody>{rows.map(row => <tr key={row.token}>
-                <td><button className="admin-customer-button" disabled={loading} onClick={() => setSelected(row)}>{row.name}</button><small>{row.company || row.city}</small><bdi className="admin-request-id">{row.id}</bdi></td>
-                <td><span className={'admin-kind kind-' + requestKind(row)}>{requestKind(row) === 'order' ? <Package size={13}/> : <MessageSquareText size={13}/>} {kindLabels[requestKind(row)]}</span><small>{quoteItems(row).length ? fa(quoteItems(row).length) + ' قلم محصول' : 'بررسی نیاز پروژه'}</small></td>
-                <td>{quantities(row).length ? quantities(row).map(volume => <span className="admin-row-volume" key={volume.unit}><b>{fa(volume.quantity)}</b> {volume.unit}</span>) : <span className="admin-help">—</span>}</td>
-                <td><span className={'admin-status status-' + row.status}><i/>{statusLabels[row.status]}</span></td>
-                <td><span className={needsFollowUp(row) ? 'admin-due' : ''}>{row.follow_up_date ? displayDate(row.follow_up_date, false) : 'تعیین نشده'}</span><small>{row.assignee || 'بدون مسئول'}</small></td>
-                <td><span>{displayDate(row.created_at, false)}</span><small>{new Date(row.created_at).toLocaleTimeString('fa-IR', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit' })}</small></td>
+                <td data-label="مشتری / کد پیگیری"><button className="admin-customer-button" disabled={loading} onClick={() => setSelected(row)}>{row.name}</button><small>{row.company || row.city}</small><bdi className="admin-request-id">{row.id}</bdi></td>
+                <td data-label="نوع و اقلام"><span className={'admin-kind kind-' + requestKind(row)}>{requestKind(row) === 'order' ? <Package size={13}/> : <MessageSquareText size={13}/>} {kindLabels[requestKind(row)]}</span><small>{quoteItems(row).length ? fa(quoteItems(row).length) + ' قلم محصول' : 'بررسی نیاز پروژه'}</small></td>
+                <td data-label="مقدار درخواستی">{quantities(row).length ? quantities(row).map(volume => <span className="admin-row-volume" key={volume.unit}><b>{fa(volume.quantity)}</b> {volume.unit}</span>) : <span className="admin-help">—</span>}</td>
+                <td data-label="وضعیت"><span className={'admin-status status-' + row.status}><i/>{statusLabels[row.status]}</span></td>
+                <td data-label="پیگیری بعدی"><span className={needsFollowUp(row) ? 'admin-due' : ''}>{row.follow_up_date ? displayDate(row.follow_up_date, false) : 'تعیین نشده'}</span><small>{row.assignee || 'بدون مسئول'}</small></td>
+                <td data-label="زمان ثبت"><span>{displayDate(row.created_at, false)}</span><small>{new Date(row.created_at).toLocaleTimeString('fa-IR', { timeZone: 'Asia/Tehran', hour: '2-digit', minute: '2-digit' })}</small></td>
                 <td><button className="admin-open-detail" disabled={loading} aria-label={'مشاهده جزئیات ' + row.id} onClick={() => setSelected(row)}>جزئیات<ChevronLeft size={15}/></button></td>
               </tr>)}</tbody></table></div> : <div className="admin-empty"><Inbox size={38}/><h3>{activeFilters ? 'درخواستی با این فیلترها پیدا نشد' : 'هنوز درخواستی ثبت نشده است'}</h3><p>{activeFilters ? 'جست‌وجو یا بازه تاریخ را تغییر دهید.' : 'سفارش و مشاوره ثبت‌شده از فرم سایت در این بخش نمایش داده می‌شود.'}</p></div>}
             <footer className="admin-pagination"><span>{data!.total ? `${fa((data!.page - 1) * data!.pageSize + 1)} تا ${fa(Math.min(data!.page * data!.pageSize, data!.total))} از ${fa(data!.total)} درخواست` : '۰ درخواست'}</span>
