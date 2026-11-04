@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { CalendarClock, Check, ExternalLink, History, LoaderCircle, Phone, Save, X } from 'lucide-react';
-import { fa, products } from '../../lib/catalog';
+import { fa, products, thicknessLabel } from '../../lib/catalog';
 import { kindLabels, needsFollowUp, quantities, quoteItems, requestKind, statusLabels, type Quote, type QuoteStatus } from '../../lib/management-model';
 
 export function displayDate(value: string, time = true) {
@@ -77,9 +77,9 @@ export default function RequestDetail({ quote, onClose, onSaved, onSessionExpire
           <h4>شرح نیاز پروژه</h4><p className="admin-project-message">{record.message || 'توضیحی ثبت نشده است.'}</p>
         </section>
         <section className="admin-detail-section"><div className="admin-section-title"><h3>اقلام درخواستی</h3><span>{fa(items.length)} قلم</span></div>
-          {items.length ? <><div className="admin-table-scroll"><table className="admin-items-table"><thead><tr><th>محصول</th><th>ضخامت</th><th>مقدار</th></tr></thead>
+          {items.length ? <><div className="admin-table-scroll"><table className="admin-items-table"><thead><tr><th>محصول و مشخصات</th><th>ضخامت / انتخاب</th><th>مقدار</th></tr></thead>
             <tbody>{items.map((item, index) => { const product = products.find(p => p.id === item.productId);
-              return <tr key={index}><td><b>{product?.name || item.productId}</b>{item.note && <small>{item.note}</small>}</td><td>{fa(item.thickness)} میلی‌متر</td><td>{fa(item.quantity)} {product?.unit || 'واحد'}</td></tr>;
+              return <tr key={index}><td><b>{product?.name || item.productId}</b>{product&&<small><bdi>{product.id}</bdi></small>}{item.note && <small>{item.note}</small>}</td><td>{thicknessLabel(item.thickness)}</td><td>{fa(item.quantity)} {product?.unit || 'واحد'}</td></tr>;
             })}</tbody></table></div><div className="admin-quantity-total">جمع مقدار درخواستی: {quantities(record).map(v => <b key={v.unit}>{fa(v.quantity)} {v.unit}</b>)}</div></>
             : <div className="admin-inline-empty">این درخواست برای مشاوره ثبت شده و قلمی ندارد.</div>}
         </section>

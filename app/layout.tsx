@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', template: '%s | بازرگانی پاداش' },
   description: 'انتخاب، مقایسه و استعلام عایق‌های حرارتی و برودتی برای تأسیسات، ساختمان و صنعت. کاتالوگ تخصصی بازرگانی پاداش.',
-  icons: { icon: { url: '/images/padash-logo.png', type: 'image/png' }, apple: '/images/padash-logo.png' },
+  icons: { icon: { url: '/images/padash-logo-slim.png', type: 'image/png' }, apple: '/images/padash-logo-slim.png' },
   applicationName: SITE_NAME,
   robots: { index: !['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || ''), follow: true },
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
-  openGraph: { title: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl('/images/padash-logo.png'), width: 1000, height: 1000, alt: 'نشان بازرگانی پاداش' }] },
+  openGraph: { title: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl('/images/padash-logo-slim.png'), width: 1254, height: 1254, alt: 'نشان بازرگانی پاداش' }] },
   twitter: { card: 'summary' },
 };
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#063959' };

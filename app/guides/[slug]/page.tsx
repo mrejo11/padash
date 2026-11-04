@@ -5,11 +5,12 @@ import JsonLd from '../../../components/json-ld';
 import { findGuide, guides } from '../../../lib/guides';
 import { products, fa } from '../../../lib/catalog';
 import { absoluteUrl, breadcrumbs, organization, pageMetadata } from '../../../lib/seo';
+import { guideSearchTitle } from '../../../lib/seo-content';
 export function generateStaticParams() { return guides.map(guide => ({ slug: guide.slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const guide = findGuide((await params).slug);
   if (!guide) return { title: 'راهنما پیدا نشد', robots: { index: false } };
-  const meta = pageMetadata(guide.title, guide.description, '/guides/' + guide.slug);
+  const meta = pageMetadata(guideSearchTitle(guide.slug,guide.title), guide.description, '/guides/' + guide.slug);
   return { ...meta, openGraph: { ...meta.openGraph, type: 'article', publishedTime: guide.published + 'T12:00:00+03:30', modifiedTime: guide.modified + 'T12:00:00+03:30' } };
 }
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {

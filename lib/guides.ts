@@ -14,12 +14,15 @@ const glassIran: GuideSource = { id: 'glass-iran', title: 'شرکت پشم شی�
 const nzMaterials: GuideSource = { id: 'nz-materials', title: 'Building Performance نیوزیلند — مواد عایق و محدودیت‌های نصب', url: 'https://www.building.govt.nz/getting-started/smarter-homes-guides/heating-cooling-and-insulation/insulation-materials', origin: 'خارجی' };
 const pnnl: GuideSource = { id: 'pnnl', title: 'آزمایشگاه ملی PNNL — مقاومت حرارتی و رده‌بندی بخارگذرانی عایق‌ها', url: 'https://basc.pnnl.gov/information/typical-r-values-and-vapor-retarder-classifications-common-insulation-materials', origin: 'خارجی' };
 const tubolit: GuideSource = { id: 'tubolit', title: 'Armacell — دیتاشیت فوم پلی‌اتیلن Tubolit', url: 'https://www.armacell.com/en-US/product/technical-specs/tubolit-tubes', origin: 'خارجی' };
+const reflectix:GuideSource={id:'reflectix-seams',title:'Reflectix — نمونه دستور نصب و هم‌پوشانی درزها',url:'https://www.reflectixinc.com/wp-content/uploads/Download-Pro-Attic-Installation-Instructions-Rev-1114.pdf',origin:'خارجی'};
+const coroplast:GuideSource={id:'coroplast-size',title:'Coroplast — مشخصات و تلرانس ابعاد ورق',url:'https://www.coroplast.com/wp-content/uploads/Coroplast-Print-7-2020.pdf',origin:'خارجی'};
+const rockQuantities:GuideSource={id:'rock-quantities',title:'ROCKWOOL — راهنمای متره مواد و ذخیره پروژه SeaRox',url:'https://rti.rockwool.com/syssiteassets/tools--documentation/searox-technical-guidelines/rw-ti_searox_technical_guidelines.pdf',origin:'خارجی'};
 
 export const guides: Guide[] = [
   {
-    slug: 'roll-insulation-quantity', title: 'محاسبه مقدار عایق رولی؛ از متره تا تعداد رول خرید',
-    description: 'فرمول مساحت و تعداد رول عایق، تفاوت حداقل مساحتی با برش واقعی، مثال حل‌شده و اندازه‌گیری دورپیچ لوله با منابع سازندگان.',
-    category: 'متره و محاسبات', minutes: 6, published: checked, modified: checked, relatedProducts: ['EL-R', 'GW-F', 'PE-R'],
+    slug: 'roll-insulation-quantity', title: 'محاسبه مقدار عایق و ملزومات؛ رول، ورق و برنامه برش',
+    description: 'متره پشم شیشه، پشم سنگ، فوم، فویل، توری و کارتن‌پلاست؛ تعداد رول و ورق با ابعاد واقعی، هم‌پوشانی، ذخیره و برنامه برش.',
+    category: 'متره و محاسبات', minutes: 8, published: checked, modified: '2026-11-04', relatedProducts: ['EL-R', 'GW-F', 'PE-R','VN-1221','VN-1220','VN-1218','VN-1219','VN-1216','VN-1213'],
     intro: 'برای خرید عایق رولی باید سه عدد مستقل مشخص باشد: مساحت واقعی نیاز، مساحت هر رول و ذخیره‌ای که برای شرایط همان پروژه انتخاب می‌شود. یک طول ثابت برای همه رول‌ها قابل استفاده نیست.',
     sections: [
       { heading: '۱. ابتدا سطح واقعی را متره کنید', paragraphs: [
@@ -37,7 +40,18 @@ export const guides: Guide[] = [
         'ممکن است مساحت کل کافی باشد ولی قطعات از عرض یا طول رول بریده نشوند. ابزار پاداش برای دورپیچ لوله یک برنامه ساده هم می‌دهد: دورپیچ در امتداد طول رول و قطعات مسیر در امتداد عرض رول، بدون استفاده مجدد از دورریزها. مساحت افزوده و ذخیره در رول‌های جدا حساب می‌شوند؛ این برنامه بهینه‌سازی کامل برش نیست.',
         'زانو، شیر، سه‌راهی و جزئیات روکش، متره جدا لازم دارند. طول نهایی برش و روش درزبندی باید با دستور نصب محصول تطبیق داده شود. محاسبه تعداد رول، ضخامت لازم برای کنترل میعان یا اتلاف حرارت را تعیین نمی‌کند.',
       ], sourceIds: ['arma-install'] },
-    ], sources: [armaManual, armaRolls],
+      {heading:'۵. محاسبه رول، ورق و هم‌پوشانی',paragraphs:[
+        'برای پشم شیشه و پشم سنگ، شکل عرضهٔ رول یا ورق را انتخاب کنید؛ فوم پلی‌اتیلن، فویل و توری با رول و کارتن‌پلاست با ورق محاسبه می‌شوند. اندازهٔ پیش‌فرضی برای این گروه‌ها فرض نشده است. ابعاد قابل استفادهٔ واحد خرید را از برچسب مدل واقعی بخوانید. تلرانس ابعاد ورق نیز می‌تواند مهم باشد؛ برای نمونه، Coroplast بین ابعاد ورق استاندارد و برش دقیق تفاوت قائل می‌شود.',
+        'هم‌پوشانی به مدل و روش نصب وابسته است. دستور نصب Reflectix برای یک کاربرد مشخص هم‌پوشانی تعریف می‌کند؛ آن مقدار را نمی‌توان به هر فویل، توری یا عایق تعمیم داد. در ابزار، صفر یعنی درز بدون هم‌پوشانی. مقدار لازم را از جزئیات اجرایی پروژه وارد کنید.',
+        'در جهت عرض، با بُعد سطح B، عرض محصول W و هم‌پوشانی o، اگر B ≤ W باشد یک ردیف کافی است؛ در غیر این صورت تعداد ردیف برابر ۱ + سقفِ ((B − W) ÷ (W − o)) است. همین رابطه در جهت طول به کار می‌رود. بنابراین هم‌پوشانی فقط در درزهای بین قطعات حساب می‌شود و از لبهٔ بیرونی سطح کسر نمی‌شود.',
+      ],sourceIds:['coroplast-size','reflectix-seams']},
+      {heading:'۶. برنامهٔ برش چه فرض‌هایی دارد؟',paragraphs:[
+        'برای رول، اگر طول هر نوار از طول رول بیشتر نباشد، تعداد نوارهای کامل قابل برش از یک رول محاسبه می‌شود. نمونهٔ مستقل: سه ردیفِ ۱ × ۲ متر از یک رول فرضی ۱ × ۱۰ متر، یک رول پایه می‌خواهند و ۴ مترمربع بخش برش‌نخورده باقی می‌ماند. با ۱۰٪ ذخیره روی مصرف ۶ مترمربع، همان باقی‌مانده برای ۰٫۶ مترمربع ذخیره کافی است؛ رول اضافی لازم نمی‌شود.',
+        'برای ورق یا سطح بلندتر از یک رول، شبکه‌ای از واحدهای کامل با برش در لبهٔ سطح محاسبه می‌شود و دورریزها دوباره مصرف نمی‌شوند. چرخش ۹۰ درجه فقط با انتخاب کاربر مقایسه می‌شود؛ جهت الیاف، شیار و روکش می‌تواند آن را محدود کند. نمونهٔ مستقل: سطح ۳ × ۲ متر با ورق فرضی ۲ × ۳ متر در یک جهت دو ورق و با چرخش مجاز یک ورق می‌خواهد. این مثال اندازهٔ موجود در انبار را اعلام نمی‌کند.',
+        'ذخیره بر اساس مصرفِ برنامهٔ برش به‌اضافهٔ مساحت افزوده محاسبه می‌شود. بخش برش‌نخوردهٔ رول ابتدا از نیاز ذخیره کم می‌شود و کمبود به واحد کامل گرد می‌شود. ذخیره و مساحت افزوده بر مبنای مساحت‌اند؛ جاگرفتن قطعهٔ خاص در باقیمانده نیازمند بررسی شکل برش است. برش‌های مختلط و استفادهٔ مجدد از دورریزها بهینه‌سازی نمی‌شوند.',
+        'راهنمای متره SeaRox از ROCKWOOL نیز بر رجوع به نقشه‌های دقیق پروژه برای برآورد دقیق‌تر تأکید دارد. درصدهای ذخیرهٔ یک سامانهٔ خاص را نباید به همه محصولات تعمیم داد. در حالت «مساحت آماده»، فقط حداقل مساحتی محاسبه می‌شود؛ برای هم‌پوشانی، ابعاد سطح مستطیلی را وارد کنید.',
+      ],sourceIds:['rock-quantities']},
+    ], sources: [armaManual, armaRolls,reflectix,coroplast,rockQuantities],
   },
   {
     slug: 'elastomeric-insulation-guide', title: 'عایق الاستومری چیست و در استعلام آن چه بنویسیم؟',

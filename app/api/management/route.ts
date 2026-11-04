@@ -54,7 +54,7 @@ export async function GET(request: Request) {
             statusLabels[row.status], row.created_at, row.assignee || '', row.follow_up_date || '', row.message, row.internal_note || ''];
           return items.length ? items.map(item => {
             const product = products.find(p => p.id === item.productId);
-            return [...base, product?.name || item.productId, item.thickness, item.quantity, product?.unit || 'واحد', item.note];
+            return [...base, product ? `${product.name} (${product.id})` : item.productId, item.thickness??'طبق مشخصات درخواست', item.quantity, product?.unit || 'واحد', item.note];
           }) : [[...base, '', '', '', '', '']];
         }),
       ];

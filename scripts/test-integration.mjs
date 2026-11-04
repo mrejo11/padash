@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
-import { randomBytes, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { mkdir, mkdtemp } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { resolve } from 'node:path';
 import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import { startLocalBlobs } from './local-blobs.mjs';
 import { getStore } from '@netlify/blobs';
+import { auditSeo } from './test-seo.mjs';
 
 await mkdir('.sites-runtime', { recursive: true });
 const directory = await mkdtemp(resolve('.sites-runtime/integration-'));
@@ -22,6 +23,7 @@ await new Promise(resolve => portProbe.close(resolve));
 const origin = `http://127.0.0.1:${port}`;
 let child;
 let logs = '';
+let blobsStopped = false;
 async function start(adminPassword = password, hosted = false) {
   child = spawn(process.execPath, [resolve('node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -249,8 +251,78 @@ try {
   assert(legacyCsv.includes("' =1+1"), 'legacy formulas with leading whitespace are escaped');
   assert.equal((await send('/api/management', { token: legacyTokens[0], revision: 0, assignee: 'Legacy operator' },
     { method: 'PATCH', headers: { ...hostedSession, ...proxyHeaders } })).status, 200, 'legacy records can be updated');
-  console.log('PASS: validation, privacy, quotas, admin access, CSRF, workflow, concurrent edits, quantities, CSV, dates, persistence, crawlable guides/products, canonical URLs, noindex, news draft/publish/unpublish, XSS escaping and sitemap updates.');
+  console.log('Checking all partner products, image integrity and custom specification orders...');
+  const partnerSource = JSON.parse(await readFile('docs/catalog-source.json', 'utf8'));
+  assert.equal(partnerSource.count, 6);
+  assert.deepEqual(partnerSource.products.map(item => item.id).sort(), [1213, 1216, 1218, 1219, 1220, 1221]);
+  assert.equal(partnerSource.products.flatMap(item => item.images).length, 19);
+  const productSitemap = await (await request('/sitemap.xml')).text();
+  const catalogue = await (await request('/products')).text();
+  const noSupplierName = content => assert(!/ونانه|vananeh/i.test(content), 'supplier identity must not appear in the deployed page or metadata');
+  for (const path of ['/', '/products', '/calculator', '/management']) noSupplierName(await (await request(path)).text());
+  noSupplierName(await readFile('lib/product-images.json', 'utf8'));
+  for (const product of partnerSource.products) {
+    const path = '/products/vn-' + product.id;
+    const response = await request(path);
+    assert.equal(response.status, 200, path);
+    const content = await response.text();
+    assert(content.includes('rel="canonical" href="https://padashco.netlify.app' + path + '"'));
+    noSupplierName(content);
+    assert(content.includes('/calculator?product=vn-' + product.id), 'each new product opens its own calculator profile');
+    const calculator = await (await request('/calculator?product=vn-' + product.id)).text();
+    noSupplierName(calculator);
+    assert(calculator.includes('value="VN-' + product.id + '" selected=""'), 'calculator selects the requested product');
+    assert(content.includes('ثبت مشخصات و استعلام'));
+    assert(productSitemap.includes('https://padashco.netlify.app' + path));
+    assert(catalogue.includes('href="' + path + '"'), 'partner listings render without JavaScript');
+    for (const picture of product.images) {
+      const bytes = await readFile(resolve('public', picture.src.slice(1)));
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), picture.sha256, 'partner image remains unchanged');
+      const imageResponse = await request(picture.src);
+      assert.equal(imageResponse.status, 200);
+      assert(imageResponse.headers.get('content-type').startsWith('image/'));
+      assert.equal(createHash('sha256').update(Buffer.from(await imageResponse.arrayBuffer())).digest('hex'), picture.sha256);
+    }
+  }
+  const partnerHeaders = { ...proxyHeaders, 'x-nf-client-connection-ip': '203.0.113.12' };
+  const partnerItems = partnerSource.products.map(product => ({productId: 'VN-' + product.id, thickness: null, quantity: 2, note: 'Private specification for model ' + product.id}));
+  const partnerPayload = { ...payload(), name: 'Partner Order Customer', kind: 'order', items: partnerItems };
+  for (const invalid of [
+    { ...partnerItems[0], note: '   ' },
+    { ...partnerItems[0], thickness: 19 },
+    { productId: 'EL-R', thickness: null, quantity: 1, note: 'invalid legacy thickness' },
+    { productId: 'VN-1213', thickness: null, quantity: 1.5, note: 'fractional sheet count' },
+    { productId: 'VN-1219', thickness: null, quantity: .5, note: 'fractional roll count' },
+  ]) assert.equal((await send('/api/quotes', { ...partnerPayload, items: [invalid] }, { headers: partnerHeaders })).status, 400);
+  const partnerResponse = await send('/api/quotes', partnerPayload, { headers: partnerHeaders });
+  assert.equal(partnerResponse.status, 201);
+  const partnerReceipt = await partnerResponse.json();
+  assert.equal((await send('/api/quotes', partnerPayload, { headers: partnerHeaders })).status, 200, 'partner request retry is idempotent');
+  const partnerAdminPath = '/api/management?q=' + encodeURIComponent(partnerPayload.name);
+  const partnerOrders = await (await request(partnerAdminPath, { headers: hostedSession })).json();
+  assert.equal(partnerOrders.total, 1);
+  const storedItems = typeof partnerOrders.items[0].items === 'string' ? JSON.parse(partnerOrders.items[0].items) : partnerOrders.items[0].items;
+  assert.deepEqual(storedItems, partnerItems, 'all six product specifications reach management unchanged');
+  const partnerCsv = await (await request(partnerAdminPath + '&format=csv', { headers: hostedSession })).text();
+  noSupplierName(partnerCsv);
+  assert(partnerCsv.includes('طبق مشخصات درخواست') && partnerCsv.includes('رول') && partnerCsv.includes('ورق'));
+  for (const item of partnerItems) assert(partnerCsv.includes(item.productId) && partnerCsv.includes(item.note));
+  const partnerReceiptHtml = await (await request('/request/' + partnerReceipt.token)).text();
+  assert(partnerReceiptHtml.includes('طبق مشخصات درخواست'));
+  assert(!partnerReceiptHtml.includes('NaN'));
+  for (const privateValue of [partnerPayload.name, partnerPayload.phone, ...partnerItems.map(item => item.note)]) assert(!partnerReceiptHtml.includes(privateValue), 'partner receipt preserves privacy');
+  const seo = await auditSeo(origin);
+  console.log('SEO audit:',JSON.stringify({pages:seo.pagesChecked,images:seo.images,internalDestinations:seo.internalDestinations}));
+  console.log('Checking sitemap availability during a news-store outage...');
+  await blobs.stop();blobsStopped = true;
+  const fallbackSitemap = await request('/sitemap.xml');
+  assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
+  const fallbackXml = await fallbackSitemap.text();
+  assert.equal([...fallbackXml.matchAll(/<loc>/g)].length,21,'all stable pages remain in the fallback sitemap');
+  assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,19,'product images remain in the fallback sitemap');
+  for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://padashco.netlify.app'+path));
+  console.log('PASS: validation, privacy, quotas, admin access, CSRF, workflow, concurrent edits, quantities, CSV, dates, persistence, crawlable guides/products, canonical URLs, noindex, news workflow, XSS escaping, sitemap updates, 6 partner products, 19 original images, custom specification orders and complete SEO audit.');
 } finally {
   await stop();
-  await blobs.stop();
+  if(!blobsStopped)await blobs.stop();
 }

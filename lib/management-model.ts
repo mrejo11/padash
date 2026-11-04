@@ -37,7 +37,7 @@ export function quoteItems(quote: Pick<Quote, 'items'>): QuoteItem[] {
   try {
     const parsed: unknown = JSON.parse(quote.items);
     return Array.isArray(parsed) ? parsed.filter((item): item is QuoteItem =>
-      Boolean(item && typeof item.productId === 'string' && Number.isFinite(item.thickness)
+      Boolean(item && typeof item.productId === 'string' && (item.thickness===null||Number.isFinite(item.thickness))
         && Number.isFinite(item.quantity) && item.quantity > 0 && typeof item.note === 'string')) : [];
   } catch { return []; }
 }
