@@ -20,7 +20,7 @@ PADASH_STORAGE=sqlite
 PADASH_DATABASE_PATH=/app/data/padash.sqlite
 PADASH_PERSISTENT_DISK=true
 PADASH_STORE_NAMESPACE=production
-PADASH_PUBLIC_ORIGIN=https://padashco-dac-padashco.runflare.cloud
+PADASH_PUBLIC_ORIGIN=https://padashco-zrq-padashco.runflare.cloud
 ```
 
 Set `SALES_ADMIN_PASSWORD` separately as a private hosting secret, using a unique password of at least 24 characters from a password manager. Never commit it, copy `.env.local` to Git, or prefix it with `NEXT_PUBLIC_`. Changing it invalidates administrator sessions. The production launcher rejects missing credentials, an invalid public origin, or unconfirmed persistent storage.
@@ -32,6 +32,8 @@ On self-hosting, quote limits use a private hash of the contact number (five req
 ## Existing records and backups
 
 Before the first storage switch, inspect the old `.sites-runtime/netlify-blobs` directory and the old hosted store. Existing local, Netlify, and SQLite stores are separate; **records are not automatically migrated**. If there are real orders or news, export and migrate them before switching customer traffic. Do not delete the old directory or old provider store.
+
+Do not attach a new disk, rebuild, restart, or change storage until the active records have been located and backed up. Attaching a disk can replace the container. An empty active emulator does not prove that earlier deployments or a different hostname have no customer records. Reconcile order receipt IDs with the owner before making that switch. Verify saved environment variable names and whether they have been applied to the selected service.
 
 A persistent disk is not an independent backup. Take consistent SQLite snapshots using SQLite's online backup API, and retain encrypted copies outside this service. Do not copy only `padash.sqlite` from a running WAL database: recent commits may still be in `padash.sqlite-wal`. For an offline backup or restore, stop all database writers and preserve the database together with its WAL/SHM companions. Restrict access because customer details are private. Test restore into an isolated service before relying on a backup.
 
