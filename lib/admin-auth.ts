@@ -43,6 +43,6 @@ export function sessionCookie(request: Request, logout = false) {
   if (!secret && !logout) throw new Error('Administrator not configured');
   const payload = `${Math.floor(Date.now() / 1000) + duration}.${randomUUID()}`;
   const value = logout ? '' : `${payload}.${signature(payload, secret!)}`;
-  const secure = onNetlify() || new URL(request.url).protocol === 'https:';
+  const secure = Boolean(process.env.PADASH_PUBLIC_ORIGIN?.startsWith('https://')) || onNetlify() || new URL(request.url).protocol === 'https:';
   return `${cookieName}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${logout ? 0 : duration}${secure ? '; Secure' : ''}`;
 }

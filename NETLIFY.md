@@ -51,9 +51,11 @@ Open `http://localhost:5173`. The local launcher starts Netlify's Blobs emulator
 npm.cmd run build
 npm.cmd run typecheck
 npm.cmd run test:integration
-npm.cmd start
+npm.cmd run start:local
 ```
 
 The integration check launches the built Next.js server and an isolated Netlify Blobs emulator. It tests actual HTTP requests, concurrent submissions, persistent limits, privacy of receipts, administrator access, cross-origin rejection, updates, logout and persistence across app restarts. Test data stays under ignored `.sites-runtime/integration-*`.
+
+`npm start` is the guarded production launcher for self-hosting; it never starts the local emulator. See [RUNFLARE.md](RUNFLARE.md) for the persistent SQLite deployment. The Netlify adapter and its runtime storage remain unchanged.
 
 The original template's Cloudflare helper files remain as historical source; they are not used by `dev`, `build`, `start`, or the Netlify runtime. The current app does not use the original ChatGPT authentication headers.

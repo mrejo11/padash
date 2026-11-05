@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import { onNetlify } from './platform';
 
 export function json(data: unknown, status = 200, headers: Record<string, string> = {}) {
@@ -12,6 +12,8 @@ export function sameOrigin(request: Request) {
   if (!origin) return false;
   try {
     const parsed = new URL(origin);
+    // A self-hosted service has one explicitly configured public origin.
+    if(process.env.PADASH_PUBLIC_ORIGIN)return parsed.origin===new URL(process.env.PADASH_PUBLIC_ORIGIN).origin;
     // Next can normalize request.url to localhost behind its HTTP server.
     // Use the incoming authority; trust forwarded hosts only on Netlify's proxy.
     const host = (onNetlify() && request.headers.get('x-forwarded-host'))
@@ -26,6 +28,16 @@ export function clientHash(request: Request) {
   // Netlify sets this header at its edge. Do not trust arbitrary forwarded headers.
   const ip = onNetlify() ? request.headers.get('x-nf-client-connection-ip') || 'unknown' : 'local';
   return createHash('sha256').update('padash:' + ip).digest('hex');
+}
+
+export function quoteClientHash(request: Request, phone: string) {
+  // Self-hosting has no verified edge IP header. Give each contact its own quota
+  // without accepting spoofable forwarded headers or storing phone numbers in keys.
+  if (process.env.PADASH_STORAGE === 'sqlite' && !onNetlify()) {
+    const normalized = phone.replace(/^\+98(?=9\d{9}$)/, '0').replace(/^0098(?=9\d{9}$)/, '0');
+    return createHmac('sha256', process.env.SALES_ADMIN_PASSWORD || '').update('quote-contact:' + normalized).digest('hex');
+  }
+  return clientHash(request);
 }
 
 export class BodyError extends Error {

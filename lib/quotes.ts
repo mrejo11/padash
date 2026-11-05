@@ -14,6 +14,8 @@ export async function createQuote(data: z.infer<typeof quotePayload>, clientHash
   const token = data.requestId.toLowerCase();
   const existing = await getQuote(token);
   if (existing) return { quote: existing, created: false };
+  if (process.env.PADASH_STORAGE === 'sqlite'
+    && !await reserveAttempt('limits/quotes/service', token, 100, 60_000)) return null;
   if (!await reserveAttempt(`limits/quotes/${clientHash}`, token, 5, 86_400_000)) return null;
   const quote: Quote = {
     id: 'PD-' + createHash('sha256').update(token).digest('hex').slice(0, 12).toUpperCase(),

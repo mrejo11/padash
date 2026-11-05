@@ -9,12 +9,22 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { startLocalBlobs } from './local-blobs.mjs';
 import { getStore } from '@netlify/blobs';
 import { auditSeo } from './test-seo.mjs';
+import ts from 'typescript';
 
 await mkdir('.sites-runtime', { recursive: true });
 const directory = await mkdtemp(resolve('.sites-runtime/integration-'));
 const storageToken = randomBytes(32).toString('hex');
 const password = randomBytes(32).toString('base64url');
 const blobs = await startLocalBlobs({ directory, token: storageToken });
+const sqliteMode=process.env.PADASH_TEST_STORAGE==='sqlite';
+const sqliteFile=resolve(directory,'production.sqlite');
+let sqliteStore;
+if(sqliteMode){
+  const source=await readFile('lib/sqlite-storage.ts','utf8');
+  const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText;
+  const {SqliteJsonStore}=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'));
+  sqliteStore=new SqliteJsonStore(sqliteFile,'padash-local-v1');
+}
 const portProbe = createServer();
 portProbe.listen(0, '127.0.0.1');
 await once(portProbe, 'listening');
@@ -24,10 +34,11 @@ const origin = `http://127.0.0.1:${port}`;
 let child;
 let logs = '';
 let blobsStopped = false;
-async function start(adminPassword = password, hosted = false) {
+async function start(adminPassword = password, hosted = false, publicOrigin = '') {
   child = spawn(process.execPath, [resolve('node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, NODE_ENV: 'production', NETLIFY: '', SALES_ADMIN_PASSWORD: adminPassword,
+      PADASH_STORAGE:sqliteMode?'sqlite':'netlify',PADASH_DATABASE_PATH:sqliteMode?sqliteFile:'',PADASH_PUBLIC_ORIGIN:publicOrigin,
       SITE_ID: hosted ? 'integration' : '', SITE_NAME: hosted ? 'integration' : '',
       NETLIFY_BLOBS_CONTEXT: Buffer.from(JSON.stringify(blobs.context)).toString('base64') },
   });
@@ -199,8 +210,8 @@ try {
   assert.equal(cancelledStats.stats.volumes.length, 0, 'cancelled orders excluded from volume');
 
   const burst = await Promise.all(Array.from({ length: 8 }, () => send('/api/quotes', payload())));
-  assert.equal(burst.filter(r => r.status === 201).length, 3, 'three remaining quota slots');
-  assert.equal(burst.filter(r => r.status === 429).length, 5, 'concurrent requests respect quota');
+  assert.equal(burst.filter(r => r.status === 201).length, sqliteMode?4:3, 'remaining contact or network quota slots');
+  assert.equal(burst.filter(r => r.status === 429).length, sqliteMode?4:5, 'concurrent requests respect quota');
   assert.equal((await send('/api/quotes', data)).status, 200, 'idempotent retry after limit');
   const logout = await request('/api/admin/session', { method: 'DELETE', headers: { ...sessionHeaders, Origin: origin } });
   assert.equal(logout.status, 200);
@@ -228,7 +239,7 @@ try {
   assert.equal((await send('/api/quotes', payload(), { headers: { ...proxyHeaders, 'x-nf-client-connection-ip': '203.0.113.11' } })).status, 201, 'separate clients have separate quotas');
 
   console.log('Checking legacy records, Tehran date boundaries, pagination and export across pages...');
-  const store = getStore({ ...blobs.context, name: 'padash-local-v1', consistency: 'strong' });
+  const store = sqliteStore || getStore({ ...blobs.context, name: 'padash-local-v1', consistency: 'strong' });
   const legacyTokens = [];
   for (let i = 0; i < 25; i++) {
     const token = randomUUID(); legacyTokens.push(token);
@@ -313,14 +324,33 @@ try {
   for (const privateValue of [partnerPayload.name, partnerPayload.phone, ...partnerItems.map(item => item.note)]) assert(!partnerReceiptHtml.includes(privateValue), 'partner receipt preserves privacy');
   const seo = await auditSeo(origin);
   console.log('SEO audit:',JSON.stringify({pages:seo.pagesChecked,images:seo.images,internalDestinations:seo.internalDestinations}));
-  console.log('Checking sitemap availability during a news-store outage...');
-  await blobs.stop();blobsStopped = true;
-  const fallbackSitemap = await request('/sitemap.xml');
-  assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
-  const fallbackXml = await fallbackSitemap.text();
-  assert.equal([...fallbackXml.matchAll(/<loc>/g)].length,21,'all stable pages remain in the fallback sitemap');
-  assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,19,'product images remain in the fallback sitemap');
-  for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://padashco.netlify.app'+path));
+  assert.equal((await request('/api/health')).status,200,'storage readiness succeeds');
+  if(sqliteMode){
+    await stop();
+    await sqliteStore.setJSON('limits/login/'+createHash('sha256').update('padash:local').digest('hex'),[]);
+    await start(password,false,'https://padash.runflare.example');
+    const selfHostedHeaders={Origin:'https://padash.runflare.example','x-forwarded-host':'untrusted.example'};
+    assert.equal((await send('/api/admin/session',{password},{headers:{...selfHostedHeaders,Origin:'https://untrusted.example'}})).status,403);
+    assert.equal((await send('/api/admin/session',{password},{headers:{...selfHostedHeaders,Origin:'http://padash.runflare.example'}})).status,403);
+    const selfHostedLogin=await send('/api/admin/session',{password},{headers:selfHostedHeaders});
+    assert.equal(selfHostedLogin.status,200);
+    assert(selfHostedLogin.headers.get('set-cookie').includes('; Secure'));
+    const otherContact={...payload(),phone:'09121234568'};
+    assert.equal((await send('/api/quotes',otherContact,{headers:selfHostedHeaders})).status,201,'another contact is not blocked by the first contact quota');
+    assert.equal((await send('/api/quotes',payload(),{headers:{...selfHostedHeaders,'x-forwarded-for':'203.0.113.99','x-nf-client-connection-ip':'203.0.113.99'}})).status,429,'spoofed IP headers cannot reset the contact quota');
+    assert.equal((await send('/api/quotes',{...payload(),phone:'+989121234567'},{headers:selfHostedHeaders})).status,429,'Iranian international prefix shares its normalized contact quota');
+  }
+  if(!sqliteMode){
+    console.log('Checking sitemap availability during a news-store outage...');
+    await blobs.stop();blobsStopped = true;
+    const fallbackSitemap = await request('/sitemap.xml');
+    assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
+    const fallbackXml = await fallbackSitemap.text();
+    assert.equal([...fallbackXml.matchAll(/<loc>/g)].length,21,'all stable pages remain in the fallback sitemap');
+    assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,19,'product images remain in the fallback sitemap');
+    for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://padashco.netlify.app'+path));
+    assert.equal((await request('/api/health')).status,503,'unavailable storage fails readiness');
+  }
   console.log('PASS: validation, privacy, quotas, admin access, CSRF, workflow, concurrent edits, quantities, CSV, dates, persistence, crawlable guides/products, canonical URLs, noindex, news workflow, XSS escaping, sitemap updates, 6 partner products, 19 original images, custom specification orders and complete SEO audit.');
 } finally {
   await stop();

@@ -1,8 +1,12 @@
 import { getStore } from '@netlify/blobs';
+import { SqliteJsonStore } from './sqlite-storage';
 
 export function storage() {
+  const name=`padash-${process.env.PADASH_STORE_NAMESPACE || 'local'}-v1`;
+  if(process.env.PADASH_STORAGE==='sqlite')return new SqliteJsonStore(process.env.PADASH_DATABASE_PATH||'',name);
+  if(process.env.PADASH_STORAGE&&process.env.PADASH_STORAGE!=='netlify')throw new Error('Unsupported storage driver');
   return getStore({
-    name: `padash-${process.env.PADASH_STORE_NAMESPACE || 'local'}-v1`,
+    name,
     consistency: 'strong',
     fetch: (input, init) => fetch(input, { ...init, cache: 'no-store', signal: AbortSignal.timeout(10000) }),
   });
