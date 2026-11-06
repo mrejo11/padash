@@ -7,6 +7,7 @@ import '../app/storefront-theme.css';
 import '../app/content.css';
 import '../app/catalog.css';
 import '../app/storefront-polish.css';
+import '../app/storefront-redesign.css';
 
 export default function PublicPage({ children }: { children: ReactNode }) {
   return <div className="storefront public-page"><a className="skip-link" href="#content">رفتن به محتوای اصلی</a>

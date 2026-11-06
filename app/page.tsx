@@ -7,6 +7,7 @@ import './storefront-theme.css';
 import './content.css';
 import './catalog.css';
 import './storefront-polish.css';
+import './storefront-redesign.css';
 export const dynamic = 'force-dynamic';
 export const metadata = { ...pageMetadata('تأمین عایق حرارتی و برودتی', 'بازرگانی پاداش؛ انتخاب و استعلام عایق الاستومری، پشم سنگ، پشم شیشه و پلی‌اتیلن، محاسبه مقدار عایق و تماس با مهندس پاداشی و مهندس فرجی.', '/'), title: { absolute: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی' } };
 export default async function Home() {
