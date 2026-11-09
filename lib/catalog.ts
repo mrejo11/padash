@@ -1,8 +1,9 @@
 import { partnerProducts } from './partner-products';
+import { constructionProducts } from './construction-products';
 export type ProductImage = { src:string; width:number; height:number; alt:string };
 export type Product = { id:string; name:string; en:string; category:string; material:string; form:string; use:string; desc:string; thicknesses:number[]; unit:string; art:string; tag:string; cover:string; notes:string[];
-  images?:ProductImage[]; specifications?:{label:string; value:string}[]; requestHint?:string; relatedProducts?:string[] };
-export const categories = [ {id:'all',name:'همه محصولات'}, {id:'elastomeric',name:'عایق الاستومری'}, {id:'rockwool',name:'پشم سنگ'}, {id:'glasswool',name:'پشم شیشه'}, {id:'polymer',name:'فوم و پلی‌اتیلن'}, {id:'facing',name:'فویل و روکش'}, {id:'mesh',name:'توری'}, {id:'sheets',name:'کارتن‌پلاست'} ];
+  images?:ProductImage[]; imageNote?:string; searchTerms?:string[]; specifications?:{label:string; value:string}[]; requestHint?:string; relatedProducts?:string[] };
+export const categories = [ {id:'all',name:'همه محصولات'}, {id:'elastomeric',name:'عایق الاستومری'}, {id:'rockwool',name:'پشم سنگ'}, {id:'glasswool',name:'پشم شیشه'}, {id:'polymer',name:'فوم و پلی‌اتیلن'}, {id:'facing',name:'فویل و روکش'}, {id:'mesh',name:'توری'}, {id:'sheets',name:'کارتن‌پلاست'}, {id:'cord',name:'نخ و طناب پلاستیکی'}, {id:'fasteners',name:'پیچ شیروانی'}, {id:'eps',name:'یونولیت ورقی و سقفی'} ];
 const generalProducts:Product[] = [
  {id:'EL-R',name:'عایق الاستومری رولی',en:'ELASTOMERIC · ROLL',category:'elastomeric',material:'فوم الاستومری',form:'رول',use:'کانال هوا و سطوح تأسیسات',desc:'ساختار منعطف و سلول‌بسته برای عایق‌کاری سطوح و کانال‌های تأسیساتی. انتخاب ضخامت و پوشش باید با دما و رطوبت پروژه تطبیق داده شود.',thicknesses:[6,9,13,19,25,32],unit:'مترمربع',art:'roll',tag:'تأسیسات و تهویه',cover:'ساده / روکش‌دار',notes:['مناسب برای بررسی در کاربردهای HVAC','نیازمند درزبندی کامل و چسب سازگار','محیط بیرونی نیازمند بررسی پوشش محافظ']},
  {id:'RW-S',name:'پشم سنگ تخته‌ای',en:'STONE WOOL · BOARD',category:'rockwool',material:'الیاف معدنی سنگ',form:'تخته',use:'جداره‌ها و تجهیزات صنعتی',desc:'عایق الیافی به شکل تخته برای بررسی در کاربردهای حرارتی و صوتی ساختمان و صنعت. دانسیته، ضخامت و نوع روکش متناسب با پروژه مشخص می‌شود.',thicknesses:[30,50,75,100],unit:'مترمربع',art:'board',tag:'حرارتی و صوتی',cover:'ساده / فویل آلومینیوم',notes:['انتخاب دانسیته بر اساس محل نصب','کنترل رطوبت و جزئیات اجرایی ضروری است','واکنش در برابر آتش مطابق گواهی محصول منتخب']},
@@ -12,12 +13,12 @@ const generalProducts:Product[] = [
  {id:'PE-R',name:'فوم پلی‌اتیلن رولی',en:'POLYETHYLENE · FOAM',category:'polymer',material:'فوم پلی‌اتیلن',form:'رول',use:'کاربردهای عمومی ساختمان',desc:'فوم سبک رولی برای کاربردهای عمومی عایق‌کاری و زیرسازی. تناسب با شرایط دمایی، الزامات حریق و محل نصب باید پیش از خرید تأیید شود.',thicknesses:[5,10,15,20],unit:'مترمربع',art:'white',tag:'سبک و انعطاف‌پذیر',cover:'ساده / متالایز',notes:['انتخاب بر اساس کاربرد و دیتاشیت','کاربرد در دمای بالا نیازمند تأیید فنی است','ابعاد رول بر اساس برند تأمین‌شده متغیر است']},
 ];
 // Stable legacy IDs preserve old requests; partner IDs identify their source catalogue.
-export const products:Product[] = [...partnerProducts, ...generalProducts];
+export const products:Product[] = [...partnerProducts, ...generalProducts, ...constructionProducts];
 export type QuoteItem = {productId:string; thickness:number|null; quantity:number; note:string};
 export const fa = (n:number) => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:1}).format(n);
 export const normalizeDigits = (s:string) => s.replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠١٢٣٤٥٦٧٨٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
 export const validThickness = (product:Product, thickness:unknown) => product.thicknesses.length ? typeof thickness==='number' && product.thicknesses.includes(thickness) : thickness===null;
-export const quantityStep = (product:Product) => ['رول','ورق'].includes(product.unit) ? 1 : .1;
+export const quantityStep = (product:Product) => ['رول','ورق','عدد','کلاف','بسته'].includes(product.unit) ? 1 : .1;
 export const validQuantity = (product:Product, quantity:number) => Number.isFinite(quantity) && quantity>=quantityStep(product) && quantity<=100000 && (quantityStep(product)!==1 || Number.isInteger(quantity));
 export const thicknessLabel = (value:number|null) => value===null ? 'طبق مشخصات درخواست' : fa(value)+' میلی‌متر';
 export const productPath = (product:Pick<Product,'id'>) => '/products/'+product.id.toLowerCase();
@@ -25,5 +26,5 @@ export const normalizeSearch = (value:string) => normalizeDigits(value).replace(
 export function filterProducts({query='',category='all'}:{query?:string;category?:string}) {
   const words=normalizeSearch(query).split(' ').filter(Boolean);
   return products.filter(product => (category==='all'||product.category===category)
-    && words.every(word=>normalizeSearch([product.name,product.en,product.id,product.material,product.use,product.form].join(' ')).includes(word)));
+    && words.every(word=>normalizeSearch([product.name,product.en,product.id,product.material,product.use,product.form,...(product.searchTerms||[])].join(' ')).includes(word)));
 }

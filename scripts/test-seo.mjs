@@ -83,7 +83,10 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert.equal(new Set(pages.map(page=>page.title)).size,pages.length,'no duplicate titles');
   assert.equal(new Set(pages.map(page=>page.description)).size,pages.length,'no duplicate descriptions');
   const images=[...xml.matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]);
-  assert.equal(new Set(images).size,19,'all 19 existing product images are discoverable');
+  const oldSource=JSON.parse(await readFile(new URL('../docs/catalog-source.json',import.meta.url),'utf8'));
+  const newSource=JSON.parse(await readFile(new URL('../docs/new-product-image-sources.json',import.meta.url),'utf8'));
+  const expectedImages=[...new Set([...oldSource.products.flatMap(product=>product.images.map(image=>canonicalOrigin+image.src)),...newSource.assets.map(image=>canonicalOrigin+image.src)])];
+  assert.deepEqual([...new Set(images)].sort(),expectedImages.sort(),'all original and new product photographs are discoverable');
   for(const image of new Set(images)){assert(image.startsWith(canonicalOrigin+'/images/products/'));assert.equal((await request(new URL(image).pathname)).status,200);}
   for(const page of pages.filter(page=>page.path.startsWith('/guides/'))){
     const block=xml.match(new RegExp('<url>\\s*<loc>'+canonicalOrigin+page.path+'<\\/loc>([\\s\\S]*?)<\\/url>'))?.[1];

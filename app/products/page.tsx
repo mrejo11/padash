@@ -3,7 +3,7 @@ import CatalogShopping from '../../components/catalog-shopping';
 import JsonLd from '../../components/json-ld';
 import { products, categories, fa } from '../../lib/catalog';
 import { absoluteUrl, breadcrumbs, pageMetadata } from '../../lib/seo';
-export const metadata = pageMetadata('کاتالوگ عایق و ملزومات پروژه', 'محصولات بازرگانی پاداش؛ پشم شیشه، پشم سنگ، فوم، فویل، توری، کارتن‌پلاست و عایق الاستومری، همراه تصاویر و فرم استعلام.', '/products');
+export const metadata = pageMetadata('کاتالوگ عایق و ملزومات پروژه', 'عایق، پشم شیشه و سنگ، فوم و یونولیت ورقی و سقفی، نخ و طناب پلاستیکی و پیچ شیروانی؛ تصاویر، مشخصات، متره و استعلام از بازرگانی پاداش.', '/products');
 export default function ProductsPage() {
   const list={'@type':'ItemList','@id':absoluteUrl('/products#items'),numberOfItems:products.length,itemListElement:products.map((product,index)=>({'@type':'ListItem',position:index+1,name:product.name,url:absoluteUrl('/products/'+product.id.toLowerCase())}))};
   const trail=breadcrumbs([{name:'صفحه اصلی',path:'/'},{name:'محصولات',path:'/products'}]);

@@ -19,5 +19,6 @@ export default function ProductGallery({product}:{product:Product}) {
       <Image src={picture.src} alt="" width={80} height={80} sizes="80px"/>
     </button>)}</div>}
     <p className="gallery-caption">گالری {product.name} · {fa(active+1)} از {fa(images.length)}</p>
+    {product.imageNote&&<p className="gallery-caption">{product.imageNote}</p>}
   </div>;
 }

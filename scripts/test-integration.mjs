@@ -109,7 +109,7 @@ try {
   }
   const home = await (await request('/')).text();
   assert(home.includes('"@type":"WebSite"') && home.includes('"@type":"Organization"'));
-  assert(home.includes('href="/guides/roll-insulation-quantity"') && home.includes('href="/products/el-r"'), 'public content uses crawlable links');
+  assert(home.includes('href="/guides/roll-insulation-quantity"') && home.includes('href="/products/vn-1221"'), 'public content exposes crawlable guide and featured catalogue product links');
   assert(home.includes('tel:+989112286151') && home.includes('tel:+989112243632'));
   const robots = await (await request('/robots.txt')).text();
   assert(robots.includes('Sitemap: https://padashco.netlify.app/sitemap.xml'));
@@ -346,8 +346,9 @@ try {
     const fallbackSitemap = await request('/sitemap.xml');
     assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
     const fallbackXml = await fallbackSitemap.text();
-    assert.equal([...fallbackXml.matchAll(/<loc>/g)].length,21,'all stable pages remain in the fallback sitemap');
-    assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,19,'product images remain in the fallback sitemap');
+    const stablePaths=seo.pages.filter(page=>!page.path.startsWith('/news/')).map(page=>'https://padashco.netlify.app'+page.path).sort();
+    assert.deepEqual([...fallbackXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]).sort(),stablePaths,'all original and new stable pages remain in the fallback sitemap');
+    assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,seo.images,'all product images remain in the fallback sitemap');
     for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://padashco.netlify.app'+path));
     assert.equal((await request('/api/health')).status,503,'unavailable storage fails readiness');
   }

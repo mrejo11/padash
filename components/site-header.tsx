@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ArrowUpLeft, ClipboardList, Menu, Phone, X } from 'lucide-react';
 import { fa } from '../lib/catalog';
 import Brand from './brand';
+import BrandTicker from './brand-ticker';
 
 export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () => void; cartCount?: number }) {
   const [open, setOpen] = useState(false);
@@ -48,5 +49,5 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
       </button> : <a className="button button-dark quote-header" href="/#contact" aria-label="مشاوره و تماس با مدیران"><Phone size={17}/><span className="header-action-label">مشاوره و تماس</span><span className="header-action-short">تماس</span></a>}
       <button ref={toggle} className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-controls={menuId} aria-expanded={open} aria-label={open ? 'بستن منو' : 'باز کردن منو'}>{open ? <X/> : <Menu/>}</button>
     </div>
-  </div></header>;
+  </div><BrandTicker/></header>;
 }

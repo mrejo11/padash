@@ -16,7 +16,7 @@ const productDescriptions:Record<string,string>={
   'PE-R':'مشخصات و استعلام قیمت فوم پلی‌اتیلن رولی برای کاربردهای عمومی ساختمان؛ انتخاب ضخامت، ابعاد رول، پوشش ساده یا متالایز و مقدار مورد نیاز در پاداش.',
 };
 export function productSearchSnippet(product:Product){
-  return {title:product.name+'؛ مشخصات و استعلام قیمت',description:productDescriptions[product.id]||product.desc};
+  return {title:product.name+'؛ مشخصات و استعلام قیمت',description:productDescriptions[product.id]||('مشخصات و استعلام قیمت '+product.name+' از بازرگانی پاداش؛ '+product.desc)};
 }
 const guideTitles:Record<string,string>={
   'roll-insulation-quantity':'محاسبه تعداد رول و ورق؛ فرمول و برنامه برش',

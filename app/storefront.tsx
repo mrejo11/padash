@@ -26,6 +26,10 @@ const quickCategories = [
   { id: 'rockwool', product: 'VN-1220', name: 'پشم سنگ', note: 'کاربردهای حرارتی و صوتی' },
   { id: 'elastomeric', product: 'EL-R', name: 'عایق الاستومری', note: 'سرمایش، گرمایش و تهویه' },
   { id: 'polymer', product: 'VN-1218', name: 'فوم پلی‌اتیلن', note: 'زیرسازی و عایق‌کاری عمومی' },
+  { id: 'eps', product: 'EPS-SHEET', name: 'یونولیت ورقی و سقفی', note: 'ورق EPS و بلوک تیرچه و کرومیت' },
+  { id: 'fasteners', product: 'RF-DRILL', name: 'پیچ شیروانی', note: 'سرمته‌ای، چوب و ساندویچ‌پانل' },
+  { id: 'cord', product: 'PB-TWINE', name: 'نخ و طناب پلاستیکی', note: 'بستن عایق و ملزومات نصب' },
+  { id: 'mesh', product: 'VN-1216', name: 'توری پلاستیکی و مرغی', note: 'نگهداری عایق و کاربردهای اجرایی' },
 ];
 const questions = [
   { question: 'نمی‌دانم کدام عایق برای پروژه‌ام مناسب است؛ از کجا شروع کنم؟', answer: 'کاربرد عایق، محل نصب و شرایط دما و رطوبت را در درخواست مشاوره بنویسید. اگر اندازه‌ها یا نقشه پروژه را آماده دارید، هنگام گفت‌وگو با کارشناسان مطرح کنید تا گزینه‌های مناسب بررسی شوند.' },
@@ -94,7 +98,6 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
 
   return <>
     <a href="#main" className="skip-link">رفتن به محتوای اصلی</a>
-    <div className="topbar"><div className="container"><span>همراه شما، از انتخاب عایق تا تأمین پروژه</span><a className="topbar-contact" href={businessContacts[0].href}><Phone size={13}/><span>مشاوره مستقیم</span><bdi>{businessContacts[0].displayPhone}</bdi></a></div></div>
     <SiteHeader onQuote={() => openQuote()} cartCount={cart.length}/>
     <main id="main">
       <div className="hero-band" id="home-intro"><section className="hero container" aria-labelledby="hero-heading">

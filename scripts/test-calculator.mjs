@@ -71,3 +71,4 @@ for(let i=1;i<=250;i++){
   assert(rotated.plan.totalUnits<=p.totalUnits,'optional rotation cannot increase purchases');
 }
 console.log('PASS: roll/sheet quantities, cutting capacity, uncut stock, overlaps at millimetre boundaries, rotation, layers, invalid inputs and 250 material coverage invariants.');
+await import('./test-accessory-estimate.mjs');

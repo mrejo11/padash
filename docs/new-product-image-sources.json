@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-11-09",
+  "purpose": "Reference photographs for product families; no brand, stock, performance or distribution relationship is asserted. Images retained unchanged.",
+  "assets": [
+    {
+      "id": "plastic-twine",
+      "path": "public/images/products/plastic-twine.jpg",
+      "width": 1200,
+      "height": 1200,
+      "bytes": 64224,
+      "sourceUrl": "https://www.officeoneuae.com/cdn/shop/products/14218-Packing-Rope-White_2000x.jpg?v=1635663567",
+      "pageUrl": "https://www.officeoneuae.com/products/packing-rope-twine-polypropylene-180m-white",
+      "sha256": "33760e459c76abfd45648b6a7f2fdc7016a7c9a5cd3cfa956b421b1d54d13371",
+      "src": "/images/products/plastic-twine.jpg"
+    },
+    {
+      "id": "plastic-rope-blue",
+      "path": "public/images/products/plastic-rope-blue.png",
+      "width": 2000,
+      "height": 2000,
+      "bytes": 3332817,
+      "sourceUrl": "https://smi-live.imgix.net/storage/uploads/products/image/ows-9700-norm.jpg?auto=format&crop=edges%2Cfocalpoint&fit=crop&fm=png&q=90&w=2000",
+      "pageUrl": "https://www.smigroupuk.com/product-page/polypropylene-rope-6mm-x-220m",
+      "sha256": "e082f72d0fe49933388dad45cd5c37d0de5776978d65e645f61fa9496ed895e9",
+      "src": "/images/products/plastic-rope-blue.png"
+    },
+    {
+      "id": "roofing-screw-clean",
+      "path": "public/images/products/roofing-screw-clean.jpg",
+      "width": 800,
+      "height": 800,
+      "bytes": 122968,
+      "sourceUrl": "https://stalmax.ru/thumb/2/14dQZAdM5Ky0jm1W93mJBw/r/d/lsr-mv_11224-023_foto_2.jpg",
+      "pageUrl": "https://stalmax.ru/samorezy/samorez-krovelnyj-po-metallu-lsr-mv-5-5x25-art-11222",
+      "sha256": "7baab67d7129caabd0f358afef71a1d5401487b22ef850e11e445a0a1b5d0773",
+      "src": "/images/products/roofing-screw-clean.jpg"
+    },
+    {
+      "id": "timber-screws",
+      "path": "public/images/products/timber-screws.png",
+      "width": 600,
+      "height": 600,
+      "bytes": 43732,
+      "sourceUrl": "https://www.roofcom.ru/uploads/images/Krovelnyi-krepezh/samorez-krovelnyj-ostryj.png",
+      "pageUrl": "https://www.roofcom.ru/catalog/krepezh/krovelnyj-krepez/samorez-krovelnyj-ostryj/",
+      "sha256": "0107cc9e9a7a19864c8cea8f8611864a30fd8b615bd9d462d44d524e17d6b054",
+      "src": "/images/products/timber-screws.png"
+    },
+    {
+      "id": "panel-screws",
+      "path": "public/images/products/panel-screws.png",
+      "width": 700,
+      "height": 700,
+      "bytes": 55328,
+      "sourceUrl": "https://marcopol.eu/catalog/media/catalog/product/cache/207e23213cf636ccdef205098cf3c8a3/0/5/05205wkretsamowiercacydomocowplytwarstwowychocynkbialysingle.png",
+      "pageUrl": "https://marcopol.eu/catalog/self-drilling-sandwich-panel-screw.html",
+      "sha256": "12d998d63befe59ae8a39230bf8efc850b5fcf0acb748186830fde8053596dcd",
+      "src": "/images/products/panel-screws.png"
+    },
+    {
+      "id": "eps-sheets",
+      "path": "public/images/products/eps-sheets.jpg",
+      "width": 906,
+      "height": 906,
+      "bytes": 26594,
+      "sourceUrl": "https://www.kruza.lv/files/external_files/image/74804.png",
+      "pageUrl": "https://www.kruza.lv/katalogs/celtniecbas-materili/siltumizolcijas-materili/putuplasts-eps/putuplasts-tenapors-eps-100-1000x500x-50mm-050m2-paka60m212gab/",
+      "sha256": "9c6bae9d409d9f5ed8b71c484d9430bdbbb801ff7f9516e027f079df2fa93734",
+      "src": "/images/products/eps-sheets.jpg"
+    },
+    {
+      "id": "eps-roof-block",
+      "path": "public/images/products/eps-roof-block.jpg",
+      "width": 600,
+      "height": 600,
+      "bytes": 27832,
+      "sourceUrl": "https://polymermall.com/laravel-filemanager/photos/1/%D8%AD%D9%85.jpg",
+      "pageUrl": "https://polymermall.com/articles/plastoform",
+      "sha256": "4022b83e711ea703c95c73fa28fe74449d836ad9b77ac84e1981084c281440ca",
+      "src": "/images/products/eps-roof-block.jpg"
+    }
+  ]
+}

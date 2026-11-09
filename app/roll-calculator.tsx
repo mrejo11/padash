@@ -5,7 +5,8 @@ import { ArrowLeft, Calculator, Info, Ruler } from 'lucide-react';
 import { normalizeDigits } from '../lib/catalog';
 import { calculateRolls, type RollGeometry } from '../lib/roll-estimate';
 import { calculateMaterial, type MaterialEstimate } from '../lib/material-estimate';
-import { estimateProfiles, estimateProfile } from '../lib/estimate-products';
+import { calculatorProfiles, calculatorProfile, estimateProfiles, estimateProfile } from '../lib/estimate-products';
+import AccessoryCalculator from '../components/accessory-calculator';
 
 const number=(value:string)=>{
   const normalized=normalizeDigits(value.trim()).replace(/٫/g,'.');
@@ -14,8 +15,19 @@ const number=(value:string)=>{
 const format=(value:number)=>new Intl.NumberFormat('fa-IR',{maximumFractionDigits:6}).format(value);
 
 export default function RollCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:string)=>void;initialProductId?:string}){
+  const [productId,setProductId] = useState((calculatorProfile(initialProductId)||calculatorProfiles[0]).id as string);
+  const profile = calculatorProfile(productId)!;
+  return <div className="calculator roll-calculator project-estimator">
+    <div className="calculator-top"><span><Calculator size={20}/>محاسبه مقدار عایق و ملزومات</span><span className="mini-label">متره و برآورد خرید</span></div>
+    <label className="roll-preset estimator-product">محصول مورد محاسبه<select value={productId} onChange={event=>setProductId(event.target.value)}>{calculatorProfiles.map(item=><option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
+    {profile.kind==='surface'?<SurfaceCalculator key={productId} initialProductId={productId===estimateProfile(initialProductId)?.id?initialProductId:productId} onSelect={onSelect}/>:<AccessoryCalculator key={productId} kind={profile.kind} productId={productId} onSelect={onSelect}/>}
+  </div>;
+}
+
+function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:string)=>void;initialProductId?:string}){
   const initial=estimateProfile(initialProductId)||estimateProfiles[0];
-  const [productId,setProductId]=useState<string>(initial.id),[unitKind,setUnitKind]=useState<'roll'|'sheet'>(initialProductId.toUpperCase()==='RW-S'?'sheet':initial.formats[0]);
+  const productId=initial.id;
+  const [unitKind,setUnitKind]=useState<'roll'|'sheet'>(initialProductId.toUpperCase()==='RW-S'?'sheet':initial.formats[0]);
   const [mode,setMode]=useState<RollGeometry['kind']>('area'),[allowRotation,setAllowRotation]=useState(false);
   const [values,setValues]=useState({area:'120',surfaceWidth:'3',surfaceLength:'8',count:'1',layers:'1',wrapLength:'0.65',pipeLength:'20',
     rollWidth:initial.id==='EL-R'?'1':'',rollLength:initial.id==='EL-R'?'10':'',extraArea:'0',waste:'10',overlapWidth:'0',overlapLength:'0'});
@@ -39,12 +51,8 @@ export default function RollCalculator({onSelect,initialProductId='EL-R'}:{onSel
   }catch(value){error=value instanceof Error?value.message:'ورودی‌ها را بررسی کنید.';}
   function field(key:keyof typeof values,label:string,unitLabel:string){return <label>{label}<span>{unitLabel}</span><input type="text" inputMode="decimal" dir="ltr" value={values[key]} maxLength={12}
     onChange={event=>{update(key,event.target.value);if(key==='rollWidth'||key==='rollLength')setPreset('custom');}}/></label>;}
-  return <div className="calculator roll-calculator">
-    <div className="calculator-top"><span><Calculator size={20}/>محاسبه مقدار عایق و ملزومات</span><span className="mini-label">متره و برآورد خرید</span></div>
-    <div className="material-selectors"><label className="roll-preset">محصول مورد محاسبه<select value={productId} onChange={event=>{
-      const next=estimateProfile(event.target.value)!;setProductId(next.id);setUnitKind(next.formats[0]);setPreset('custom');setMode('area');setAllowRotation(false);
-      setValues(previous=>({...previous,rollWidth:'',rollLength:'',overlapWidth:'0',overlapLength:'0'}));
-    }}>{estimateProfiles.map(item=><option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
+  return <div className="surface-estimator">
+    <div className="material-selectors">
     <label className="roll-preset">شکل عرضه<select value={unitKind} onChange={event=>{const next=event.target.value as 'roll'|'sheet';setUnitKind(next);if(next==='sheet'&&mode==='pipe')setMode('rectangle');setPreset('custom');setValues(previous=>({...previous,rollWidth:'',rollLength:''}));}}>{profile.formats.map(kind=><option value={kind} key={kind}>{kind==='roll'?'رول':'ورق / تخته'}</option>)}</select></label></div>
     <div className={'roll-modes '+(!pipeAllowed?'two-modes':'')} role="group" aria-label="روش اندازه‌گیری">{[
       ['area','مساحت آماده'],['rectangle','سطح و برنامه برش'],...(pipeAllowed?[['pipe','دورپیچ لوله']]:[]),
