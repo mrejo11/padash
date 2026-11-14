@@ -16,8 +16,8 @@ export type NewsRecord = NewsFields & {
 };
 export type PublicNews = Omit<NewsRecord, 'revision' | 'status'>;
 export function publicNews(record: NewsRecord): PublicNews {
-  const { revision: _revision, status: _status, ...visible } = record;
-  return visible;
+  const { id, title, summary, body, kind, event_date, created_at, updated_at, published_at } = record;
+  return { id, title, summary, body, kind, event_date, created_at, updated_at, published_at };
 }
 export async function listNews() {
   const store = storage();

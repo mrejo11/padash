@@ -18,6 +18,8 @@ Photos illustrate product families, not a claim about an offered brand or availa
 
 ## Arithmetic
 
+Valid calculator results can be reviewed in the product form and added to the existing quote basket. The surface calculators use the cutting-plan purchase count when available, then the pipe cut plan, then the area minimum. Square-metre catalogue items receive purchase area rounded up to the form's 0.1 m² order increment; rolls, sheets, coils and individual fasteners retain their own order units. Missing dimensions, an impossible one-piece cut, or a quantity outside the online order range cannot be submitted through this shortcut. The customer still reviews thickness and specifications before adding the estimate; no order is sent automatically.
+
 The new calculator functions are in `lib/accessory-estimate.ts`. Entered lengths use integer millimetres and percentages use thousandths of a percent. Inputs reject non-finite values, fractional counts, dimensions beyond supported ranges and more than three decimal places.
 
 - Twine/rope: count measured ties, count ties along measured routes at a supplied maximum spacing (including both endpoints), or enter groups of continuous cuts. Add knot/end allowance once per piece. Show the linear-length lower bound and a separate feasible unspliced cut plan. Full-piece reserve is rounded separately for each length group. Different length groups are packed separately; global nesting and joining short tails are not assumed. Optional free extra length may use uncut tails; continuous extras belong in the cut groups instead.

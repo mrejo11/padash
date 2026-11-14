@@ -1,4 +1,6 @@
 'use client';
+
+import Link from 'next/link';
 import Brand from '../../components/brand';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -120,15 +122,15 @@ export default function Management() {
       <Brand className="admin-brand" subtitle="سامانه مدیریت فروش"/>
       <div className="admin-sidebar-label">فضای مدیریت</div>
       <a href="#dashboard" className="admin-sidebar-link active"><LayoutDashboard size={19}/>نمای کلی و درخواست‌ها</a>
-      <a href="/management/news" className="admin-sidebar-link"><ClipboardList size={19}/>اخبار و رویدادها</a>
+      <Link href="/management/news" className="admin-sidebar-link"><ClipboardList size={19}/>اخبار و رویدادها</Link>
       {authenticated && <><button className="admin-sidebar-link" onClick={() => quickFilter({ kind: 'order' })}><Package size={19}/>سفارش و استعلام<span>{fa(data!.stats.orders)}</span></button>
         <button className="admin-sidebar-link" onClick={() => quickFilter({ kind: 'consultation' })}><MessageSquareText size={19}/>درخواست‌های مشاوره<span>{fa(data!.stats.consultations)}</span></button>
         <button className="admin-sidebar-link" onClick={() => quickFilter({ followUp: 'due' })}><CalendarClock size={19}/>پیگیری‌ها<span>{fa(data!.stats.followUps)}</span></button></>}
-      <div className="admin-sidebar-bottom"><span><LockKeyhole size={15}/>دسترسی ویژه مدیریت</span><a href="/">مشاهده وب‌سایت<ArrowLeft size={16}/></a></div>
+      <div className="admin-sidebar-bottom"><span><LockKeyhole size={15}/>دسترسی ویژه مدیریت</span><Link href="/">مشاهده وب‌سایت<ArrowLeft size={16}/></Link></div>
     </aside>
     <div className="admin-workspace" id="dashboard">
       <header className="admin-topbar"><div className="admin-breadcrumb">بازرگانی پاداش <ChevronLeft size={13}/><b>مدیریت فروش</b></div>
-        <div className="admin-top-actions"><a href="/" className="admin-site-link">بازگشت به سایت<ArrowLeft size={14}/></a>{authenticated && <button onClick={logout} disabled={loggingOut} className="admin-logout"><LogOut size={16}/>{loggingOut ? 'در حال خروج...' : 'خروج امن'}</button>}</div></header>
+        <div className="admin-top-actions"><Link href="/" className="admin-site-link">بازگشت به سایت<ArrowLeft size={14}/></Link>{authenticated && <button onClick={logout} disabled={loggingOut} className="admin-logout"><LogOut size={16}/>{loggingOut ? 'در حال خروج...' : 'خروج امن'}</button>}</div></header>
       <div className="admin-content">
         <div className="admin-page-heading"><div><span className="admin-eyebrow">مدیریت ارتباط با مشتریان</span><h1>مرکز مدیریت درخواست‌ها</h1><p>سفارش‌ها، نیاز پروژه و پیگیری مشتریان در یک نگاه.</p></div>
           <button className="button button-outline" onClick={refresh} disabled={loading}><RefreshCw size={16} className={loading ? 'spin' : ''}/>به‌روزرسانی</button></div>

@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep local development from generating extra agent instruction files.
+  agentRules: false,
   outputFileTracingRoot: process.cwd(),
   serverExternalPackages: ["@netlify/blobs"],
   async headers() {

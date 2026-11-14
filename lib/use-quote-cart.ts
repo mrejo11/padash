@@ -1,8 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore, type SetStateAction } from 'react';
 import { products, validThickness, validQuantity, type QuoteItem } from './catalog';
 
 const key='padash-cart-v1';
+const emptyCart:QuoteItem[]=[];
 function restore():QuoteItem[] {
   try {
     const saved=JSON.parse(localStorage.getItem(key)||'[]');
@@ -12,9 +13,16 @@ function restore():QuoteItem[] {
   }catch{return [];}
 }
 export function useQuoteCart() {
-  const [cart,setCart]=useState<QuoteItem[]>([]);
-  const [ready,setReady]=useState(false);
-  useEffect(()=>{setCart(restore());setReady(true);},[]);
+  const ready=useSyncExternalStore(subscribe,()=>true,()=>false);
+  const [initialCart]=useState(restore);
+  const [editedCart,setEditedCart]=useState<QuoteItem[]|null>(null);
+  const cart=editedCart??(ready?initialCart:emptyCart);
+  function setCart(update:SetStateAction<QuoteItem[]>) {
+    setEditedCart(previous=>typeof update==='function'?update(previous??initialCart):update);
+  }
   useEffect(()=>{if(ready)try{localStorage.setItem(key,JSON.stringify(cart));}catch{}},[cart,ready]);
   return {cart,setCart,ready};
 }
+
+// The cart becomes visible after hydration, keeping browser storage out of SSR.
+function subscribe() { return () => {}; }

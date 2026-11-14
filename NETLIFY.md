@@ -1,6 +1,6 @@
 # Deploying Padash on Netlify
 
-The app now builds with **Next.js**, not Vinext. `npm run build` produces `.next`, including the server-rendered receipt and API routes. Netlify's automatically installed Next.js adapter handles those routes.
+The app builds with **Next.js**. `npm run build` produces `.next`, including the server-rendered receipt and API routes. Netlify's automatically installed Next.js adapter handles those routes.
 
 ## Deployment
 
@@ -14,13 +14,11 @@ Leave the base directory empty: `package.json` is at the repository root. Keep t
 
 ## Request storage
 
-Requests are stored in **Netlify Blobs**, using the runtime credentials supplied by Netlify. No Cloudflare account, database connection string, or personal Netlify API token is needed. Production uses the site-wide store `padash-production-v1`; previews use `padash-preview-v1`. Records persist across deployments.
+Requests are stored in **Netlify Blobs**, using the runtime credentials supplied by Netlify. No database connection string or personal Netlify API token is needed. Production uses the site-wide store `padash-production-v1`; previews use `padash-preview-v1`. Records persist across deployments.
 
 The application uses strong reads and conditional writes for duplicate submissions, status updates, and request/login limits. The small sales panel reads records to sort and paginate them; for a large request volume, replace this repository implementation with an indexed database.
 
 The `/management` dashboard includes order/consultation counts, seven-day activity, requested quantities grouped by unit, search and date/status/type filters, follow-up dates, internal notes, assignments, recent change history, and filtered CSV export across all pages. Updates carry a revision number to reject stale concurrent edits. Internal fields are never rendered on the customer receipt. See the [Persian management guide](docs/management.md) for operating details and the distinction between requested quantities and confirmed sales.
-
-Original Cloudflare D1 data and local Wrangler data are not deleted or copied automatically. If the old site contains real requests, export and migrate those separately before switching customer traffic. The Netlify store initially starts empty.
 
 ## Administrator login
 
@@ -56,6 +54,4 @@ npm.cmd run start:local
 
 The integration check launches the built Next.js server and an isolated Netlify Blobs emulator. It tests actual HTTP requests, concurrent submissions, persistent limits, privacy of receipts, administrator access, cross-origin rejection, updates, logout and persistence across app restarts. Test data stays under ignored `.sites-runtime/integration-*`.
 
-`npm start` is the guarded production launcher for self-hosting; it never starts the local emulator. See [RUNFLARE.md](RUNFLARE.md) for the persistent SQLite deployment. The Netlify adapter and its runtime storage remain unchanged.
-
-The original template's Cloudflare helper files remain as historical source; they are not used by `dev`, `build`, `start`, or the Netlify runtime. The current app does not use the original ChatGPT authentication headers.
+`npm start` runs the built Next.js server with the configured hosting storage. Use `npm run start:local` to preview the build with the local Blobs emulator.

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowLeft, ArrowUpLeft, Check, Search, SlidersHorizontal, Scale, X } from 'lucide-react';
 import { categories, fa, filterProducts, products, productPath, type Product } from '../lib/catalog';
@@ -14,8 +15,10 @@ export default function CatalogBrowser({onInspect,onCompare,compared=[],category
   function reset(){setQuery('');selectCategory('all');setSort('featured');setExpanded(false);}
   const filtered=filterProducts({query,category:selectedCategory});
   if(sort==='name')filtered.sort((a,b)=>a.name.localeCompare(b.name,'fa'));
-  const visible=compact&&!expanded&&!query&&selectedCategory==='all'?filtered.slice(0,4):filtered;
-  return <div className="catalog-browser">
+  const featured=compact&&!expanded&&!query&&selectedCategory==='all';
+  const featuredIds=['VN-1221','EL-R','VN-1220','EPS-SHEET'];
+  const visible=featured?featuredIds.map(id=>filtered.find(product=>product.id===id)!).filter(Boolean):filtered;
+  return <div className={'catalog-browser'+(featured?' catalog-featured':'')}>
     <div className="catalog-search-row"><label className="catalog-search"><Search size={20}/><input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="نام محصول، جنس یا کاربرد را جست‌وجو کنید…" aria-label="جست‌وجوی محصولات"/>{query&&<button type="button" onClick={()=>setQuery('')} aria-label="پاک کردن جست‌وجو"><X size={18}/></button>}</label>
       <label className="catalog-sort"><SlidersHorizontal size={17}/><span>چینش</span><select value={sort} onChange={event=>setSort(event.target.value)} aria-label="ترتیب نمایش محصولات"><option value="featured">پیشنهاد کاتالوگ</option><option value="name">نام محصول</option></select></label></div>
     <div className="catalog-category-list" role="group" aria-label="دسته‌بندی محصولات">{categories.map(item=><button key={item.id} type="button" aria-pressed={selectedCategory===item.id} className={selectedCategory===item.id?'active':''} onClick={()=>selectCategory(item.id)}>{item.name}<span className="category-count">{fa(item.id==='all'?products.length:products.filter(product=>product.category===item.id).length)}</span></button>)}</div>
@@ -32,7 +35,7 @@ export default function CatalogBrowser({onInspect,onCompare,compared=[],category
         <div className="catalog-card-actions"><a href={productPath(product)}>مشخصات محصول<ArrowUpLeft size={16}/></a><button className="button button-dark" aria-label={'استعلام قیمت '+product.name} onClick={()=>onInspect(product)}>استعلام قیمت<ArrowLeft size={16}/></button></div>
       </div>
     </article>)}</div>:<div className="empty-state"><Search size={32}/><h3>محصولی با این انتخاب پیدا نشد</h3><p>عبارت جست‌وجو یا دسته‌بندی را تغییر دهید.</p><button className="button button-outline" onClick={reset}>نمایش همه محصولات</button></div>}
-    {visible.length<filtered.length&&<button className="button button-outline catalog-load-more" onClick={()=>setExpanded(true)}>نمایش همه {fa(filtered.length)} محصول<ArrowLeft size={18}/></button>}
+    {visible.length<filtered.length&&(compact?<Link className="button button-outline catalog-load-more" href="/products">مشاهده کاتالوگ کامل<ArrowLeft size={18}/></Link>:<button className="button button-outline catalog-load-more" onClick={()=>setExpanded(true)}>نمایش همه {fa(filtered.length)} محصول<ArrowLeft size={18}/></button>)}
     <p className="catalog-order-note">واحدهای این کاتالوگ برای ثبت نیاز اولیه‌اند؛ ابعاد، مشخصات و واحد نهایی تأمین در پیش‌فاکتور تأیید می‌شوند.</p>
   </div>;
 }

@@ -1,10 +1,13 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useRef, useState } from 'react';
 import { ArrowLeft, Info, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { normalizeDigits, products } from '../lib/catalog';
 import { type AccessoryKind } from '../lib/estimate-products';
 import { calculateCord, calculateFasteners, calculateRoofBlocks, type MeasuredRun, type PackageEstimate } from '../lib/accessory-estimate';
+import EstimateInquiry from './estimate-inquiry';
 
 const number = (value:string) => {
   const normalized = normalizeDigits(value.trim()).replace(/٫/g, '.');
@@ -97,8 +100,11 @@ export default function AccessoryCalculator({kind,productId,onSelect}:{kind:Acce
       {!result&&<p className="form-error" role="status">{error}</p>}
     </div>
     <p className="roll-note">دقت نتیجه تابع اندازه‌ها و جزئیات ورودی است. ۵٪ ذخیره یک مقدار قابل ویرایش است؛ برای مشاهده روش کار می‌توانید مثال را بارگذاری کنید.</p>
-    <div className="roll-source-links"><a href="/guides/construction-material-quantities">روش محاسبه و مثال‌های نخ، پیچ و یونولیت</a></div>
+    <div className="roll-source-links"><Link href="/guides/construction-material-quantities">روش محاسبه و مثال‌های نخ، پیچ و یونولیت</Link></div>
     {onSelect?<button className="button button-dark" disabled={!result||(kind==='cord'&&!cord?.cutPlan)} onClick={()=>onSelect(productId)}>انتخاب {product.name}<ArrowLeft size={17}/></button>:<a href={'/products/'+productId.toLowerCase()} className="button button-dark">مشخصات و استعلام {product.name}<ArrowLeft size={17}/></a>}
+    {!onSelect&&result&&(kind!=='cord'||cord?.cutPlan)&&<EstimateInquiry productId={productId}
+      quantity={cord?.cutPlan?.totalCoils??packageResult?.purchaseCount??0}
+      note={`برآورد اولیه ${product.name}؛ روش ${method}. ${kind==='cord'?`طول هر کلاف ${values.coilLength} متر، طول نیاز با ذخیره ${format(cord!.requiredLength)} متر`: `تعداد در بسته ${values.pack}؛ خرید ${format(packageResult!.purchaseCount)} عدد`}. ذخیره ${values.waste}٪. مشخصات نهایی و شرایط نصب باید تأیید شوند.`}/>}
   </div>;
 }
 

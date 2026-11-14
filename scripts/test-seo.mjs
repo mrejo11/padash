@@ -118,5 +118,5 @@ export async function auditSeo(origin,{baselineDirectory}={}){
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const result=await auditSeo(process.argv[2]||'http://127.0.0.1:5173',{baselineDirectory:process.argv[3]});
-  const {pages,...summary}=result;console.log('PASS: SEO metadata, canonical, robots, sitemap images, schema contracts, 404s, private noindex, crawlable links and query canonicalisation.');console.log(JSON.stringify(summary,null,2));
+  const summary={pagesChecked:result.pagesChecked,productPages:result.productPages,images:result.images,internalDestinations:result.internalDestinations,unchangedBodies:result.unchangedBodies};console.log('PASS: SEO metadata, canonical, robots, sitemap images, schema contracts, 404s, private noindex, crawlable links and query canonicalisation.');console.log(JSON.stringify(summary,null,2));
 }

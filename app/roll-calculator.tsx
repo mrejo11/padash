@@ -1,12 +1,15 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useState } from 'react';
 import { ArrowLeft, Calculator, Info, Ruler } from 'lucide-react';
-import { normalizeDigits } from '../lib/catalog';
+import { normalizeDigits, products } from '../lib/catalog';
 import { calculateRolls, type RollGeometry } from '../lib/roll-estimate';
 import { calculateMaterial, type MaterialEstimate } from '../lib/material-estimate';
 import { calculatorProfiles, calculatorProfile, estimateProfiles, estimateProfile } from '../lib/estimate-products';
 import AccessoryCalculator from '../components/accessory-calculator';
+import EstimateInquiry from '../components/estimate-inquiry';
 
 const number=(value:string)=>{
   const normalized=normalizeDigits(value.trim()).replace(/٫/g,'.');
@@ -33,6 +36,7 @@ function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:str
     rollWidth:initial.id==='EL-R'?'1':'',rollLength:initial.id==='EL-R'?'10':'',extraArea:'0',waste:'10',overlapWidth:'0',overlapLength:'0'});
   const [preset,setPreset]=useState('custom');
   const profile=estimateProfile(productId)!;
+  const product=products.find(item=>item.id===productId)!;
   const unit=unitKind==='roll'?'رول':'ورق';
   const pipeAllowed=profile.pipe&&unitKind==='roll';
   const update=(key:keyof typeof values,value:string)=>setValues(previous=>({...previous,[key]:value}));
@@ -49,6 +53,9 @@ function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:str
       extraArea:number(values.extraArea),wastePercent:number(values.waste),overlapWidthMm:mode==='rectangle'?number(values.overlapWidth):0,
       overlapLengthMm:mode==='rectangle'?number(values.overlapLength):0,allowRotation});
   }catch(value){error=value instanceof Error?value.message:'ورودی‌ها را بررسی کنید.';}
+  const totalUnits=result?.plan?.totalUnits??pipe?.totalRolls??result?.areaUnits??0;
+  const inquiryQuantity=product.unit==='مترمربع'&&result?Math.ceil((totalUnits*result.unitArea-1e-8)*10)/10:totalUnits;
+  const inquiryNote=`برآورد اولیه؛ ${format(totalUnits)} ${unit} با ابعاد ${values.rollWidth} × ${values.rollLength} متر. ذخیره ${values.waste}٪؛ روش ${mode==='area'?'مساحت آماده':mode==='rectangle'?'سطح و برش':'دورپیچ'}. ${mode==='area'?`مساحت ${values.area} م²، ${values.layers} لایه`:mode==='rectangle'?`سطح ${values.surfaceWidth} × ${values.surfaceLength} متر، ${values.count} عدد، ${values.layers} لایه`:`دورپیچ ${values.wrapLength} متر، مسیر ${values.pipeLength} متر`}. مقدار نهایی نیازمند تأیید مشخصات محصول و اجراست.`;
   function field(key:keyof typeof values,label:string,unitLabel:string){return <label>{label}<span>{unitLabel}</span><input type="text" inputMode="decimal" dir="ltr" value={values[key]} maxLength={12}
     onChange={event=>{update(key,event.target.value);if(key==='rollWidth'||key==='rollLength')setPreset('custom');}}/></label>;}
   return <div className="surface-estimator">
@@ -85,7 +92,8 @@ function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:str
       <p className="roll-formula" dir="ltr">Nmin = ceil[((A + Aextra) × (1 + p/100)) / (W × L)]</p>
     </>:<p className="form-error" role="status">{error}</p>}</div>
     <p className="roll-note"><Info size={15}/>{mode==='area'?'برای لحاظ‌کردن هم‌پوشانی و محدودیت برش، حالت «سطح و برنامه برش» را انتخاب کنید. ':''}دقت محاسبه تابع اندازه‌های واردشده است. این ابزار ضخامت حرارتی، مقاومت حریق یا تعداد مقاطع لوله‌ای کارخانه‌ای را تعیین نمی‌کند.</p>
-    <div className="roll-source-links"><a href="/guides/roll-insulation-quantity">روش محاسبه، مثال‌ها و منابع</a>{productId==='EL-R'&&<a href="https://www.armacell.com/en-LV/af-armaflex-product-brochure" target="_blank" rel="noreferrer">منبع نمونه ابعاد رول</a>}</div>
+    <div className="roll-source-links"><Link href="/guides/roll-insulation-quantity">روش محاسبه، مثال‌ها و منابع</Link>{productId==='EL-R'&&<a href="https://www.armacell.com/en-LV/af-armaflex-product-brochure" target="_blank" rel="noreferrer">منبع نمونه ابعاد رول</a>}</div>
     {onSelect?<button className="button button-dark" disabled={!result} onClick={()=>onSelect(productId)}>انتخاب {profile.name}<ArrowLeft size={17}/></button>:<a href={'/products/'+productId.toLowerCase()} className="button button-dark">مشخصات و استعلام {profile.name}<ArrowLeft size={17}/></a>}
+    {!onSelect&&result&&(!pipe||pipe.possible)&&<EstimateInquiry productId={productId} quantity={inquiryQuantity} note={inquiryNote}/>}
   </div>;
 }
