@@ -3,14 +3,22 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 
-const canonicalOrigin='https://padashco.netlify.app';
+const canonicalOrigin='https://www.padashgroup.ir';
 const attrs=tag=>Object.fromEntries([...tag.matchAll(/([^\s=<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)].map(m=>[m[1],m[2]??m[3]]));
 const tags=(html,name)=>[...html.matchAll(new RegExp('<'+name+'\\b[^>]*>','g'))].map(m=>attrs(m[0]));
 const visibleBody=html=>(html.match(/<body[^>]*>([\s\S]*?)<\/body>/)?.[1]||'')
   .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/g,'')
   .replace(/<link\b[^>]*>/g,'').replace(/<meta\b[^>]*>/g,'').replace(/<title\b[^>]*>[\s\S]*?<\/title>/g,'').replace(/\s+/g,' ').trim();
 const hash=value=>createHash('sha256').update(value).digest('hex');
+const requestWithHost=(origin,path,host)=>new Promise((resolve,reject)=>{
+  // Node 22 fetch can discard a custom Host header; exercise real HTTP routing.
+  const url=new URL(path,origin),send=url.protocol==='https:'?httpsRequest:httpRequest;
+  const request=send(url,{headers:{Host:host}},response=>{response.resume();resolve({status:response.statusCode,location:response.headers.location});});
+  request.on('error',reject);request.setTimeout(15000,()=>request.destroy(new Error('Redirect check timed out')));request.end();
+});
 function validateSchemas(html,path){
   const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
   assert(schemas.length>0,path+' has JSON-LD');
@@ -30,7 +38,7 @@ function validateSchemas(html,path){
       assert(html.includes(node.headline.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')),'article headline matches the visible article');
     }
     if(node['@type']==='WebSite'){
-      assert.equal(node.name,'بازرگانی پاداش');assert.equal(node.alternateName,'پاداش');assert.equal(node.url,canonicalOrigin+'/');
+      assert.equal(node.name,'بازرگانی پاداش');assert.deepEqual(node.alternateName,['پاداش','Padash Trading','Padash']);assert.equal(node.url,canonicalOrigin+'/');
     }
     if(node['@type']==='Organization'){
       assert.equal(node.name,'بازرگانی پاداش');assert.equal(node.url,canonicalOrigin);
@@ -55,7 +63,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const sitemapResponse=await request('/sitemap.xml');assert.equal(sitemapResponse.status,200);
   const xml=await sitemapResponse.text();
   const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
-  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=21);
+  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=39);
   for(const url of urls){assert(url.startsWith(canonicalOrigin+'/'));assert(!/[?#]/.test(url));assert(!/\/(management|request|api)(\/|$)/.test(new URL(url).pathname));}
   const robots=await(await request('/robots.txt')).text();
   assert(robots.includes('Sitemap: '+canonicalOrigin+'/sitemap.xml'));assert(robots.includes('Allow: /'));assert(robots.includes('Disallow: /api/'));assert(!/^Disallow: \/\s*$/m.test(robots));
@@ -75,8 +83,14 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     assert(!/noindex/.test(response.headers.get('x-robots-tag')||''));
     assert(/<html[^>]*\blang="fa"/.test(html)&&/<html[^>]*\bdir="rtl"/.test(html));
     assert.equal([...html.matchAll(/<h1\b[^>]*>/g)].length,1,path+' has one visible H1');
+    const levels=[...html.matchAll(/<h([1-6])\b[^>]*>/g)].map(match=>Number(match[1]));
+    for(let i=1;i<levels.length;i++)assert(levels[i]<=levels[i-1]+1,path+' does not skip heading levels');
     const schemaTypes=validateSchemas(html,path);
-    if(path.startsWith('/products/'))assert(value('description')[0].content.includes('استعلام قیمت'));
+    if(path.startsWith('/products/')&&!path.startsWith('/products/category/'))assert(value('description')[0].content.includes('استعلام قیمت'));
+    for(const image of tags(html,'img')){
+      assert('alt' in image,path+' images have alt attributes');
+      assert(image.width&&image.height||image.style?.includes('position:absolute'),path+' reserves image space');
+    }
     const visibleHash=hash(visibleBody(html));
     pages.push({path,status:response.status,title:titles[0][1],description:value('description')[0].content,canonical:links[0].href,schemaTypes,visibleHash});
   }
@@ -95,7 +109,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const targets=new Set();
   for(const [path,html] of htmlByPath)for(const link of tags(html,'a'))if(link.href?.startsWith('/')&&!link.href.startsWith('//'))targets.add(new URL(link.href,origin+path).pathname);
   for(const target of targets)if(!htmlByPath.has(target))assert.equal((await request(target)).status,200,'crawlable internal destination '+target);
-  for(const path of ['/products/not-a-product','/guides/not-a-guide','/news/not-a-news-id','/not-a-real-page']){
+  for(const path of ['/products/not-a-product','/products/category/not-a-category','/guides/not-a-guide','/news/not-a-news-id','/not-a-real-page']){
     const response=await request(path);assert.equal(response.status,404,path);
     assert(tags(await response.text(),'meta').some(tag=>tag.name==='robots'&&tag.content.includes('noindex')),'404 pages are noindex');
   }
@@ -107,6 +121,35 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     const response=await request('/calculator'+query);assert.equal(response.status,200);
     assert.equal(tags(await response.text(),'link').find(tag=>tag.rel==='canonical')?.href,canonicalOrigin+'/calculator');
   }
+  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
+    const response=await requestWithHost(origin,path,host);
+    assert.equal(response.status,308,host+path+' permanently redirects');
+    assert.equal(response.location,canonicalOrigin+path,'one hop, preserving path and query');
+  }
+  for(const host of ['padashgroup.ir','padash-five.vercel.app']){
+    const response=await requestWithHost(origin,'/products/el-r/?utm_source=seo-audit',host);
+    assert.equal(response.status,308);assert.equal(response.location,canonicalOrigin+'/products/el-r?utm_source=seo-audit','host and trailing slash canonicalize in one hop');
+    assert.equal((await requestWithHost(origin,'/management',host)).status,200,'private routes keep their original host');
+  }
+  const slash=await request('/products/el-r/',{redirect:'manual'});
+  assert.equal(slash.status,308);assert.equal(slash.headers.get('location'),'/products/el-r');
+  const verification=await request('/googlec8009b90c25c4c6c.html');assert.equal(verification.status,200);
+  assert.equal((await verification.text()).trim(),'google-site-verification: googlec8009b90c25c4c6c.html');
+  const home=htmlByPath.get('/');
+  const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
+  assert(hero&&!hero.loading,'the homepage LCP image is not lazy-loaded');
+  assert(tags(home,'link').some(link=>link.rel==='preload'&&link.as==='image'),'hero image is preloaded');
+  const catalogue=htmlByPath.get('/products');
+  const categoryPaths=urls.map(url=>new URL(url).pathname).filter(path=>path.startsWith('/products/category/'));
+  assert.equal(categoryPaths.length,10);
+  for(const path of categoryPaths){
+    assert(tags(catalogue,'a').some(link=>link.href===path),'category has a crawlable HTML link: '+path);
+    assert(htmlByPath.get(path).includes('"@type":"CollectionPage"'));
+  }
+  for(const [accept,mime] of [['image/webp','image/webp'],['image/avif,image/webp','image/avif']]){
+    const response=await request('/_next/image?url=%2Fimages%2Fpadash-logo.webp&w=256&q=75',{headers:{Accept:accept}});
+    assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),mime);
+  }
   let unchangedBodies;
   if(baselineDirectory){
     const before=JSON.parse(await readFile(resolve(baselineDirectory,'pages-before.json'),'utf8'));
@@ -114,7 +157,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     unchangedBodies=before.length;
     await writeFile(resolve(baselineDirectory,'pages-after.json'),JSON.stringify(pages,null,2));
   }
-  return {pagesChecked:pages.length,productPages:pages.filter(page=>page.path.startsWith('/products/')).length,images:images.length,internalDestinations:targets.size,unchangedBodies,pages};
+  return {pagesChecked:pages.length,productPages:pages.filter(page=>page.path.startsWith('/products/')&&!page.path.startsWith('/products/category/')).length,categoryPages:categoryPaths.length,images:images.length,internalDestinations:targets.size,unchangedBodies,pages};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const result=await auditSeo(process.argv[2]||'http://127.0.0.1:5173',{baselineDirectory:process.argv[3]});

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { SITE_NAME, SITE_URL, absoluteUrl } from '../lib/seo';
+import { SITE_NAME, SITE_URL, SOCIAL_IMAGE, absoluteUrl, isPreviewDeployment, organization, website } from '../lib/seo';
+import JsonLd from '../components/json-ld';
 import './globals.css';
 import './brand-system.css';
 const vazirmatn = localFont({ src: '../public/fonts/Vazirmatn.woff2', display: 'swap', variable: '--font-vazirmatn', weight: '100 900' });
@@ -8,14 +9,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', template: '%s | بازرگانی پاداش' },
   description: 'انتخاب، مقایسه و استعلام عایق‌های حرارتی و برودتی برای تأسیسات، ساختمان و صنعت. کاتالوگ تخصصی بازرگانی پاداش.',
-  icons: { icon: { url: '/images/padash-logo-slim.png', type: 'image/png' }, apple: '/images/padash-logo-slim.png' },
+  icons: { icon: { url: '/images/padash-icon.png', type: 'image/png', sizes: '48x48' }, apple: {url: '/images/padash-apple.png', sizes: '180x180'} },
   applicationName: SITE_NAME,
-  robots: { index: !['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || ''), follow: true },
+  robots: { index: !isPreviewDeployment(), follow: !isPreviewDeployment() },
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
-  openGraph: { title: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl('/images/padash-logo-slim.png'), width: 1254, height: 1254, alt: 'نشان بازرگانی پاداش' }] },
+  openGraph: { title: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl(SOCIAL_IMAGE), width: 512, height: 512, alt: 'نشان بازرگانی پاداش' }] },
   twitter: { card: 'summary' },
 };
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#063959' };
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
-  return <html lang="fa" dir="rtl" className={vazirmatn.variable}><body>{children}</body></html>;
+  return <html lang="fa" dir="rtl" className={vazirmatn.variable}><body><JsonLd value={{'@context':'https://schema.org','@graph':[organization,website]}}/>{children}</body></html>;
 }

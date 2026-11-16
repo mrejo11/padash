@@ -1,4 +1,4 @@
-﻿/* Public surfaces follow the owner's logo: ocean blue, cyan and warm orange. */
+/* Public surfaces follow the owner's logo: ocean blue, cyan and warm orange. */
 .storefront { min-height:100dvh; color:var(--ink); background:var(--paper); }
 .storefront .section { padding-block:88px; }
 .storefront .eyebrow { color:#4e6e84; font-size:12px; }
@@ -68,8 +68,8 @@
 .storefront .product-code { color:#5c7d92; font-size:10px; }
 .storefront .product-body { padding:22px 19px 15px; }
 .storefront .product-en { color:#5b7a90; font-size:9px; letter-spacing:1px; }
-.storefront .product-body h3 { font-size:17px; line-height:1.8; margin-top:8px; }
-.storefront .product-body h3 button { min-height:36px; }
+.storefront .product-body :is(h2,h3) { font-size:17px; line-height:1.8; margin-top:8px; }
+.storefront .product-body :is(h2,h3) button { min-height:36px; }
 .storefront .product-body > p { color:#537286; font-size:12px; line-height:1.9; min-height:46px; }
 .storefront .product-full-guide { font-size:11px; min-height:36px; margin-top:8px; color:var(--brand-blue); }
 .storefront .product-spec { font-size:10px; flex-wrap:wrap; line-height:1.9; }
@@ -302,7 +302,7 @@
   .storefront .product-grid { gap:16px; }
   .storefront .product-image { height:210px; }
   .storefront .product-body { padding:19px 16px 13px; }
-  .storefront .product-body h3 { font-size:15px; }
+  .storefront .product-body :is(h2,h3) { font-size:15px; }
   .storefront .product-body > p { font-size:12px; min-height:0; }
   .storefront .product-en { font-size:8px; }
   .storefront .product-spec { display:block; font-size:11px; padding-block:12px; }
@@ -377,7 +377,7 @@
   .storefront .product-grid { grid-template-columns:minmax(0,1fr); gap:22px; }
   .storefront .product-image { height:235px; }
   .storefront .product-body { padding:21px; }
-  .storefront .product-body h3 { font-size:18px; }
+  .storefront .product-body :is(h2,h3) { font-size:18px; }
   .storefront .product-spec { display:flex; font-size:12px; }
   .storefront .product-spec > b { margin-top:0; }
   .storefront .product-en { font-size:9px; }

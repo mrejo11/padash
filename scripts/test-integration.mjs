@@ -99,14 +99,14 @@ try {
     const response = await request(path);
     assert.equal(response.status, 200, path);
     const content = await response.text();
-    assert(content.includes('rel="canonical" href="https://padashco.netlify.app' + path + '"'), 'canonical must use the owner-confirmed production domain');
+    assert(content.includes('rel="canonical" href="https://www.padashgroup.ir' + path + '"'), 'canonical must use the owner-confirmed production domain');
   }
   const home = await (await request('/')).text();
   assert(home.includes('"@type":"WebSite"') && home.includes('"@type":"Organization"'));
   assert(home.includes('href="/guides/roll-insulation-quantity"') && home.includes('href="/products/vn-1221"'), 'public content exposes crawlable guide and featured catalogue product links');
   assert(home.includes('tel:+989112286151') && home.includes('tel:+989112243632'));
   const robots = await (await request('/robots.txt')).text();
-  assert(robots.includes('Sitemap: https://padashco.netlify.app/sitemap.xml'));
+  assert(robots.includes('Sitemap: https://www.padashgroup.ir/sitemap.xml'));
   assert.equal((await request('/management')).headers.get('x-robots-tag'), 'noindex, nofollow');
   assert.equal((await request('/api/admin/news')).status, 401);
   const draftFields = { title: 'خبر آزمون محرمانه برای پیش‌نویس', summary: 'این خلاصه صرفاً داده آزمون مستقل است و نباید پیش از انتشار دیده شود.',
@@ -271,14 +271,14 @@ try {
     const response = await request(path);
     assert.equal(response.status, 200, path);
     const content = await response.text();
-    assert(content.includes('rel="canonical" href="https://padashco.netlify.app' + path + '"'));
+    assert(content.includes('rel="canonical" href="https://www.padashgroup.ir' + path + '"'));
     noSupplierName(content);
     assert(content.includes('/calculator?product=vn-' + product.id), 'each new product opens its own calculator profile');
     const calculator = await (await request('/calculator?product=vn-' + product.id)).text();
     noSupplierName(calculator);
     assert(calculator.includes('value="VN-' + product.id + '" selected=""'), 'calculator selects the requested product');
     assert(content.includes('ثبت مشخصات و استعلام'));
-    assert(productSitemap.includes('https://padashco.netlify.app' + path));
+    assert(productSitemap.includes('https://www.padashgroup.ir' + path));
     assert(catalogue.includes('href="' + path + '"'), 'partner listings render without JavaScript');
     for (const picture of product.images) {
       const bytes = await readFile(resolve('public', picture.src.slice(1)));
@@ -324,11 +324,15 @@ try {
   const fallbackSitemap = await request('/sitemap.xml');
   assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
   const fallbackXml = await fallbackSitemap.text();
-  const stablePaths=seo.pages.filter(page=>!page.path.startsWith('/news/')).map(page=>'https://padashco.netlify.app'+page.path).sort();
+  const stablePaths=seo.pages.filter(page=>!page.path.startsWith('/news/')).map(page=>'https://www.padashgroup.ir'+page.path).sort();
   assert.deepEqual([...fallbackXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]).sort(),stablePaths,'all original and new stable pages remain in the fallback sitemap');
   assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,seo.images,'all product images remain in the fallback sitemap');
-  for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://padashco.netlify.app'+path));
+  for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://www.padashgroup.ir'+path));
   assert.equal((await request('/api/health')).status,503,'unavailable storage fails readiness');
+  const homeWithoutNews=await request('/');
+  assert.equal(homeWithoutNews.status,200,'news storage outage does not take down the homepage');
+  assert((await homeWithoutNews.text()).includes('انتخاب عایق و ملزومات پروژه'));
+  assert.equal((await request('/news')).status,500,'storage outage must not masquerade as an empty successful news archive');
   console.log('PASS: validation, privacy, quotas, admin access, CSRF, workflow, concurrent edits, quantities, CSV, dates, persistence, crawlable guides/products, canonical URLs, noindex, news workflow, XSS escaping, sitemap updates, 6 partner products, 19 original images, custom specification orders and complete SEO audit.');
 } finally {
   await stop();

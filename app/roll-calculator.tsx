@@ -94,6 +94,6 @@ function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:str
     <p className="roll-note"><Info size={15}/>{mode==='area'?'برای لحاظ‌کردن هم‌پوشانی و محدودیت برش، حالت «سطح و برنامه برش» را انتخاب کنید. ':''}دقت محاسبه تابع اندازه‌های واردشده است. این ابزار ضخامت حرارتی، مقاومت حریق یا تعداد مقاطع لوله‌ای کارخانه‌ای را تعیین نمی‌کند.</p>
     <div className="roll-source-links"><Link href="/guides/roll-insulation-quantity">روش محاسبه، مثال‌ها و منابع</Link>{productId==='EL-R'&&<a href="https://www.armacell.com/en-LV/af-armaflex-product-brochure" target="_blank" rel="noreferrer">منبع نمونه ابعاد رول</a>}</div>
     {onSelect?<button className="button button-dark" disabled={!result} onClick={()=>onSelect(productId)}>انتخاب {profile.name}<ArrowLeft size={17}/></button>:<a href={'/products/'+productId.toLowerCase()} className="button button-dark">مشخصات و استعلام {profile.name}<ArrowLeft size={17}/></a>}
-    {!onSelect&&result&&(!pipe||pipe.possible)&&<EstimateInquiry productId={productId} quantity={inquiryQuantity} note={inquiryNote}/>}
+    {!onSelect&&result&&(!pipe||pipe.possible)&&<EstimateInquiry productId={productId} quantity={inquiryQuantity} note={inquiryNote} headingLevel={2}/>}
   </div>;
 }

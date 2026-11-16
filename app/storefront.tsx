@@ -16,7 +16,7 @@ import MaterialShowcase from '../components/material-showcase';
 import ProductMedia from '../components/product-media';
 import CatalogBrowser from '../components/catalog-browser';
 import Modal from '../components/modal';
-import { ProductModal, QuoteModal } from '../components/commerce-dialogs';
+import { ProductModal, QuoteModal } from '../components/lazy-commerce';
 
 const applications = [
   { title: 'تأسیسات و تهویه', icon: Wind, filter: 'elastomeric', product: 'EL-T', heading: 'برای لوله‌ها و کانال‌های پروژه', description: 'برای خطوط سرمایش و گرمایش یا کانال هوا، از خانواده عایق‌های الاستومری شروع کنید. دمای کار، رطوبت و قطر لوله، انتخاب نهایی را مشخص می‌کنند.', tags: ['خطوط آب سرد و گرم', 'کانال هوا', 'موتورخانه'] },
@@ -105,7 +105,7 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
       <div className="hero-band" id="home-intro"><section className="hero container" aria-labelledby="hero-heading">
         <div className="hero-copy">
           <div className="hero-kicker"><span/>بازرگانی پاداش · عایق و ملزومات پروژه</div>
-          <h1 id="hero-heading">پروژه‌های مطمئن،<br/><span>از انتخاب درست شروع می‌شوند.</span></h1>
+          <h1 id="hero-heading">بازرگانی پاداش،<br/><span>انتخاب عایق و ملزومات پروژه.</span></h1>
           <p>عایق و ملزومات پروژه را بشناسید، مقدار مورد نیاز را برآورد کنید و برای تأمین، مستقیم با پاداش در ارتباط باشید.</p>
           <div className="hero-buttons"><a href="#catalog" className="button button-orange">مشاهده محصولات<ArrowLeft size={19}/></a><button className="button button-outline" onClick={() => openQuote('consultation')}><Headphones size={19}/>مشاوره انتخاب عایق</button></div>
           <form className="hero-search" role="search" onSubmit={search}><Search size={20}/><input aria-label="جست‌وجوی سریع محصول" type="search" placeholder="دنبال چه محصولی می‌گردید؟" value={heroQuery} onChange={event => setHeroQuery(event.target.value)}/><button type="submit" aria-label="جست‌وجو در کاتالوگ"><ArrowLeft size={20}/></button></form>
@@ -123,7 +123,7 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
 
       <section className="category-section section container" aria-labelledby="categories-heading">
         <div className="section-heading"><div><span className="section-kicker">خانواده محصولات</span><h2 id="categories-heading">متریال پروژه‌تان را پیدا کنید.</h2></div><Link className="text-button" href="/products">همه دسته‌بندی‌ها<ArrowLeft size={18}/></Link></div>
-        <div className="category-tiles">{quickCategories.map(item => <button className="category-tile" key={item.id} onClick={() => jumpFilter(item.id)}><span className="category-tile-image"><ProductMedia product={products.find(product => product.id === item.product)!}/></span><span className="category-tile-copy"><strong>{item.name}</strong><small>{item.note}</small></span><ArrowUpLeft size={21}/></button>)}</div>
+        <div className="category-tiles">{quickCategories.map(item => <button className="category-tile" key={item.id} onClick={() => jumpFilter(item.id)}><span className="category-tile-image"><ProductMedia product={products.find(product => product.id === item.product)!} sizes="(max-width: 600px) 110px, 150px"/></span><span className="category-tile-copy"><strong>{item.name}</strong><small>{item.note}</small></span><ArrowUpLeft size={21}/></button>)}</div>
       </section>
 
       <section className="catalog section container" id="catalog" aria-labelledby="catalog-heading">
@@ -137,7 +137,7 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
         <div className="project-tabs" role="tablist" aria-label="کاربرد عایق">{applications.map((item, index) => <button id={'application-tab-' + index} key={item.filter} role="tab" aria-selected={index === application} aria-controls="application-panel" tabIndex={index === application ? 0 : -1} onClick={() => setApplication(index)} onKeyDown={event => moveApplication(event, index)}><item.icon size={23}/>{item.title}<ArrowUpLeft size={18}/></button>)}</div>
         <div className="project-panel" id="application-panel" role="tabpanel" aria-labelledby={'application-tab-' + application} tabIndex={0}>
           <div className="project-panel-copy"><span className="project-panel-label">{selected.title}</span><h3>{selected.heading}</h3><p>{selected.description}</p><div className="project-tags">{selected.tags.map(tag => <span key={tag}>{tag}</span>)}</div><button className="button button-dark" onClick={() => jumpFilter(selected.filter)}>بررسی محصولات مرتبط<ArrowLeft size={18}/></button></div>
-          <div className="project-panel-visual"><span className="project-visual-circle"/><ProductMedia product={products.find(product => product.id === selected.product)!}/><span className="project-visual-caption">انتخاب نهایی بر اساس مشخصات فنی پروژه</span></div>
+          <div className="project-panel-visual"><span className="project-visual-circle"/><ProductMedia product={products.find(product => product.id === selected.product)!} sizes="(max-width: 850px) 85vw, 480px"/><span className="project-visual-caption">انتخاب نهایی بر اساس مشخصات فنی پروژه</span></div>
         </div>
       </div></section>
 
