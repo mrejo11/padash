@@ -15,9 +15,11 @@ export default function ProductGallery({product,preload=false}:{product:Product;
       <Image src={selected.src} alt={selected.alt} width={selected.width} height={selected.height} sizes="(max-width: 850px) 90vw, 520px" preload={preload&&active===0}/>
       <span className="gallery-expand"><Expand size={17}/>نمایش بزرگ‌تر</span>
     </a>
-    {images.length>1&&<div className="product-gallery-thumbs" role="group" aria-label="تصاویر محصول">{images.map((picture,index)=><button key={picture.src} type="button" onClick={()=>setActive(index)} aria-pressed={index===active} aria-label={'تصویر '+fa(index+1)+' از '+product.name}>
-      <Image src={picture.src} alt="" width={80} height={80} sizes="80px"/>
-    </button>)}</div>}
+    {images.length>1&&<div className="product-gallery-thumbs" role="group" aria-label="تصاویر محصول">{images.map((picture,index)=><a key={picture.src} href={picture.src}
+      onClick={event=>{if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();setActive(index);}}
+      aria-current={index===active?'true':undefined} aria-label={'تصویر '+fa(index+1)+' از '+product.name}>
+      <Image src={picture.src} alt={picture.alt} width={80} height={80} sizes="80px"/>
+    </a>)}</div>}
     <p className="gallery-caption">گالری {product.name} · {fa(active+1)} از {fa(images.length)}</p>
     {product.imageNote&&<p className="gallery-caption">{product.imageNote}</p>}
   </div>;

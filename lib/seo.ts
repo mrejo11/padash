@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { businessContacts } from './contacts';
+import type { ProductImage } from './catalog';
 
 // Confirmed by the owner. Deployment-preview URLs must never become canonical.
 export const SITE_URL = 'https://www.padashgroup.ir';
@@ -10,13 +11,15 @@ export const SOCIAL_IMAGE = '/images/padash-share.png';
 export const isPreviewDeployment = () => process.env.VERCEL_ENV === 'preview'
   || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || '');
 export const absoluteUrl = (path = '/') => new URL(path, SITE_URL).toString();
-export function pageMetadata(title: string, description: string, path: string): Metadata {
+export function pageMetadata(title: string, description: string, path: string, picture?: ProductImage): Metadata {
+  const image=picture||{src:SOCIAL_IMAGE,width:512,height:512,alt:'نشان بازرگانی پاداش؛ عایق و ملزومات پروژه'};
   return { title, description, alternates: { canonical: absoluteUrl(path) },
     openGraph: { title: `${title} | ${SITE_NAME}`, description, url: absoluteUrl(path), siteName: SITE_NAME,
-      type: 'website', locale: 'fa_IR', images: [{ url: absoluteUrl(SOCIAL_IMAGE), width: 512, height: 512, alt: 'نشان بازرگانی پاداش؛ عایق و ملزومات پروژه' }] },
-    twitter: { card: 'summary', title: `${title} | ${SITE_NAME}`, description, images: [absoluteUrl(SOCIAL_IMAGE)] },
+      type: 'website', locale: 'fa_IR', images: [{ url: absoluteUrl(image.src), width: image.width, height: image.height, alt: image.alt }] },
+    twitter: { card: 'summary', title: `${title} | ${SITE_NAME}`, description, images: [absoluteUrl(image.src)] },
   };
 }
+export const imageObject=(image:ProductImage)=>({'@type':'ImageObject',url:absoluteUrl(image.src),contentUrl:absoluteUrl(image.src),width:image.width,height:image.height,caption:image.alt});
 export const organization = {
   '@type': 'Organization', '@id': absoluteUrl('/#organization'), name: SITE_NAME,
   alternateName: SITE_ALTERNATE_NAMES,

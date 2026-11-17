@@ -38,11 +38,11 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
   return <header className="header site-header" ref={header}><ContactStrip/><div className="container header-inner">
     <Brand/>
     <nav id={menuId} className={'nav' + (open ? ' mobile-open' : '')} aria-label="منوی اصلی" onClick={() => setOpen(false)}>
-      <a href={home ? '#catalog' : '/products'} aria-current={pathname.startsWith('/products')?'page':undefined}>محصولات</a>
+      <Link href="/products" aria-current={pathname.startsWith('/products')?'page':undefined}>محصولات</Link>
       <a href={home ? '#solutions' : '/#solutions'}>انتخاب بر اساس کاربرد</a>
       <Link href="/calculator" aria-current={pathname==='/calculator'?'page':undefined}>محاسبه مقدار</Link>
       <Link href="/guides" aria-current={pathname.startsWith('/guides')?'page':undefined}>راهنمای خرید</Link>
-      <a href={home ? '#contact' : '/#contact'}>تماس با ما</a>
+      <Link href="/contact" aria-current={pathname==='/contact'?'page':undefined}>تماس با ما</Link>
     </nav>
     <div className="header-actions">
       {onQuote ? <button className="button button-dark quote-header" onClick={() => { setOpen(false); onQuote(); }} aria-label="درخواست مشاوره و پیش‌فاکتور">

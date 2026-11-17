@@ -36,6 +36,8 @@ https://www.padashgroup.ir
 /products/gw-f
 /products/pe-r
 /products/category/<category>
+/about
+/contact
 /guides
 /guides/roll-insulation-quantity
 /guides/elastomeric-insulation-guide
@@ -48,6 +50,12 @@ https://www.padashgroup.ir
 /robots.txt
 /sitemap.xml
 ```
+
+## تصاویر و Sitelinks
+
+صفحات مستقل درباره و تماس، همراه با لینک‌های واقعی در منو/پاورقی، در Sitemap قرار دارند. تمام تصاویر گالری علاوه بر Sitemap، لینک مستقیم و Alt توصیفی در HTML اولیه دارند؛ صفحهٔ کاتالوگ و دسته‌های دارای عکس نیز تصویر مرتبط معرفی می‌کنند. نمایش Sitelinks و تعداد نتایج تصاویر را گوگل انتخاب می‌کند.
+
+[جزئیات بررسی ۱۷ نوامبر، اصلاحات و مراحل پایش در Search Console](google-visibility-2026-11-17.md)
 
 ## پس از دیپلوی روی دامنه اصلی
 

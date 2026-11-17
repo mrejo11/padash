@@ -63,7 +63,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const sitemapResponse=await request('/sitemap.xml');assert.equal(sitemapResponse.status,200);
   const xml=await sitemapResponse.text();
   const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
-  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=39);
+  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=41);
   for(const url of urls){assert(url.startsWith(canonicalOrigin+'/'));assert(!/[?#]/.test(url));assert(!/\/(management|request|api)(\/|$)/.test(new URL(url).pathname));}
   const robots=await(await request('/robots.txt')).text();
   assert(robots.includes('Sitemap: '+canonicalOrigin+'/sitemap.xml'));assert(robots.includes('Allow: /'));assert(robots.includes('Disallow: /api/'));assert(!/^Disallow: \/\s*$/m.test(robots));
@@ -80,6 +80,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     for(const name of ['og:title','og:description','og:image','twitter:title','twitter:description','twitter:image'])assert.equal(value(name).length,1,path+' '+name);
     assert(value('og:image')[0].content.startsWith(canonicalOrigin+'/images/'));
     assert(!value('robots').some(tag=>/noindex/.test(tag.content)),path+' is indexable');
+    assert(value('robots').some(tag=>tag.content.includes('max-image-preview:large')),path+' permits large image previews');
     assert(!/noindex/.test(response.headers.get('x-robots-tag')||''));
     assert(/<html[^>]*\blang="fa"/.test(html)&&/<html[^>]*\bdir="rtl"/.test(html));
     assert.equal([...html.matchAll(/<h1\b[^>]*>/g)].length,1,path+' has one visible H1');
@@ -97,6 +98,19 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert.equal(new Set(pages.map(page=>page.title)).size,pages.length,'no duplicate titles');
   assert.equal(new Set(pages.map(page=>page.description)).size,pages.length,'no duplicate descriptions');
   const images=[...xml.matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]);
+  for(const block of xml.matchAll(/<url>([\s\S]*?)<\/url>/g)){
+    const path=new URL(block[1].match(/<loc>([^<]+)<\/loc>/)[1]).pathname,html=htmlByPath.get(path);
+    const pageImages=[...block[1].matchAll(/<image:loc>([^<]+)<\/image:loc>/g)].map(m=>m[1]);
+    if(!pageImages.length)continue;
+    const links=tags(html,'a'),pictures=tags(html,'img');
+    const pageSchema=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1])).find(node=>node['@type']==='WebPage');
+    assert.deepEqual(pageSchema.image.map(image=>image.contentUrl),pageImages,'all gallery images have truthful image metadata');
+    for(const url of pageImages){
+      const imagePath=new URL(url).pathname;
+      assert(links.some(link=>link.href===imagePath),'full-size gallery image is linked without JavaScript: '+imagePath);
+      assert(pictures.some(image=>image.alt?.length>5&&(image.src===imagePath||new URL(image.src,canonicalOrigin).searchParams.get('url')===imagePath)),'gallery image has descriptive alt: '+imagePath);
+    }
+  }
   const oldSource=JSON.parse(await readFile(new URL('../docs/catalog-source.json',import.meta.url),'utf8'));
   const newSource=JSON.parse(await readFile(new URL('../docs/new-product-image-sources.json',import.meta.url),'utf8'));
   const expectedImages=[...new Set([...oldSource.products.flatMap(product=>product.images.map(image=>canonicalOrigin+image.src)),...newSource.assets.map(image=>canonicalOrigin+image.src)])];
@@ -121,7 +135,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     const response=await request('/calculator'+query);assert.equal(response.status,200);
     assert.equal(tags(await response.text(),'link').find(tag=>tag.rel==='canonical')?.href,canonicalOrigin+'/calculator');
   }
-  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
+  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
     const response=await requestWithHost(origin,path,host);
     assert.equal(response.status,308,host+path+' permanently redirects');
     assert.equal(response.location,canonicalOrigin+path,'one hop, preserving path and query');
@@ -136,14 +150,20 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const verification=await request('/googlec8009b90c25c4c6c.html');assert.equal(verification.status,200);
   assert.equal((await verification.text()).trim(),'google-site-verification: googlec8009b90c25c4c6c.html');
   const home=htmlByPath.get('/');
+  assert(tags(home,'a').some(link=>link.href==='/about'),'About has a real crawlable destination as well as a homepage dialog');
+  for(const [path,html] of htmlByPath)for(const target of ['/products','/contact'])assert(tags(html,'a').some(link=>link.href===target),path+' exposes primary navigation '+target);
+  assert(htmlByPath.get('/about').includes('"@type":"AboutPage"'));
+  assert(htmlByPath.get('/contact').includes('"@type":"ContactPage"')&&htmlByPath.get('/contact').includes('tel:+989112243632'));
   const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
   assert(hero&&!hero.loading,'the homepage LCP image is not lazy-loaded');
   assert(tags(home,'link').some(link=>link.rel==='preload'&&link.as==='image'),'hero image is preloaded');
   const catalogue=htmlByPath.get('/products');
   const categoryPaths=urls.map(url=>new URL(url).pathname).filter(path=>path.startsWith('/products/category/'));
   assert.equal(categoryPaths.length,10);
+  const footer=home.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
   for(const path of categoryPaths){
     assert(tags(catalogue,'a').some(link=>link.href===path),'category has a crawlable HTML link: '+path);
+    assert(tags(footer,'a').some(link=>link.href===path),'homepage footer links every category: '+path);
     assert(htmlByPath.get(path).includes('"@type":"CollectionPage"'));
   }
   for(const [accept,mime] of [['image/webp','image/webp'],['image/avif,image/webp','image/avif']]){

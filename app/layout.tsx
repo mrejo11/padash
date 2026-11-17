@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: 'انتخاب، مقایسه و استعلام عایق‌های حرارتی و برودتی برای تأسیسات، ساختمان و صنعت. کاتالوگ تخصصی بازرگانی پاداش.',
   icons: { icon: { url: '/images/padash-icon.png', type: 'image/png', sizes: '48x48' }, apple: {url: '/images/padash-apple.png', sizes: '180x180'} },
   applicationName: SITE_NAME,
-  robots: { index: !isPreviewDeployment(), follow: !isPreviewDeployment() },
+  robots: { index: !isPreviewDeployment(), follow: !isPreviewDeployment(), 'max-image-preview': 'large' },
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
   openGraph: { title: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl(SOCIAL_IMAGE), width: 512, height: 512, alt: 'نشان بازرگانی پاداش' }] },
   twitter: { card: 'summary' },
