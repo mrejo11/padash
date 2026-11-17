@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'بازرگانی پاداش | تأمین عایق حرارتی و برودتی', template: '%s | بازرگانی پاداش' },
   description: 'انتخاب، مقایسه و استعلام عایق‌های حرارتی و برودتی برای تأسیسات، ساختمان و صنعت. کاتالوگ تخصصی بازرگانی پاداش.',
-  icons: { icon: { url: '/images/padash-icon.png', type: 'image/png', sizes: '48x48' }, apple: {url: '/images/padash-apple.png', sizes: '180x180'} },
+  icons: { icon: { url: '/images/padash-icon.png', type: 'image/png', sizes: '96x96' }, apple: {url: '/images/padash-apple.png', sizes: '180x180'} },
   applicationName: SITE_NAME,
   robots: { index: !isPreviewDeployment(), follow: !isPreviewDeployment(), 'max-image-preview': 'large' },
   verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,

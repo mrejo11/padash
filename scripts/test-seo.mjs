@@ -150,6 +150,14 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const verification=await request('/googlec8009b90c25c4c6c.html');assert.equal(verification.status,200);
   assert.equal((await verification.text()).trim(),'google-site-verification: googlec8009b90c25c4c6c.html');
   const home=htmlByPath.get('/');
+  const favicon=tags(home,'link').find(link=>link.rel==='icon');
+  assert.equal(favicon?.href,'/images/padash-icon.png','favicon keeps its stable branded URL');
+  assert.equal(favicon.sizes,'96x96');
+  const faviconResponse=await request(favicon.href);assert.equal(faviconResponse.status,200);
+  assert(faviconResponse.headers.get('content-type').startsWith('image/png'));
+  assert(!/noindex/.test(faviconResponse.headers.get('x-robots-tag')||''));
+  const faviconBytes=Buffer.from(await faviconResponse.arrayBuffer());
+  assert.equal(faviconBytes.readUInt32BE(16),96);assert.equal(faviconBytes.readUInt32BE(20),96,'favicon is square and matches declared size');
   assert(tags(home,'a').some(link=>link.href==='/about'),'About has a real crawlable destination as well as a homepage dialog');
   for(const [path,html] of htmlByPath)for(const target of ['/products','/contact'])assert(tags(html,'a').some(link=>link.href===target),path+' exposes primary navigation '+target);
   assert(htmlByPath.get('/about').includes('"@type":"AboutPage"'));
