@@ -153,6 +153,13 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(tags(home,'a').some(link=>link.href==='/about'),'About has a real crawlable destination as well as a homepage dialog');
   for(const [path,html] of htmlByPath)for(const target of ['/products','/contact'])assert(tags(html,'a').some(link=>link.href===target),path+' exposes primary navigation '+target);
   assert(htmlByPath.get('/about').includes('"@type":"AboutPage"'));
+  const about=htmlByPath.get('/about');
+  for(const text of ['ما فقط عایق نمی‌فروشیم','چرا بازرگانی پاداش؟','چشم‌انداز ما','هدف ما فراتر از فروش محصول است','فناوری، کیفیت و مسئولیت‌پذیری'])assert(about.includes(text),'owner-selected About copy is crawlable: '+text);
+  const aboutNodes=[...about.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(match=>{const schema=JSON.parse(match[1]);return schema['@graph']||[schema];});
+  const aboutSchema=aboutNodes.find(node=>node['@type']==='AboutPage');
+  assert.equal(aboutSchema.description,pages.find(page=>page.path==='/about').description,'About metadata and schema use the same approved description');
+  assert(aboutSchema.description.includes('حرارتی، برودتی و صوتی'));
+  assert(Number.isFinite(Date.parse(aboutSchema.dateModified)),'About schema has its actual content update date');
   assert(htmlByPath.get('/contact').includes('"@type":"ContactPage"')&&htmlByPath.get('/contact').includes('tel:+989112243632'));
   const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
   assert(hero&&!hero.loading,'the homepage LCP image is not lazy-loaded');

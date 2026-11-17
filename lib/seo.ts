@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { businessContacts } from './contacts';
 import type { ProductImage } from './catalog';
+import { aboutProfile } from './business-profile';
 
 // Confirmed by the owner. Deployment-preview URLs must never become canonical.
 export const SITE_URL = 'https://www.padashgroup.ir';
@@ -24,7 +25,7 @@ export const organization = {
   '@type': 'Organization', '@id': absoluteUrl('/#organization'), name: SITE_NAME,
   alternateName: SITE_ALTERNATE_NAMES,
   url: SITE_URL, logo: absoluteUrl(SOCIAL_IMAGE),
-  description: 'انتخاب، مقایسه، مشاوره و استعلام تأمین عایق‌های حرارتی و برودتی برای ساختمان، تأسیسات و صنعت.',
+  description: aboutProfile.description,
   contactPoint: businessContacts.map(contact => ({ '@type': 'ContactPoint', name: contact.name,
     telephone: contact.href.slice(4), contactType: 'sales', availableLanguage: 'Persian' })),
 };

@@ -1,0 +1,4 @@
+.copy > section + section { margin-top: 30px; }
+.copy strong { font-weight: 700; }
+.copy h3 { font-size: 18px; font-weight: 700; line-height: 2; margin: 20px 0 12px; }
+.copy > section:first-child > h3 { margin-top: 0; }
