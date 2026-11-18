@@ -24,10 +24,10 @@ const origin = `http://127.0.0.1:${port}`;
 let child;
 let logs = '';
 let blobsStopped = false;
-async function start(adminPassword = password, hosted = false) {
+async function start(adminPassword = password, hosted = false, vercel = false) {
   child = spawn(process.execPath, [resolve('node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, NODE_ENV: 'production', NETLIFY: '', SALES_ADMIN_PASSWORD: adminPassword,
+    env: { ...process.env, NODE_ENV: 'production', NETLIFY: '', VERCEL:vercel?'1':'', PADASH_LOCAL_RUNTIME:'1', SALES_ADMIN_PASSWORD: adminPassword,
       SITE_ID: hosted ? 'integration' : '', SITE_NAME: hosted ? 'integration' : '',
       NETLIFY_BLOBS_CONTEXT: Buffer.from(JSON.stringify(blobs.context)).toString('base64') },
   });
@@ -316,6 +316,35 @@ try {
   assert(partnerReceiptHtml.includes('طبق مشخصات درخواست'));
   assert(!partnerReceiptHtml.includes('NaN'));
   for (const privateValue of [partnerPayload.name, partnerPayload.phone, ...partnerItems.map(item => item.note)]) assert(!partnerReceiptHtml.includes(privateValue), 'partner receipt preserves privacy');
+  console.log('Checking Vercel per-client quotas, secure login and trusted headers...');
+  await stop();
+  await start(password,false,true);
+  const vercelHeaders={'x-forwarded-host':'padash.example',Origin:'https://padash.example','x-vercel-forwarded-for':'198.51.100.40','x-forwarded-for':'198.51.100.99','x-nf-client-connection-ip':'198.51.100.98'};
+  // next start injects its loopback X-Forwarded-For when absent; an explicitly
+  // empty authoritative header exercises the fail-closed branch end to end.
+  assert.equal((await send('/api/quotes',payload(),{headers:{Origin:'https://padash.example','x-forwarded-host':'padash.example','x-vercel-forwarded-for':''}})).status,503,'empty trusted IP fails instead of using a shared global quota');
+  const vercelLogin=await send('/api/admin/session',{password},{headers:vercelHeaders});
+  assert.equal(vercelLogin.status,200);assert(vercelLogin.headers.get('set-cookie').includes('; Secure'));
+  assert.equal((await send('/api/admin/session',{password},{headers:{...vercelHeaders,Origin:'http://padash.example'}})).status,403);
+  const vercelSession={Cookie:vercelLogin.headers.get('set-cookie').split(';')[0]};
+  assert.equal((await request('/api/admin/status')).status,401,'service details require a valid session');
+  const health=await(await request('/api/admin/status',{headers:{...vercelHeaders,...vercelSession}})).json();
+  assert.equal(health.platform,'vercel');assert.equal(health.clientIdentification,'vercel');assert.equal(health.storage,'ok');
+  assert.equal(health.limits.quotes,5);assert(!JSON.stringify(health).includes(password));assert(!JSON.stringify(health).includes('198.51.100.40'));
+  for(let i=0;i<5;i++)assert.equal((await send('/api/quotes',payload(),{headers:vercelHeaders})).status,201,'same Vercel client within quota');
+  assert.equal((await send('/api/quotes',payload(),{headers:{...vercelHeaders,'x-forwarded-for':'203.0.113.250','x-nf-client-connection-ip':'203.0.113.249'}})).status,429,'changing untrusted fallback headers cannot evade the authoritative IP quota');
+  assert.equal((await send('/api/quotes',payload(),{headers:{...vercelHeaders,'x-vercel-forwarded-for':'198.51.100.41'}})).status,201,'another customer can submit after the first hits quota');
+  assert.equal((await send('/api/quotes',payload(),{headers:{...vercelHeaders,'x-vercel-forwarded-for':'invalid'}})).status,503);
+  const loginIp={...vercelHeaders,'x-vercel-forwarded-for':'198.51.100.42'};
+  for(let i=0;i<10;i++)assert.equal((await send('/api/admin/session',{password:'wrong'},{headers:loginIp})).status,401);
+  assert.equal((await send('/api/admin/session',{password},{headers:loginIp})).status,429);
+  assert.equal((await send('/api/admin/session',{password},{headers:{...loginIp,'x-vercel-forwarded-for':'198.51.100.43'}})).status,200,'login quota is isolated by client too');
+  for(const path of ['/management','/management/requests?kind=order','/management/follow-ups','/management/news','/management/system']){
+    const response=await request(path);assert.equal(response.status,200,path);assert.equal(response.headers.get('x-robots-tag'),'noindex, nofollow');
+    const html=await response.text();for(const destination of ['/management/requests','/management/follow-ups','/management/news','/management/system'])assert(html.includes('href="'+destination+'"'),'shared management menu includes '+destination);
+    assert(!html.includes('Private Test Customer'),'customer details are not prerendered without authentication');
+    assert(/name="robots" content="[^"]*noindex/.test(html),'new management routes inherit noindex');
+  }
   const seo = await auditSeo(origin);
   console.log('SEO audit:',JSON.stringify({pages:seo.pagesChecked,images:seo.images,internalDestinations:seo.internalDestinations}));
   assert.equal((await request('/api/health')).status,200,'storage readiness succeeds');
@@ -329,6 +358,8 @@ try {
   assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,seo.images,'all product images remain in the fallback sitemap');
   for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://www.padashgroup.ir'+path));
   assert.equal((await request('/api/health')).status,503,'unavailable storage fails readiness');
+  const outageStatus=await(await request('/api/admin/status',{headers:{...vercelHeaders,...vercelSession}})).json();
+  assert.equal(outageStatus.storage,'unavailable','authenticated system view reports a real storage outage');
   const homeWithoutNews=await request('/');
   assert.equal(homeWithoutNews.status,200,'news storage outage does not take down the homepage');
   assert((await homeWithoutNews.text()).includes('انتخاب عایق و ملزومات پروژه'));

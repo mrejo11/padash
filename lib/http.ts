@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { onNetlify } from './platform';
+import { clientAddress, onManagedHost } from './platform';
 
 export function json(data: unknown, status = 200, headers: Record<string, string> = {}) {
   return Response.json(data, { status, headers: {
@@ -13,18 +13,17 @@ export function sameOrigin(request: Request) {
   try {
     const parsed = new URL(origin);
     // Next can normalize request.url to localhost behind its HTTP server.
-    // Use the incoming authority; trust forwarded hosts only on Netlify's proxy.
-    const host = (onNetlify() && request.headers.get('x-forwarded-host'))
+    // Forwarded hosts are trusted only inside a recognised platform runtime.
+    const host = (onManagedHost() && request.headers.get('x-forwarded-host'))
       || request.headers.get('host') || new URL(request.url).host;
     return ['http:', 'https:'].includes(parsed.protocol)
       && parsed.host === host.toLowerCase()
-      && (!onNetlify() || parsed.protocol === 'https:');
+      && (!onManagedHost() || parsed.protocol === 'https:');
   } catch { return false; }
 }
 
 export function clientHash(request: Request) {
-  // Netlify sets this header at its edge. Do not trust arbitrary forwarded headers.
-  const ip = onNetlify() ? request.headers.get('x-nf-client-connection-ip') || 'unknown' : 'local';
+  const ip = clientAddress(request);
   return createHash('sha256').update('padash:' + ip).digest('hex');
 }
 

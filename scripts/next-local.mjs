@@ -6,6 +6,7 @@ import { startLocalBlobs } from './local-blobs.mjs';
 const [command, ...args] = process.argv.slice(2);
 if (!['dev', 'start'].includes(command)) throw new Error('Expected dev or start');
 const env = { ...process.env };
+env.PADASH_LOCAL_RUNTIME = '1';
 let blobs;
 // Real Netlify functions receive their own storage context from the adapter.
 if (!env.NETLIFY && !env.NETLIFY_BLOBS_CONTEXT) {

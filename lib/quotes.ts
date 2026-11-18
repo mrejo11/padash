@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { z } from 'zod';
 import { quotePayload } from './quote-validation';
 import { storage, reserveAttempt, readVersioned } from './storage';
+import {REQUEST_LIMITS} from './request-limits';
 import { filterQuotes, managementStats, type Quote, type ManagementFilters, type QuoteStatus } from './management-model';
 
 export type { Quote } from './management-model';
@@ -14,7 +15,7 @@ export async function createQuote(data: z.infer<typeof quotePayload>, clientHash
   const token = data.requestId.toLowerCase();
   const existing = await getQuote(token);
   if (existing) return { quote: existing, created: false };
-  if (!await reserveAttempt(`limits/quotes/${clientHash}`, token, 5, 86_400_000)) return null;
+  if (!await reserveAttempt(`limits/quotes/${clientHash}`, token, REQUEST_LIMITS.quotes.limit, REQUEST_LIMITS.quotes.windowMs)) return null;
   const quote: Quote = {
     id: 'PD-' + createHash('sha256').update(token).digest('hex').slice(0, 12).toUpperCase(),
     token, name: data.name, company: data.company, phone: data.phone, city: data.city,

@@ -1,5 +1,5 @@
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
-import { onNetlify } from './platform';
+import { onManagedHost } from './platform';
 
 const cookieName = 'padash_admin';
 const duration = 8 * 60 * 60;
@@ -43,6 +43,6 @@ export function sessionCookie(request: Request, logout = false) {
   if (!secret && !logout) throw new Error('Administrator not configured');
   const payload = `${Math.floor(Date.now() / 1000) + duration}.${randomUUID()}`;
   const value = logout ? '' : `${payload}.${signature(payload, secret!)}`;
-  const secure = onNetlify() || new URL(request.url).protocol === 'https:';
+  const secure = onManagedHost() || new URL(request.url).protocol === 'https:';
   return `${cookieName}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${logout ? 0 : duration}${secure ? '; Secure' : ''}`;
 }

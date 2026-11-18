@@ -13,6 +13,7 @@
     "start:local": "node scripts/next-local.mjs start",
     "typecheck": "tsc --noEmit",
     "test:integration": "node scripts/test-integration.mjs",
+    "test:platform": "node scripts/test-platform.mjs",
     "test:calculator": "node scripts/test-calculator.mjs",
     "lint": "eslint .",
     "test:accessories": "node scripts/test-accessory-estimate.mjs"

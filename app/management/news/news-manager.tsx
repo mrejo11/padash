@@ -1,13 +1,14 @@
 'use client';
 
-import Link from 'next/link';
+
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { ArrowRight, ExternalLink, FileText, LoaderCircle, Plus, RefreshCw, Save } from 'lucide-react';
+import { ExternalLink, FileText, LoaderCircle, Plus, RefreshCw, Save } from 'lucide-react';
 import type { NewsFields, NewsRecord } from '../../../lib/news';
 import { fa } from '../../../lib/catalog';
-import AdminLogin from '../admin-login';
-import Brand from '../../../components/brand';
+
+import AdminShell from '../admin-shell';
+import AdminAccess from '../admin-access';
 const blank: NewsFields = { title: '', summary: '', body: '', kind: 'news', status: 'draft', event_date: '' };
 
 export default function NewsManager() {
@@ -22,18 +23,17 @@ export default function NewsManager() {
   const [message, setMessage] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const refresh = useCallback(() =>
-    fetch('/api/admin/news', { cache: 'no-store' }).then(async response => {
-      const result = await response.json() as { items: NewsRecord[]; error?: string; code?: string };
-      if (!response.ok) {
-        if (result.code) { setCode(result.code); setAuthenticated(false); setItems([]); setShowEditor(false); }
-        else throw new Error(result.error || 'دریافت اطلاعات انجام نشد.');
-        return;
-      }
-      setItems(result.items); setAuthenticated(true); setCode('');
-    }).catch(error => { setError(error instanceof Error ? error.message : 'ارتباط برقرار نشد.'); })
-      .finally(() => { setLoading(false); }), []);
-  useEffect(() => { void refresh(); }, [refresh]);
+  const generation=useRef(0);
+  function expireSession(){generation.current++;setAuthenticated(false);setCode('signin');setItems([]);setSelected(null);setFields(blank);setShowEditor(false);setError('');setMessage('');}
+  const refresh=useCallback(async()=>{
+    const current=++generation.current;setLoading(true);
+    try{const response=await fetch('/api/admin/news',{cache:'no-store'});const result=await response.json() as {items:NewsRecord[];error?:string;code?:string};if(current!==generation.current)return;
+      if(!response.ok){if(result.code){setCode(result.code);setAuthenticated(false);setItems([]);setShowEditor(false);setSelected(null);setFields(blank);return;}throw new Error(result.error||'دریافت اطلاعات انجام نشد.');}
+      setItems(result.items);setAuthenticated(true);setCode('');
+    }catch(error){if(current===generation.current)setError(error instanceof Error?error.message:'ارتباط برقرار نشد.');}
+    finally{if(current===generation.current)setLoading(false);}
+  },[]);
+  useEffect(()=>{void refresh();return()=>{generation.current++;};},[refresh]);
   async function reload() {
     setLoading(true); setError('');
     await refresh();
@@ -46,10 +46,12 @@ export default function NewsManager() {
   async function save(event: FormEvent) {
     event.preventDefault(); if (busy) return;
     setBusy(true); setError(''); setMessage('');
+    const current=generation.current;
     try {
       const response = await fetch('/api/admin/news', { method: selected ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(selected ? { id: selected.id, revision: selected.revision, fields } : fields) });
       const result = await response.json() as { item: NewsRecord; error?: string };
+      if(current!==generation.current)return;
       if (response.status === 401) { setAuthenticated(false); setCode('signin'); setItems([]); setSelected(null); setFields(blank); setShowEditor(false); throw new Error('نشست پایان یافته است؛ دوباره وارد شوید.'); }
       if (!response.ok) throw new Error(result.error || 'ذخیره انجام نشد.');
       setSelected(result.item); setFields({ title: result.item.title, summary: result.item.summary, body: result.item.body, kind: result.item.kind, status: result.item.status, event_date: result.item.event_date });
@@ -59,13 +61,13 @@ export default function NewsManager() {
     finally { setBusy(false); }
   }
   function field(key: keyof NewsFields, value: string) { setFields(previous => ({ ...previous, [key]: value })); setMessage(''); }
-  return <main className="news-admin"><div className="news-admin-brand"><Brand subtitle="مدیریت محتوای پاداش"/></div><header className="news-admin-header"><Link href="/management" className="button button-outline"><ArrowRight size={16}/>مدیریت درخواست‌ها</Link><Link href="/news" target="_blank" rel="noreferrer">مشاهده بخش اخبار<ExternalLink size={15}/></Link></header>
+  return <AdminShell authenticated={authenticated} onSignedOut={expireSession} logoutDisabled={busy}>
     <div className="admin-page-heading"><div><span className="admin-eyebrow">محتوای رسمی بازرگانی پاداش</span><h1>مدیریت اخبار و رویدادها</h1><p>خبر واقعی را پیش‌نویس کنید و پس از بازبینی منتشر کنید.</p></div><button className="button button-outline" onClick={reload} disabled={loading || busy}><RefreshCw size={16}/>به‌روزرسانی</button></div>
     {error && <p className="form-error" role="alert">{error}</p>}
-    {!authenticated ? <section className="admin-login-panel">{loading ? <LoaderCircle className="spin"/> : <><h2>ورود مدیر</h2>{code === 'not_configured' ? <p>رمز مدیریت روی سرور تنظیم نشده است.</p> : code === 'signin' ? <AdminLogin onSuccess={reload}/> : <p>دریافت وضعیت دسترسی انجام نشد. دوباره تلاش کنید.</p>}</>}</section> : <>
+    {!authenticated ? <AdminAccess loading={loading} code={code} onSuccess={reload}/> : <>
       <div className="news-admin-summary"><span>{fa(items.length)} مطلب · {fa(items.filter(item => item.status === 'published').length)} منتشرشده</span><button className="button button-dark" disabled={busy} onClick={() => edit(null)}><Plus size={17}/>خبر یا رویداد جدید</button></div>
       {items.length ? <div className="news-admin-list">{items.map(item => <article key={item.id}><div><span className={'admin-status ' + (item.status === 'published' ? 'status-confirmed' : '')}>{item.status === 'published' ? 'منتشرشده' : 'پیش‌نویس'}</span><h2>{item.title}</h2><p>{item.summary}</p><small>{item.kind === 'event' ? 'رویداد' : 'خبر'} · آخرین تغییر: {new Date(item.updated_at).toLocaleString('fa-IR', { timeZone: 'Asia/Tehran', dateStyle: 'medium', timeStyle: 'short' })}</small></div><button className="button button-outline" disabled={busy} onClick={() => edit(item)}>ویرایش</button></article>)}</div>
-        : <div className="content-empty"><FileText size={32}/><h2>هنوز مطلبی ثبت نشده است</h2><p>هیچ خبر نمونه‌ای به‌جای خبر واقعی منتشر نمی‌شود. از دکمه بالا یک پیش‌نویس بسازید.</p></div>}
+        : <div className="content-empty"><FileText size={32}/><h2>هنوز مطلبی ثبت نشده است</h2><p>با دکمهٔ «خبر یا رویداد جدید» اولین پیش‌نویس را بسازید؛ پیش‌نویس‌ها فقط در مدیریت دیده می‌شوند.</p></div>}
       {showEditor && <form ref={formRef} className="news-editor" onSubmit={save} aria-labelledby="news-editor-title"><h2 id="news-editor-title">{selected ? 'ویرایش مطلب' : 'مطلب جدید'}</h2>
         <fieldset disabled={busy}><div className="field-grid"><label className="field">نوع مطلب<select value={fields.kind} onChange={event => field('kind', event.target.value)}><option value="news">خبر و اطلاعیه</option><option value="event">رویداد</option></select></label>
           <label className="field">وضعیت انتشار<select value={fields.status} onChange={event => field('status', event.target.value)}><option value="draft">پیش‌نویس؛ فقط مدیریت</option><option value="published">انتشار عمومی در سایت</option></select></label></div>
@@ -81,5 +83,5 @@ export default function NewsManager() {
         </fieldset>
       </form>}
     </>}
-  </main>;
+  </AdminShell>;
 }
