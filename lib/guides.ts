@@ -22,7 +22,7 @@ export const guides: Guide[] = [
   {
     slug: 'roll-insulation-quantity', title: 'محاسبه مقدار عایق و ملزومات؛ رول، ورق و برنامه برش',
     description: 'متره پشم شیشه، پشم سنگ، فوم، فویل، توری و کارتن‌پلاست؛ تعداد رول و ورق با ابعاد واقعی، هم‌پوشانی، ذخیره و برنامه برش.',
-    category: 'متره و محاسبات', minutes: 8, published: checked, modified: '2026-11-04', relatedProducts: ['EL-R', 'GW-F', 'PE-R','VN-1221','VN-1220','VN-1218','VN-1219','VN-1216','VN-1213'],
+    category: 'متره و محاسبات', minutes: 8, published: checked, modified: '2026-11-19', relatedProducts: ['EL-R', 'GW-F', 'PE-R','VN-1221','VN-1220','VN-1218','VN-1219','VN-1216','VN-1213'],
     intro: 'برای خرید عایق رولی باید سه عدد مستقل مشخص باشد: مساحت واقعی نیاز، مساحت هر رول و ذخیره‌ای که برای شرایط همان پروژه انتخاب می‌شود. یک طول ثابت برای همه رول‌ها قابل استفاده نیست.',
     sections: [
       { heading: '۱. ابتدا سطح واقعی را متره کنید', paragraphs: [
@@ -56,7 +56,7 @@ export const guides: Guide[] = [
   {
     slug: 'elastomeric-insulation-guide', title: 'عایق الاستومری چیست و در استعلام آن چه بنویسیم؟',
     description: 'راهنمای عایق الاستومری رولی و لوله‌ای، تفاوت مدل‌ها، ضخامت، روکش و اطلاعات لازم برای استعلام تأسیسات.',
-    category: 'شناخت محصول', minutes: 4, published: checked, modified: checked, relatedProducts: ['EL-R', 'EL-T'],
+    category: 'شناخت محصول', minutes: 4, published: checked, modified: '2026-11-19', relatedProducts: ['EL-R', 'EL-T'],
     intro: 'الاستومری نام یک خانواده عایق انعطاف‌پذیر است. برای تصمیم خرید، باید مدل، شکل عرضه، ضخامت و شرایط کار مشخص شوند؛ نام خانواده به‌تنهایی مشخصات نهایی را تعیین نمی‌کند.',
     sections: [
       { heading: 'کاربرد را با مدل محصول تطبیق دهید', paragraphs: [
@@ -76,7 +76,7 @@ export const guides: Guide[] = [
   {
     slug: 'rock-wool-and-glass-wool', title: 'پشم سنگ و پشم شیشه؛ تفاوت در انتخاب و شکل عرضه',
     description: 'شناخت عایق‌های الیاف معدنی، شکل تخته‌ای، رولی و لوله‌ای و نقش روکش، ضخامت و جزئیات نصب در انتخاب محصول.',
-    category: 'عایق‌های معدنی', minutes: 4, published: checked, modified: checked, relatedProducts: ['RW-S', 'RW-P', 'GW-F'],
+    category: 'عایق‌های معدنی', minutes: 4, published: checked, modified: '2026-11-19', relatedProducts: ['RW-S', 'RW-P', 'GW-F'],
     intro: 'پشم سنگ و پشم شیشه از عایق‌های الیافی معدنی‌اند. انتخاب میان آن‌ها را باید با مشخصات محصول واقعی و محل نصب انجام داد، نه با یک حکم کلی درباره بهتر بودن یک خانواده.',
     sections: [
       { heading: 'شکل عرضه به اندازه نام جنس اهمیت دارد', paragraphs: [
@@ -96,7 +96,7 @@ export const guides: Guide[] = [
   {
     slug: 'polyethylene-and-elastomeric-foam', title: 'فوم پلی‌اتیلن و الاستومری یک محصول نیستند',
     description: 'تفاوت نام ماده در فوم پلی‌اتیلن و عایق الاستومری و راهنمای تطبیق کاربرد، مشخصات و شکل عرضه با دیتاشیت.',
-    category: 'عایق‌های پلیمری', minutes: 3, published: checked, modified: checked, relatedProducts: ['PE-R', 'EL-R', 'EL-T'],
+    category: 'عایق‌های پلیمری', minutes: 3, published: checked, modified: '2026-11-19', relatedProducts: ['PE-R', 'EL-R', 'EL-T'],
     intro: 'سفید یا مشکی بودن فوم، جنس و عملکرد آن را ثابت نمی‌کند. برای سفارش دقیق، نام ماده و مدل را از برچسب و دیتاشیت بررسی کنید.',
     sections: [
       { heading: 'نام ماده را از نام تجاری جدا کنید', paragraphs: [

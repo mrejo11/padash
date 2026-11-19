@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
-import { useEffect, useState, type FormEvent, type KeyboardEvent, type MouseEvent } from 'react';
+import { useEffect, useState, type FormEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowUpLeft, BookOpen, Building2, Calculator, CheckCheck, ChevronDown, ClipboardList, Factory, FileText, Headphones, Layers3, Phone, Scale, Search, ShieldCheck, Truck, Wind, X } from 'lucide-react';
 import { products, categories, fa, type Product, type QuoteItem } from '../lib/catalog';
 import { useQuoteCart } from '../lib/use-quote-cart';
 import { businessContacts } from '../lib/contacts';
-import AboutContent from '../components/about-content';
+const AboutContent=dynamic(()=>import('../components/about-content'));
 import type { Guide } from '../lib/guides';
 import type { PublicNews } from '../lib/news';
 import type { RequestKind } from '../lib/management-model';
@@ -41,10 +42,10 @@ const questions = [
   { question: 'بعد از ثبت استعلام، چطور درخواست را پیگیری کنم؟', answer: 'پس از ثبت موفق، کد و پیوند اختصاصی پیگیری دریافت می‌کنید. از همان پیوند، وضعیت و خلاصه درخواست را ببینید یا چاپ کنید. برای هماهنگی بیشتر نیز می‌توانید با مدیران پاداش تماس بگیرید.' },
 ];
 
-type Props = { news?: Pick<PublicNews, 'id' | 'title' | 'summary' | 'kind' | 'published_at'>[]; newsUnavailable?: boolean; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
+type Props = { children?:ReactNode; news?: Pick<PublicNews, 'id' | 'title' | 'summary' | 'kind' | 'published_at'>[]; newsUnavailable?: boolean; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
 const plainClick=(event:MouseEvent<HTMLAnchorElement>)=>event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey;
 
-export default function Storefront({ news = [], featuredGuides = [] }: Props) {
+export default function Storefront({ news = [], featuredGuides = [], children }: Props) {
   const { cart, setCart } = useQuoteCart();
   const [category, setCategory] = useState('all');
   const [catalogReset, setCatalogReset] = useState(0);
@@ -107,8 +108,8 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
       <div className="hero-band" id="home-intro"><section className="hero container" aria-labelledby="hero-heading">
         <div className="hero-copy">
           <div className="hero-kicker"><span/>بازرگانی پاداش · عایق و ملزومات پروژه</div>
-          <h1 id="hero-heading">بازرگانی پاداش،<br/><span>انتخاب عایق و ملزومات پروژه.</span></h1>
-          <p>عایق و ملزومات پروژه را بشناسید، مقدار مورد نیاز را برآورد کنید و برای تأمین، مستقیم با پاداش در ارتباط باشید.</p>
+          <h1 id="hero-heading">تأمین و فروش <span>عایق حرارتی، برودتی و صوتی</span></h1>
+          <p>عایق مناسب را با توجه به کاربرد و شرایط پروژه بررسی کنید؛ محصولات و ملزومات را بشناسید، مقدار مورد نیاز را برآورد کنید و برای استعلام قیمت با پاداش در ارتباط باشید.</p>
           <div className="hero-buttons"><a href="#catalog" className="button button-orange">مشاهده محصولات<ArrowLeft size={19}/></a><button className="button button-outline" onClick={() => openQuote('consultation')}><Headphones size={19}/>مشاوره انتخاب عایق</button></div>
           <form className="hero-search" role="search" onSubmit={search}><Search size={20}/><input aria-label="جست‌وجوی سریع محصول" type="search" placeholder="دنبال چه محصولی می‌گردید؟" value={heroQuery} onChange={event => setHeroQuery(event.target.value)}/><button type="submit" aria-label="جست‌وجو در کاتالوگ"><ArrowLeft size={20}/></button></form>
           <div className="hero-search-suggestions"><span>پرکاربرد:</span>{quickCategories.slice(0, 3).map(item => <button key={item.id} onClick={() => jumpFilter(item.id)}>{item.name}</button>)}</div>
@@ -123,6 +124,7 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
         { icon: Truck, title: 'هماهنگی تأمین', note: 'با توجه به مقصد و زمان پروژه' },
       ].map(item => <div key={item.title}><item.icon/><span><b>{item.title}</b><small>{item.note}</small></span></div>)}</section>
 
+      {children}
       <section className="category-section section container" aria-labelledby="categories-heading">
         <div className="section-heading"><div><span className="section-kicker">خانواده محصولات</span><h2 id="categories-heading">متریال پروژه‌تان را پیدا کنید.</h2></div><Link className="text-button" href="/products">همه دسته‌بندی‌ها<ArrowLeft size={18}/></Link></div>
         <div className="category-tiles">{quickCategories.map(item => <button className="category-tile" key={item.id} onClick={() => jumpFilter(item.id)}><span className="category-tile-image"><ProductMedia product={products.find(product => product.id === item.product)!} sizes="(max-width: 600px) 110px, 150px"/></span><span className="category-tile-copy"><strong>{item.name}</strong><small>{item.note}</small></span><ArrowUpLeft size={21}/></button>)}</div>
@@ -154,7 +156,7 @@ export default function Storefront({ news = [], featuredGuides = [] }: Props) {
       <section className="business-contact section container" id="contact" aria-labelledby="contact-heading"><div className="contact-heading"><div><span className="section-kicker">یک گفت‌وگوی خوب، یک انتخاب بهتر</span><h2 id="contact-heading">درباره پروژه‌تان صحبت کنیم.</h2><p>برای مشاوره، استعلام قیمت و هماهنگی تأمین، مستقیم با ما در ارتباط باشید.</p></div><span className="contact-heading-icon"><Headphones size={40} strokeWidth={1.3}/></span></div><ol className="contact-process"><li><span>۰۱</span>انتخاب و تعیین مشخصات</li><li><span>۰۲</span>ثبت درخواست و دریافت کد پیگیری</li><li><span>۰۳</span>بررسی و اعلام شرایط تأمین</li></ol><div className="business-contact-grid">{businessContacts.map(contact => <a className="manager-card" href={contact.href} key={contact.phone} aria-label={'تماس با ' + contact.name + '، ' + contact.displayPhone}><span className="manager-icon"><Phone size={23}/></span><div className="manager-info"><h3>{contact.name}</h3><p>مشاوره و هماهنگی تأمین</p></div><div className="manager-call"><bdi className="manager-number">{contact.displayPhone}</bdi><span>تماس مستقیم<ArrowUpLeft size={16}/></span></div></a>)}</div><div className="contact-online"><span><ShieldCheck size={19}/>ترجیح می‌دهید نیاز پروژه را آنلاین بفرستید؟</span><button className="text-button" onClick={() => openQuote()}>ثبت درخواست و دریافت کد پیگیری<ArrowLeft size={18}/></button></div></section>
     </main>
 
-    <footer className="footer"><div className="container footer-main"><div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی و برودتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div><div><h4>محصولات پاداش</h4>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();jumpFilter(item.id);}}}>{item.name}</Link>)}</div><div><h4>همراه پروژه شما</h4><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about" prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();setInfo('about');}}}>درباره پاداش</Link></div><div className="footer-contact"><h4>شروع یک همکاری</h4><p>مشخصات پروژه را بفرستید تا گزینه‌های تأمین را بررسی کنیم.</p><button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><a href="#contact">تماس مستقیم با مدیران<ArrowUpLeft size={15}/></a></div></div><div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><button onClick={() => setInfo('privacy')}>حریم خصوصی</button><button onClick={() => setInfo('terms')}>شرایط استعلام</button><Link href="/management">ورود مدیریت</Link></div></div></footer>
+    <footer className="footer"><div className="container footer-main"><div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی، برودتی و صوتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div><div><h4>محصولات پاداش</h4>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();jumpFilter(item.id);}}}>{item.name}</Link>)}</div><div><h4>همراه پروژه شما</h4><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about" prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();setInfo('about');}}}>درباره پاداش</Link></div><div className="footer-contact"><h4>شروع یک همکاری</h4><p>مشخصات پروژه را بفرستید تا گزینه‌های تأمین را بررسی کنیم.</p><button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><a href="#contact">تماس مستقیم با مدیران<ArrowUpLeft size={15}/></a></div></div><div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><button onClick={() => setInfo('privacy')}>حریم خصوصی</button><button onClick={() => setInfo('terms')}>شرایط استعلام</button><Link href="/management">ورود مدیریت</Link></div></div></footer>
 
     {showQuickActions && !quoteOpen && !detail && !compareOpen && !info && compare.length === 0 && <aside className="mobile-project-actions" aria-label="دسترسی سریع تماس و استعلام"><a href={businessContacts[0].href}><Phone size={20}/><span>تماس با پاداش</span></a><button className="button button-orange" onClick={() => openQuote()}><ClipboardList size={18}/>{cart.length ? 'سبد استعلام (' + fa(cart.length) + ')' : 'مشاوره و استعلام'}<ArrowLeft size={17}/></button></aside>}
     {compare.length > 0 && <aside className="compare-dock" aria-label="سبد مقایسه"><div><Scale size={20}/><span>{fa(compare.length)} محصول برای مقایسه</span></div><button className="button button-dark" disabled={compare.length < 2} onClick={() => setCompareOpen(true)}>{compare.length < 2 ? 'یک محصول دیگر انتخاب کنید' : 'مقایسه محصولات'}<ArrowLeft size={15}/></button><button className="icon-button" aria-label="پاک کردن مقایسه" onClick={() => setCompare([])}><X size={18}/></button></aside>}

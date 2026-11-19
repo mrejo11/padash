@@ -63,7 +63,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const sitemapResponse=await request('/sitemap.xml');assert.equal(sitemapResponse.status,200);
   const xml=await sitemapResponse.text();
   const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
-  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=41);
+  assert.equal(new Set(urls).size,urls.length,'sitemap URLs are unique');assert(urls.length>=44);
   for(const url of urls){assert(url.startsWith(canonicalOrigin+'/'));assert(!/[?#]/.test(url));assert(!/\/(management|request|api)(\/|$)/.test(new URL(url).pathname));}
   const robots=await(await request('/robots.txt')).text();
   assert(robots.includes('Sitemap: '+canonicalOrigin+'/sitemap.xml'));assert(robots.includes('Allow: /'));assert(robots.includes('Disallow: /api/'));assert(!/^Disallow: \/\s*$/m.test(robots));
@@ -122,6 +122,9 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   }
   const targets=new Set();
   for(const [path,html] of htmlByPath)for(const link of tags(html,'a'))if(link.href?.startsWith('/')&&!link.href.startsWith('//'))targets.add(new URL(link.href,origin+path).pathname);
+  const reachable=new Set(['/']),queue=['/'];
+  while(queue.length){const path=queue.shift();for(const link of tags(htmlByPath.get(path)||'','a')){if(!link.href?.startsWith('/')||link.href.startsWith('//'))continue;const target=new URL(link.href,origin+path).pathname;if(htmlByPath.has(target)&&!reachable.has(target)){reachable.add(target);queue.push(target);}}}
+  for(const path of htmlByPath.keys())assert(reachable.has(path),'no indexable orphan page: '+path);
   for(const target of targets)if(!htmlByPath.has(target))assert.equal((await request(target)).status,200,'crawlable internal destination '+target);
   for(const path of ['/products/not-a-product','/products/category/not-a-category','/guides/not-a-guide','/news/not-a-news-id','/not-a-real-page']){
     const response=await request(path);assert.equal(response.status,404,path);
@@ -135,7 +138,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     const response=await request('/calculator'+query);assert.equal(response.status,200);
     assert.equal(tags(await response.text(),'link').find(tag=>tag.rel==='canonical')?.href,canonicalOrigin+'/calculator');
   }
-  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
+  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/thermal-insulation','/cold-insulation','/sound-insulation','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
     const response=await requestWithHost(origin,path,host);
     assert.equal(response.status,308,host+path+' permanently redirects');
     assert.equal(response.location,canonicalOrigin+path,'one hop, preserving path and query');
@@ -170,8 +173,20 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(Number.isFinite(Date.parse(aboutSchema.dateModified)),'About schema has its actual content update date');
   assert(htmlByPath.get('/contact').includes('"@type":"ContactPage"')&&htmlByPath.get('/contact').includes('tel:+989112243632'));
   const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
-  assert(hero&&!hero.loading,'the homepage LCP image is not lazy-loaded');
-  assert(tags(home,'link').some(link=>link.rel==='preload'&&link.as==='image'),'hero image is preloaded');
+  assert(hero&&hero.loading==='eager'&&hero.fetchPriority==='high','the known homepage LCP image is eager and explicitly prioritized');
+  assert(home.includes('تأمین و فروش')&&home.includes('عایق حرارتی، برودتی و صوتی'),'homepage explains the owner-confirmed business scope');
+  const applicationPages=[['/thermal-insulation','/products/rw-p'],['/cold-insulation','/products/el-t'],['/sound-insulation','/products/rw-s']];
+  for(const [path,product] of applicationPages){
+    const html=htmlByPath.get(path);assert(html,'application hub is in the sitemap: '+path);
+    assert(tags(home,'a').some(link=>link.href===path),'home links to application hub '+path);
+    assert(tags(html,'a').some(link=>link.href===product),'hub links a real relevant catalogue product');
+    assert(html.includes('href="#topic-products"')&&html.includes('استعلام قیمت و بررسی نیاز'),'hub exposes product and genuine inquiry actions');
+    assert(html.includes('"@type":"CollectionPage"')&&html.includes('"@type":"ItemList"'),'application hub has truthful collection and list schemas');
+    assert([...html.matchAll(/<details\b/g)].length>=3,'application FAQs are visible HTML, not invented rich-result data');
+  }
+  assert(!htmlByPath.has('/insulation-guide'),'existing guides hub is enhanced without creating a competing educational URL');
+  assert(tags(htmlByPath.get('/products/el-t'),'a').some(link=>link.href==='/cold-insulation'),'product links back to its application');
+  assert(tags(htmlByPath.get('/products/category/rockwool'),'a').some(link=>link.href==='/sound-insulation'),'material category links to the relevant application');
   const catalogue=htmlByPath.get('/products');
   const categoryPaths=urls.map(url=>new URL(url).pathname).filter(path=>path.startsWith('/products/category/'));
   assert.equal(categoryPaths.length,10);

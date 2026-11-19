@@ -353,16 +353,17 @@ try {
   const fallbackSitemap = await request('/sitemap.xml');
   assert.equal(fallbackSitemap.status,200,'stable catalogue stays discoverable when news storage is unavailable');
   const fallbackXml = await fallbackSitemap.text();
-  const stablePaths=seo.pages.filter(page=>!page.path.startsWith('/news/')).map(page=>'https://www.padashgroup.ir'+page.path).sort();
+  const stablePaths=seo.pages.filter(page=>page.path!=='/news'&&!page.path.startsWith('/news/')).map(page=>'https://www.padashgroup.ir'+page.path).sort();
   assert.deepEqual([...fallbackXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]).sort(),stablePaths,'all original and new stable pages remain in the fallback sitemap');
   assert.equal([...fallbackXml.matchAll(/<image:loc>/g)].length,seo.images,'all product images remain in the fallback sitemap');
+  assert(!fallbackXml.includes('<loc>https://www.padashgroup.ir/news</loc>'),'a failing news archive is not advertised as an indexable sitemap URL');
   for(const path of ['/products/el-r','/products/vn-1213','/guides/roll-insulation-quantity'])assert(fallbackXml.includes('https://www.padashgroup.ir'+path));
   assert.equal((await request('/api/health')).status,503,'unavailable storage fails readiness');
   const outageStatus=await(await request('/api/admin/status',{headers:{...vercelHeaders,...vercelSession}})).json();
   assert.equal(outageStatus.storage,'unavailable','authenticated system view reports a real storage outage');
   const homeWithoutNews=await request('/');
   assert.equal(homeWithoutNews.status,200,'news storage outage does not take down the homepage');
-  assert((await homeWithoutNews.text()).includes('انتخاب عایق و ملزومات پروژه'));
+  assert((await homeWithoutNews.text()).includes('عایق حرارتی، برودتی و صوتی'));
   assert.equal((await request('/news')).status,500,'storage outage must not masquerade as an empty successful news archive');
   console.log('PASS: validation, privacy, quotas, admin access, CSRF, workflow, concurrent edits, quantities, CSV, dates, persistence, crawlable guides/products, canonical URLs, noindex, news workflow, XSS escaping, sitemap updates, 6 partner products, 19 original images, custom specification orders and complete SEO audit.');
 } finally {
