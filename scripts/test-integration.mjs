@@ -109,6 +109,10 @@ try {
   assert(robots.includes('Sitemap: https://www.padashgroup.ir/sitemap.xml'));
   assert.equal((await request('/management')).headers.get('x-robots-tag'), 'noindex, nofollow');
   assert.equal((await request('/api/admin/news')).status, 401);
+  const newsArchive = () => request('/news', { headers: { 'User-Agent': 'Twitterbot' } }).then(response => response.text());
+  const newsArchiveInSitemap = () => request('/sitemap.xml').then(response => response.text()).then(xml => xml.includes('<loc>https://www.padashgroup.ir/news</loc>'));
+  assert.match(await newsArchive(), /<meta name="robots" content="noindex, follow"/);
+  assert.equal(await newsArchiveInSitemap(), false, 'an empty archive stays out of the sitemap');
   const draftFields = { title: 'خبر آزمون محرمانه برای پیش‌نویس', summary: 'این خلاصه صرفاً داده آزمون مستقل است و نباید پیش از انتشار دیده شود.',
     body: 'این متن نمونه فقط در آزمون یکپارچه و فضای ذخیره‌سازی جدا ایجاد می‌شود. <script>alert("news-xss")</script> هیچ خبر واقعی یا رویداد ساختگی در سایت اصلی ثبت نمی‌شود.', kind: 'news', status: 'draft', event_date: '' };
   assert.equal((await send('/api/admin/news', draftFields)).status, 401);
@@ -130,6 +134,8 @@ try {
   assert.equal((await send('/api/admin/news', { id: eventItem.id, revision: 1, fields: eventFields }, { method: 'PATCH', headers: sessionHeaders })).status, 200);
   const publish = await send('/api/admin/news', { id: draft.id, revision: 0, fields: { ...draftFields, status: 'published' } }, { method: 'PATCH', headers: sessionHeaders });
   assert.equal(publish.status, 200);
+  assert.doesNotMatch(await newsArchive(), /<meta name="robots" content="noindex/);
+  assert.equal(await newsArchiveInSitemap(), true, 'the public archive is added as soon as a story is published');
   assert.equal((await request('/news/' + draft.id)).status, 200);
   const publishedHtml = await (await request('/news/' + draft.id)).text();
   assert(!publishedHtml.includes('<script>alert("news-xss")</script>'), 'news body cannot execute HTML');
@@ -139,6 +145,7 @@ try {
   assert.equal((await send('/api/admin/news', { id: draft.id, revision: 0, fields: draftFields }, { method: 'PATCH', headers: sessionHeaders })).status, 409);
   assert.equal((await send('/api/admin/news', { id: draft.id, revision: 1, fields: draftFields }, { method: 'PATCH', headers: sessionHeaders })).status, 200);
   assert.equal((await request('/news/' + draft.id)).status, 404, 'unpublished news is hidden immediately');
+  assert.match(await newsArchive(), /<meta name="robots" content="noindex, follow"/);
   assert(!(await (await request('/sitemap.xml')).text()).includes('/news/' + draft.id));
   const map = await (await request('/sitemap.xml')).text();
   assert(map.includes('/guides/roll-insulation-quantity') && map.includes('/products/el-r'));

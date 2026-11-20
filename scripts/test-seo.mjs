@@ -138,7 +138,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     const response=await request('/calculator'+query);assert.equal(response.status,200);
     assert.equal(tags(await response.text(),'link').find(tag=>tag.rel==='canonical')?.href,canonicalOrigin+'/calculator');
   }
-  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/thermal-insulation','/cold-insulation','/sound-insulation','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
+  for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/privacy','/quote-terms','/thermal-insulation','/cold-insulation','/sound-insulation','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
     const response=await requestWithHost(origin,path,host);
     assert.equal(response.status,308,host+path+' permanently redirects');
     assert.equal(response.location,canonicalOrigin+path,'one hop, preserving path and query');
@@ -161,8 +161,16 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(!/noindex/.test(faviconResponse.headers.get('x-robots-tag')||''));
   const faviconBytes=Buffer.from(await faviconResponse.arrayBuffer());
   assert.equal(faviconBytes.readUInt32BE(16),96);assert.equal(faviconBytes.readUInt32BE(20),96,'favicon is square and matches declared size');
-  assert(tags(home,'a').some(link=>link.href==='/about'),'About has a real crawlable destination as well as a homepage dialog');
-  for(const [path,html] of htmlByPath)for(const target of ['/products','/contact'])assert(tags(html,'a').some(link=>link.href===target),path+' exposes primary navigation '+target);
+  const companyPages = ['/about', '/contact', '/privacy', '/quote-terms'];
+  for(const path of companyPages)assert(htmlByPath.has(path),path+' is discoverable in the sitemap');
+  for(const [path,html] of htmlByPath){
+    const nav=html.match(/<nav\b[^>]*aria-label="منوی اصلی"[^>]*>([\s\S]*?)<\/nav>/)?.[1]||'';
+    for(const target of ['/products','/about','/contact'])assert(tags(nav,'a').some(link=>link.href===target),path+' exposes primary navigation '+target);
+    const pageFooter=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
+    for(const target of companyPages)assert(tags(pageFooter,'a').some(link=>link.href===target),path+' footer links to '+target);
+    const siteHeader=html.match(/<header\b[^>]*class="[^"]*site-header[^"]*"[^>]*>([\s\S]*?)<\/header>/)?.[1]||'';
+    for(const region of [siteHeader,pageFooter])assert(tags(region,'img').some(image=>new URL(image.src,canonicalOrigin).searchParams.get('url')==='/images/padash-logo-warm.webp'),path+' uses the approved logo in header and footer');
+  }
   assert(htmlByPath.get('/about').includes('"@type":"AboutPage"'));
   const about=htmlByPath.get('/about');
   for(const text of ['ما فقط عایق نمی‌فروشیم','چرا بازرگانی پاداش؟','چشم‌انداز ما','هدف ما فراتر از فروش محصول است','فناوری، کیفیت و مسئولیت‌پذیری'])assert(about.includes(text),'owner-selected About copy is crawlable: '+text);
@@ -171,7 +179,10 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert.equal(aboutSchema.description,pages.find(page=>page.path==='/about').description,'About metadata and schema use the same approved description');
   assert(aboutSchema.description.includes('حرارتی، برودتی و صوتی'));
   assert(Number.isFinite(Date.parse(aboutSchema.dateModified)),'About schema has its actual content update date');
-  assert(htmlByPath.get('/contact').includes('"@type":"ContactPage"')&&htmlByPath.get('/contact').includes('tel:+989112243632'));
+  const contact=htmlByPath.get('/contact');
+  const contactMain=contact.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1]||'';
+  assert(contact.includes('"@type":"ContactPage"'));
+  for(const phone of ['tel:+989112243632','tel:+989112286151'])assert(tags(contactMain,'a').some(link=>link.href===phone),'contact page includes both managers');
   const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
   assert(hero&&hero.loading==='eager'&&hero.fetchPriority==='high','the known homepage LCP image is eager and explicitly prioritized');
   assert(home.includes('تأمین و فروش')&&home.includes('عایق حرارتی، برودتی و صوتی'),'homepage explains the owner-confirmed business scope');
@@ -188,6 +199,26 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(tags(htmlByPath.get('/products/el-t'),'a').some(link=>link.href==='/cold-insulation'),'product links back to its application');
   assert(tags(htmlByPath.get('/products/category/rockwool'),'a').some(link=>link.href==='/sound-insulation'),'material category links to the relevant application');
   const catalogue=htmlByPath.get('/products');
+  assert(pages.find(page=>page.path==='/products').title.includes('ملزومات ساختمانی'));
+  const homeCategoryTiles=home.match(/<div class="category-tiles">([\s\S]*?)<\/div>/)?.[1]||'';
+  const buyingCategories=[
+    {id:'glasswool', heading:'خرید پشم شیشه', products:['gw-f','vn-1221'], guide:'rock-wool-and-glass-wool'},
+    {id:'eps', heading:'خرید یونولیت', products:['eps-sheet','eps-roof'], guide:'construction-material-quantities'},
+  ];
+  for(const category of buyingCategories){
+    const path='/products/category/'+category.id;
+    const html=htmlByPath.get(path);
+    assert(pages.find(page=>page.path===path).title.includes(category.heading));
+    assert(html.match(/<h1[^>]*>([^<]+)/)?.[1].startsWith(category.heading));
+    assert(tags(homeCategoryTiles,'a').some(link=>link.href===path),'featured category is linked in home HTML: '+path);
+    assert(tags(htmlByPath.get('/guides/'+category.guide),'a').some(link=>link.href===path),'guide links to the category: '+path);
+    const buying=html.match(/<div class="catalog-buying-guide">([\s\S]*?)<\/main>/)?.[1]||'';
+    for(const id of category.products){
+      assert(tags(buying,'a').some(link=>link.href==='/products/'+id),'buying guide has product '+id);
+      assert(tags(buying,'a').some(link=>link.href==='/calculator?product='+id),'buying guide has calculator preset for '+id);
+    }
+    assert(buying.includes('id="buying-price"')&&[...buying.matchAll(/<details\b/g)].length===3,'pricing and FAQs are rendered on the server');
+  }
   const categoryPaths=urls.map(url=>new URL(url).pathname).filter(path=>path.startsWith('/products/category/'));
   assert.equal(categoryPaths.length,10);
   const footer=home.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
@@ -197,7 +228,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     assert(htmlByPath.get(path).includes('"@type":"CollectionPage"'));
   }
   for(const [accept,mime] of [['image/webp','image/webp'],['image/avif,image/webp','image/avif']]){
-    const response=await request('/_next/image?url=%2Fimages%2Fpadash-logo.webp&w=256&q=75',{headers:{Accept:accept}});
+    const response=await request('/_next/image?url=%2Fimages%2Fpadash-logo-warm.webp&w=256&q=75',{headers:{Accept:accept}});
     assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),mime);
   }
   let unchangedBodies;

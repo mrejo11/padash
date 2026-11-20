@@ -1,20 +1,24 @@
 import PublicPage from '../../components/public-page';
 import CatalogShopping from '../../components/catalog-shopping';
 import JsonLd from '../../components/json-ld';
-import { products, categories, fa } from '../../lib/catalog';
+import { products } from '../../lib/catalog';
 import { absoluteUrl, breadcrumbs, imageObject, pageMetadata } from '../../lib/seo';
 import {InsulationHub} from '../../components/insulation-links';
 const picture=products.find(product=>product.images?.length)?.images?.[0];
-export const metadata = pageMetadata('کاتالوگ عایق و ملزومات پروژه', 'عایق، پشم شیشه و سنگ، فوم و یونولیت ورقی و سقفی، نخ و طناب پلاستیکی و پیچ شیروانی؛ تصاویر، مشخصات، متره و استعلام از بازرگانی پاداش.', '/products',picture);
+const title = 'محصولات عایق و ملزومات ساختمانی';
+const description = 'برای خرید عایق و ملزومات ساختمانی، پشم شیشه، پشم سنگ، عایق الاستومری، یونولیت، پیچ شیروانی، توری و روکش را بررسی کنید و استعلام قیمت بگیرید.';
+export const metadata = pageMetadata('خرید عایق و ملزومات ساختمانی | کاتالوگ محصولات', description, '/products', picture);
 export default function ProductsPage() {
   const list={'@type':'ItemList','@id':absoluteUrl('/products#items'),numberOfItems:products.length,itemListElement:products.map((product,index)=>({'@type':'ListItem',position:index+1,name:product.name,url:absoluteUrl('/products/'+product.id.toLowerCase())}))};
   const trail=breadcrumbs([{name:'صفحه اصلی',path:'/'},{name:'محصولات',path:'/products'}]);
   return <PublicPage><JsonLd value={{'@context':'https://schema.org','@graph':[
     {...trail,'@context':undefined,'@id':absoluteUrl('/products#breadcrumb')},list,
-    {'@type':'CollectionPage','@id':absoluteUrl('/products#webpage'),url:absoluteUrl('/products'),name:'انتخاب عایق و ملزومات پروژه',inLanguage:'fa-IR',isPartOf:{'@id':absoluteUrl('/#website')},breadcrumb:{'@id':absoluteUrl('/products#breadcrumb')},mainEntity:{'@id':absoluteUrl('/products#items')},...(picture?{primaryImageOfPage:imageObject(picture)}:{})},
+    {'@type':'CollectionPage','@id':absoluteUrl('/products#webpage'),url:absoluteUrl('/products'),name:title,description,inLanguage:'fa-IR',isPartOf:{'@id':absoluteUrl('/#website')},breadcrumb:{'@id':absoluteUrl('/products#breadcrumb')},mainEntity:{'@id':absoluteUrl('/products#items')},...(picture?{primaryImageOfPage:imageObject(picture)}:{})},
   ]}}/>
-    <header className="catalog-page-heading"><div className="content-heading"><span className="eyebrow">کاتالوگ تخصصی بازرگانی پاداش</span><h1>انتخاب عایق و ملزومات پروژه</h1><p>محصولات را بررسی کنید، مشخصات مورد نیاز را بنویسید و استعلام خود را مستقیم برای پاداش بفرستید.</p></div><div className="catalog-heading-stats"><span><b>{fa(products.length)}</b>محصول و خانواده</span><span><b>{fa(categories.length-1)}</b>دسته‌بندی</span></div></header>
-    <InsulationHub/>
+    <header className="catalog-page-heading"><div className="content-heading">
+      <h1>{title}</h1><p>دسته یا محصول را انتخاب کنید تا مشخصات، مقدار مورد نیاز و مسیر استعلام آن را ببینید.</p>
+    </div></header>
     <CatalogShopping/>
+    <InsulationHub/>
   </PublicPage>;
 }

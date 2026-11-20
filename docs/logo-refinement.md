@@ -1,5 +1,17 @@
 # Logo refinement
 
+## Owner-supplied warm wordmark — 2026-11-19
+
+- Current approved source: `public/images/padash-logo-warm.png`, copied exactly from the owner's supplied `Warm Gradient Persian Logo Text.png`.
+- Current website asset: `public/images/padash-logo-warm.webp`. A new main asset URL prevents an old optimized-image cache from hiding the change. The earlier artwork remains in the repository.
+- No generative image edit was needed: the supplied image already contains the requested yellow-to-orange Persian wordmark, blue monogram, climate symbols and insulation layers. The WebP derivative is lossless and the asset script verifies visible pixel equality.
+- Updated the shared `Brand` component and homepage presentation, so header, footer, management and receipts use the current artwork.
+- Regenerated the existing 96px favicon, 180px Apple icon and 512px sharing/Organization image. The favicon URL remains stable for search crawlers.
+- Coordinated the site colors around navy `#07375a`, blue `#006fae`, amber `#ffb719`, orange `#f45b0b`, pale blue surfaces and a warm CTA gradient. Dark orange is used for text on light backgrounds; semantic success/error status colors remain distinct.
+- The following section records the earlier refinement and is retained as history.
+
+## Earlier logo refinement
+
 - Date: 2026-11-04
 - Mode: built-in ImageGen, edit of the existing logo.
 - Original: `public/images/padash-logo.png` (retained).

@@ -24,7 +24,7 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
     function outside(event: PointerEvent) {
       if (event.target instanceof Node && !header.current?.contains(event.target)) setOpen(false);
     }
-    const desktop = window.matchMedia('(min-width: 1101px)');
+    const desktop = window.matchMedia('(width > 1100px)');
     const resize = () => { if (desktop.matches) setOpen(false); };
     document.addEventListener('keydown', escape);
     document.addEventListener('pointerdown', outside);
@@ -42,13 +42,14 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
       <a href={home ? '#solutions' : '/#solutions'}>انتخاب بر اساس کاربرد</a>
       <Link href="/calculator" aria-current={pathname==='/calculator'?'page':undefined}>محاسبه مقدار</Link>
       <Link href="/guides" aria-current={pathname.startsWith('/guides')?'page':undefined}>راهنمای خرید</Link>
+      <Link href="/about" aria-current={pathname==='/about'?'page':undefined}>درباره ما</Link>
       <Link href="/contact" aria-current={pathname==='/contact'?'page':undefined}>تماس با ما</Link>
     </nav>
     <div className="header-actions">
-      {onQuote ? <button className="button button-dark quote-header" onClick={() => { setOpen(false); onQuote(); }} aria-label="درخواست مشاوره و پیش‌فاکتور">
+      {onQuote ? <button className="button button-dark quote-header" onClick={() => { setOpen(false); onQuote(); }}>
         <ClipboardList size={18}/><span className="header-action-label">{cartCount?'سبد استعلام':'مشاوره و استعلام'}</span><span className="header-action-short">استعلام</span>
         {cartCount > 0 && <span className="cart-badge">{fa(cartCount)}</span>}<ArrowUpLeft size={16}/>
-      </button> : <Link className="button button-dark quote-header" href="/#contact" aria-label="مشاوره و تماس با مدیران"><Phone size={17}/><span className="header-action-label">مشاوره و تماس</span><span className="header-action-short">تماس</span></Link>}
+      </button> : <Link className="button button-dark quote-header" href={pathname==='/contact'?'#contact-team':'/contact'} onClick={() => setOpen(false)} aria-label="مشاوره و تماس با مدیران"><Phone size={17}/><span className="header-action-label">مشاوره و تماس</span><span className="header-action-short">تماس</span></Link>}
       <button ref={toggle} className="icon-button mobile-menu" onClick={() => setOpen(!open)} aria-controls={menuId} aria-expanded={open} aria-label={open ? 'بستن منو' : 'باز کردن منو'}>{open ? <X/> : <Menu/>}</button>
     </div>
   </div></header>;

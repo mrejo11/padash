@@ -1,12 +1,11 @@
 type AboutParagraph = (string | {strong: string})[];
 type AboutSection = {id: string; heading: string; paragraphs: AboutParagraph[]};
 
-// Owner-selected copy, shared verbatim by the public page and homepage dialog.
+// Owner-selected copy for the About page.
 export const aboutProfile = {
   title: 'درباره بازرگانی پاداش',
   seoTitle: 'درباره ما؛ عایق حرارتی، برودتی و صوتی',
   description: 'بازرگانی پاداش؛ تأمین و فروش عایق‌های حرارتی، برودتی و صوتی برای پروژه‌های ساختمانی، صنعتی و تأسیساتی، با هدف کاهش اتلاف انرژی و افزایش آسایش.',
-  updated: '2026-11-17',
   sections: [
     {
       id: 'purpose',

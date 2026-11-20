@@ -5,6 +5,9 @@ import { ArrowLeft, ArrowUpLeft, Check, Search, SlidersHorizontal, Scale, X } fr
 import { categories, fa, filterProducts, products, productPath, type Product } from '../lib/catalog';
 import ProductMedia from './product-media';
 
+const firstCategories = new Set(['all', 'glasswool', 'eps']);
+const linkedCategories = [...categories.filter(item => firstCategories.has(item.id)), ...categories.filter(item => !firstCategories.has(item.id))];
+
 export default function CatalogBrowser({onInspect,onCompare,compared=[],category,onCategoryChange,compact=false,initialQuery='',initialCategory='all',categoryLinks=false,headingLevel=3}:{
   onInspect:(product:Product)=>void;onCompare?:(id:string)=>void;compared?:string[];category?:string;onCategoryChange?:(value:string)=>void;compact?:boolean;initialQuery?:string;initialCategory?:string;categoryLinks?:boolean;headingLevel?:2|3;
 }) {
@@ -22,7 +25,7 @@ export default function CatalogBrowser({onInspect,onCompare,compared=[],category
   return <div className={'catalog-browser'+(featured?' catalog-featured':'')}>
     <div className="catalog-search-row"><label className="catalog-search"><Search size={20}/><input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="نام محصول، جنس یا کاربرد را جست‌وجو کنید…" aria-label="جست‌وجوی محصولات"/>{query&&<button type="button" onClick={()=>setQuery('')} aria-label="پاک کردن جست‌وجو"><X size={18}/></button>}</label>
       <label className="catalog-sort"><SlidersHorizontal size={17}/><span>چینش</span><select value={sort} onChange={event=>setSort(event.target.value)} aria-label="ترتیب نمایش محصولات"><option value="featured">پیشنهاد کاتالوگ</option><option value="name">نام محصول</option></select></label></div>
-    <div className="catalog-category-list" role="group" aria-label="دسته‌بندی محصولات">{categories.map(item=>{
+    <div className="catalog-category-list" role="group" aria-label="دسته‌بندی محصولات">{(categoryLinks ? linkedCategories : categories).map(item=>{
       const content=<>{item.name}<span className="category-count">{fa(item.id==='all'?products.length:products.filter(product=>product.category===item.id).length)}</span></>;
       return categoryLinks?<Link key={item.id} href={item.id==='all'?'/products':'/products/category/'+item.id} prefetch={false} aria-current={selectedCategory===item.id?'page':undefined} className={selectedCategory===item.id?'active':''}>{content}</Link>
         :<button key={item.id} type="button" aria-pressed={selectedCategory===item.id} className={selectedCategory===item.id?'active':''} onClick={()=>selectCategory(item.id)}>{content}</button>;

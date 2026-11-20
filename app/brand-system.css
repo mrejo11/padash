@@ -1,35 +1,44 @@
-/* Shared identity, taken from the owner's original blue and orange artwork. */
+/* Shared identity, matched to the owner's warm-gradient wordmark. */
 :root {
-  --brand-navy: #063959;
-  --brand-blue: #006da8;
-  --brand-cyan: #08a6d5;
-  --brand-amber: #ffa51c;
-  --paper: #f7fafc;
+  --brand-navy: #07375a;
+  --brand-blue: #006fae;
+  --brand-cyan: #05a9d8;
+  --brand-amber: #ffb719;
+  --brand-orange: #f45b0b;
+  --brand-orange-ink: #b44208;
+  --brand-canvas: #f8fbff;
+  --brand-soft: #edf5fc;
+  --brand-warm-soft: #fff4e6;
+  --brand-line: #d8e5f0;
+  --brand-muted: #506b80;
+  --brand-action-gradient: linear-gradient(115deg, #ffc128 0%, #ffa313 52%, #ff8610 100%);
+  --brand-action-hover: linear-gradient(115deg, #ffca45 0%, #ffb12a 52%, #ff961c 100%);
+  --paper: var(--brand-canvas);
   --white: #fff;
-  --ink: #12354c;
-  --muted: #536e80;
-  --line: #d9e5ed;
-  --orange: #a64c00;
+  --ink: #143750;
+  --muted: var(--brand-muted);
+  --line: var(--brand-line);
+  --orange: var(--brand-orange-ink);
   --dark: var(--brand-navy);
-  --soft: #edf5fa;
+  --soft: var(--brand-soft);
 }
 html { scroll-padding-top: 115px; }
 body { min-width: 0; line-height: 1.8; }
-::selection { color: #063959; background: #c4e8f6; }
-:is(button, a, input, textarea, select):focus-visible { outline: 3px solid #0087bd; outline-offset: 4px; }
+::selection { color: var(--brand-navy); background: #ffe0a6; }
+:is(button, a, input, textarea, select):focus-visible { outline: 3px solid var(--brand-blue); outline-offset: 4px; }
 :is(input, select, textarea) { min-width: 0; max-width: 100%; }
 :is(h1, h2, h3, h4) { overflow-wrap: anywhere; }
 .container { width: min(1280px, calc(100% - clamp(32px, 8vw, 112px))); }
 .button { border-radius: 10px; min-height: 48px; }
-.button-orange { background: var(--brand-amber); color: #12324b; }
-.button-orange:hover { background: #ffb743; color: #12324b; }
+.button-orange { background: var(--brand-action-gradient); color: #082c46; border-color: #ed920c; }
+.button-orange:hover { background: var(--brand-action-hover); color: #082c46; }
 .button-dark { background: var(--brand-blue); color: #fff; }
 .button-dark:hover { background: var(--brand-navy); }
 .button-outline { border-color: #b9d0df; }
 .button-outline:hover, .button-white:hover { background: #e8f3f9; }
 .icon-button { width: 44px; height: 44px; }
 .icon-button:hover { background: #eaf3f9; }
-.orange-line { background: var(--brand-amber); height: 3px; border-radius: 2px; }
+.orange-line { background: linear-gradient(90deg, var(--brand-amber), var(--brand-orange)); height: 3px; border-radius: 2px; }
 .field > :is(input, textarea, select) { border-color: #c7dae7; min-height: 46px; }
 .field > span { color: var(--muted); }
 .field input::placeholder, .field textarea::placeholder { color: #60788b; }
@@ -37,7 +46,7 @@ body { min-width: 0; line-height: 1.8; }
 .brand-logo { display: block; flex-shrink: 0; width: 70px; height: 70px; background: #fff; border-radius: 14px; border: 1px solid #e1ecf2; overflow: hidden; }
 .padash-brand .brand-logo img { width: 100%; height: 100%; object-fit: contain; padding: 0; border: 0; border-radius: 0; }
 .padash-brand .brand-text { min-width: 0; }
-.padash-brand .brand-text b { font-size: 21px; font-weight: 850; letter-spacing: -.7px; line-height: 1.7; }
+.padash-brand .brand-text b { font-size: 21px; font-weight: 850; letter-spacing: -.7px; line-height: 1.7; color:var(--brand-orange-ink); }
 .padash-brand .brand-text small { color: var(--muted); font-size: 10px; font-weight: 450; margin-top: 1px; letter-spacing: 0; white-space: normal; }
 
 /* One navigation pattern for the storefront and all public content pages. */
@@ -62,7 +71,7 @@ body { min-width: 0; line-height: 1.8; }
 .document table { min-width: 420px; }
 .document .button { white-space: normal; }
 
-@media (max-width: 1280px) {
+@media (max-width: 1100px) {
   .storefront .site-header .header-inner { height: 88px; }
   .storefront .site-header .nav { display: none; }
   .storefront .site-header .mobile-menu { display: inline-flex; width: 44px; height: 44px; }

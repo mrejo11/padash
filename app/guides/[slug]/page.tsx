@@ -5,7 +5,9 @@ import type { Metadata } from 'next';
 import PublicPage from '../../../components/public-page';
 import JsonLd from '../../../components/json-ld';
 import { findGuide, guides } from '../../../lib/guides';
-import { products, fa } from '../../../lib/catalog';
+import { products, fa, productPath } from '../../../lib/catalog';
+import { catalogBuyingGuides } from '../../../lib/catalog-buying-guides';
+import { catalogCategories, categoryPath } from '../../../lib/catalog-seo';
 import { absoluteUrl, breadcrumbs, organization, pageMetadata } from '../../../lib/seo';
 import { guideSearchTitle } from '../../../lib/seo-content';
 import {RelatedInsulation} from '../../../components/insulation-links';
@@ -20,6 +22,8 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const guide = findGuide((await params).slug);
   if (!guide) notFound();
   const path = '/guides/' + guide.slug;
+  const relatedProducts = guide.relatedProducts.map(id => products.find(product => product.id === id)!);
+  const buyingCategories = catalogCategories.filter(category => catalogBuyingGuides[category.id] && relatedProducts.some(product => product.category === category.id));
   return <PublicPage><JsonLd value={breadcrumbs([{ name: 'صفحه اصلی', path: '/' }, { name: 'راهنماها', path: '/guides' }, { name: guide.title, path }])}/>
     <JsonLd value={{ '@context': 'https://schema.org', '@type': 'Article', headline: guide.title, description: guide.description,
       mainEntityOfPage: absoluteUrl(path), datePublished: guide.published + 'T12:00:00+03:30', dateModified: guide.modified + 'T12:00:00+03:30',
@@ -33,7 +37,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         {section.sourceIds && <div className="inline-sources">منابع این بخش: {section.sourceIds.map(id => { const source = guide.sources.find(source => source.id === id)!; return <a key={id} href={source.url} target="_blank" rel="noreferrer">{source.title}</a>; })}</div>}</section>)}
       <aside className="article-note">این راهنما برای انتخاب اولیه و تنظیم استعلام است؛ جایگزین طراحی حرارتی، بررسی الزامات پروژه یا دستور نصب سازنده نیست. ارجاع به یک برند، اعلام نمایندگی یا موجودی آن در پاداش نیست.</aside>
       <section className="article-sources"><h2>منابع داخلی و خارجی</h2><ul>{guide.sources.map(source => <li key={source.id}><span>{source.origin}</span><a href={source.url} target="_blank" rel="noreferrer">{source.title}</a></li>)}</ul></section>
-      <section className="article-related"><h2>قدم بعدی پروژه</h2><Link href="/calculator">محاسبه مقدار عایق رولی</Link>{guide.relatedProducts.map(id => { const product = products.find(p => p.id === id)!; return <a href={'/products/' + product.id.toLowerCase()} key={id}>{product.name}</a>; })}<Link href="/#contact">مشاوره با مدیران پاداش</Link></section>
+      <section className="article-related"><h2>قدم بعدی پروژه</h2>{buyingCategories.map(category => <Link href={categoryPath(category.id)} key={category.id}>خرید و استعلام {category.name}</Link>)}<Link href="/calculator">محاسبه مقدار مورد نیاز</Link>{relatedProducts.map(product => <Link href={productPath(product)} key={product.id}>{product.name}</Link>)}<Link href="/contact">مشاوره با مدیران پاداش</Link></section>
       <RelatedInsulation productIds={guide.relatedProducts}/>
     </article>
   </PublicPage>;

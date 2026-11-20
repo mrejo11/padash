@@ -1,13 +1,8 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpLeft } from 'lucide-react';
+import { BRAND_LOGO } from '../lib/brand-assets';
 
 export default function MaterialShowcase() {
-  return <div className="material-editorial">
-    <div className="material-brand">
-      <div className="material-brand-art"><Image src="/images/padash-logo.webp" alt="لوگوی بازرگانی پاداش" fill loading="eager" fetchPriority="high" sizes="(max-width: 760px) 90vw, 520px"/></div>
-      <div className="material-brand-caption"><span>همراه انتخاب‌های مطمئن</span><b>عایق مطمئن، آسایش ماندگار.</b></div>
-    </div>
-    <div className="material-footnote"><span dir="ltr">PADASH / INSULATION & COMMERCE</span><Link href="/products">کشف محصولات<ArrowUpLeft size={20}/></Link></div>
+  return <div className="material-brand">
+    <Image src={BRAND_LOGO} alt="لوگوی بازرگانی پاداش" width={400} height={400} loading="eager" fetchPriority="high" sizes="(max-width: 760px) 150px, (max-width: 1200px) 32vw, 400px"/>
   </div>;
 }

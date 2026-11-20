@@ -3,7 +3,7 @@ import { constructionProducts } from './construction-products';
 export type ProductImage = { src:string; width:number; height:number; alt:string };
 export type Product = { id:string; name:string; en:string; category:string; material:string; form:string; use:string; desc:string; thicknesses:number[]; unit:string; art:string; tag:string; cover:string; notes:string[];
   images?:ProductImage[]; imageNote?:string; searchTerms?:string[]; specifications?:{label:string; value:string}[]; requestHint?:string; relatedProducts?:string[] };
-export const categories = [ {id:'all',name:'همه محصولات'}, {id:'elastomeric',name:'عایق الاستومری'}, {id:'rockwool',name:'پشم سنگ'}, {id:'glasswool',name:'پشم شیشه'}, {id:'polymer',name:'فوم و پلی‌اتیلن'}, {id:'facing',name:'فویل و روکش'}, {id:'mesh',name:'توری'}, {id:'sheets',name:'کارتن‌پلاست'}, {id:'cord',name:'نخ و طناب پلاستیکی'}, {id:'fasteners',name:'پیچ شیروانی'}, {id:'eps',name:'یونولیت ورقی و سقفی'} ];
+export const categories = [ {id:'all',name:'همه محصولات'}, {id:'polymer',name:'فوم پلی‌اتیلن'}, {id:'elastomeric',name:'عایق الاستومری'}, {id:'rockwool',name:'پشم سنگ'}, {id:'glasswool',name:'پشم شیشه'}, {id:'facing',name:'فویل و روکش'}, {id:'mesh',name:'توری'}, {id:'sheets',name:'کارتن‌پلاست'}, {id:'cord',name:'نخ و طناب پلاستیکی'}, {id:'fasteners',name:'پیچ شیروانی'}, {id:'eps',name:'یونولیت ورقی و سقفی'} ];
 const generalProducts:Product[] = [
  {id:'EL-R',name:'عایق الاستومری رولی',en:'ELASTOMERIC · ROLL',category:'elastomeric',material:'فوم الاستومری',form:'رول',use:'کانال هوا و سطوح تأسیسات',desc:'ساختار منعطف و سلول‌بسته برای عایق‌کاری سطوح و کانال‌های تأسیساتی. انتخاب ضخامت و پوشش باید با دما و رطوبت پروژه تطبیق داده شود.',thicknesses:[6,9,13,19,25,32],unit:'مترمربع',art:'roll',tag:'تأسیسات و تهویه',cover:'ساده / روکش‌دار',notes:['مناسب برای بررسی در کاربردهای HVAC','نیازمند درزبندی کامل و چسب سازگار','محیط بیرونی نیازمند بررسی پوشش محافظ']},
  {id:'RW-S',name:'پشم سنگ تخته‌ای',en:'STONE WOOL · BOARD',category:'rockwool',material:'الیاف معدنی سنگ',form:'تخته',use:'جداره‌ها و تجهیزات صنعتی',desc:'عایق الیافی به شکل تخته برای بررسی در کاربردهای حرارتی و صوتی ساختمان و صنعت. دانسیته، ضخامت و نوع روکش متناسب با پروژه مشخص می‌شود.',thicknesses:[30,50,75,100],unit:'مترمربع',art:'board',tag:'حرارتی و صوتی',cover:'ساده / فویل آلومینیوم',notes:['انتخاب دانسیته بر اساس محل نصب','کنترل رطوبت و جزئیات اجرایی ضروری است','واکنش در برابر آتش مطابق گواهی محصول منتخب']},
@@ -24,7 +24,8 @@ export const thicknessLabel = (value:number|null) => value===null ? 'طبق مش
 export const productPath = (product:Pick<Product,'id'>) => '/products/'+product.id.toLowerCase();
 export const normalizeSearch = (value:string) => normalizeDigits(value).replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[\u200c\u200d\s-]+/g,' ').trim().toLowerCase();
 export function filterProducts({query='',category='all'}:{query?:string;category?:string}) {
-  const words=normalizeSearch(query).split(' ').filter(Boolean);
+  const search = normalizeSearch(query).replace(/^(?:خرید|فروش|استعلام(?: قیمت)?|قیمت(?: روز)?) /, '').trim();
+  const words=search.split(' ').filter(Boolean);
   return products.filter(product => (category==='all'||product.category===category)
     && words.every(word=>normalizeSearch([product.name,product.en,product.id,product.material,product.use,product.form,...(product.searchTerms||[])].join(' ')).includes(word)));
 }

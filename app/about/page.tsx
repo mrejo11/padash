@@ -1,22 +1,37 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import PublicPage from '../../components/public-page';
-import JsonLd from '../../components/json-ld';
 import AboutContent from '../../components/about-content';
-import {aboutProfile} from '../../lib/business-profile';
-import {absoluteUrl, breadcrumbs, organization, pageMetadata} from '../../lib/seo';
+import CompanyPageIntro from '../../components/company-page-intro';
+import styles from '../../components/company-pages.module.css';
+import PublicPage from '../../components/public-page';
+import { BRAND_LOGO } from '../../lib/brand-assets';
+import { companyPages } from '../../lib/company-pages';
+import { insulationTopics } from '../../lib/insulation-topics';
+import { pageMetadata } from '../../lib/seo';
 
-export const metadata=pageMetadata(aboutProfile.seoTitle,aboutProfile.description,'/about');
-export default function AboutPage(){
-  return <PublicPage><JsonLd value={{'@context':'https://schema.org','@graph':[
-    breadcrumbs([{name:'صفحه اصلی',path:'/'},{name:'درباره پاداش',path:'/about'}]),
-    {'@type':'AboutPage','@id':absoluteUrl('/about#webpage'),url:absoluteUrl('/about'),name:aboutProfile.title,description:aboutProfile.description,dateModified:aboutProfile.updated,inLanguage:'fa-IR',about:{'@id':organization['@id']},isPartOf:{'@id':absoluteUrl('/#website')}},
-  ]}}/>
-    <article className="reading-article"><header className="content-heading"><span className="eyebrow" lang="en" dir="ltr">Padash Trading</span><h1>{aboutProfile.title}</h1></header>
-      <AboutContent/>
-      <section className="article-related"><h2>انتخاب و آماده‌سازی نیاز پروژه</h2>
-        <p>در کاتالوگ، مشخصات و شکل عرضه را بررسی کنید. برای برآورد تعداد، ابعاد واقعی پروژه و محصول را در محاسبه‌گر وارد کنید و برای بررسی شرایط تأمین با مدیران تماس بگیرید.</p>
-        <Link href="/products">محصولات پاداش</Link><Link href="/calculator">محاسبه مقدار مورد نیاز</Link><Link href="/guides">راهنمای خرید</Link><Link href="/contact">تماس با ما</Link>
-      </section>
-    </article>
+const page = companyPages.about;
+export const metadata = pageMetadata(page.seoTitle, page.description, page.path);
+
+export default function AboutPage() {
+  return <PublicPage>
+    <CompanyPageIntro page={page} visual={
+      <div className={styles.logoPlate}>
+        <Image src={BRAND_LOGO} alt="لوگوی بازرگانی پاداش" width={212} height={212}/>
+      </div>
+    }/>
+    <div className={styles.aboutGrid}>
+      <article className={`${styles.panel} ${styles.prose}`} aria-label="معرفی بازرگانی پاداش">
+        <AboutContent/>
+      </article>
+      <aside className={styles.aboutLinks} aria-labelledby="project-options">
+        <h2 id="project-options">عایق را بر اساس کاربرد انتخاب کنید</h2>
+        <ul>{insulationTopics.map(topic => <li key={topic.id}><Link href={topic.path}>{topic.name}</Link></li>)}</ul>
+        <Link href="/products">همهٔ محصولات</Link>
+      </aside>
+    </div>
+    <section className={styles.callout} aria-labelledby="about-contact">
+      <div><h2 id="about-contact">برای پروژه‌تان راهنمایی می‌خواهید؟</h2><p>کاربرد، ابعاد و شرایط محل نصب را با ما در میان بگذارید تا گزینه‌های تأمین را بررسی کنیم.</p></div>
+      <Link className="button button-orange" href="/contact">تماس با ما</Link>
+    </section>
   </PublicPage>;
 }

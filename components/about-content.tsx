@@ -1,10 +1,9 @@
 import {aboutProfile} from '../lib/business-profile';
 import styles from './about-content.module.css';
 
-export default function AboutContent({headingLevel=2,idPrefix='about'}:{headingLevel?:2|3;idPrefix?:string}) {
-  const Heading=headingLevel===2?'h2':'h3';
-  return <div className={styles.copy}>{aboutProfile.sections.map(section=><section key={section.id} aria-labelledby={idPrefix+'-'+section.id}>
-    <Heading id={idPrefix+'-'+section.id}>{section.heading}</Heading>
+export default function AboutContent() {
+  return <div className={styles.copy}>{aboutProfile.sections.map(section=><section key={section.id} aria-labelledby={'about-'+section.id}>
+    <h2 id={'about-'+section.id}>{section.heading}</h2>
     {section.paragraphs.map((paragraph,index)=><p key={index}>{paragraph.map((part,partIndex)=>typeof part==='string'?part:<strong key={partIndex}>{part.strong}</strong>)}</p>)}
   </section>)}</div>;
 }

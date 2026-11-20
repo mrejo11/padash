@@ -1,16 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 
-import { useEffect, useState, type FormEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { ArrowLeft, ArrowUpLeft, BookOpen, Building2, Calculator, CheckCheck, ChevronDown, ClipboardList, Factory, FileText, Headphones, Layers3, Phone, Scale, Search, ShieldCheck, Truck, Wind, X } from 'lucide-react';
 import { products, categories, fa, type Product, type QuoteItem } from '../lib/catalog';
 import { useQuoteCart } from '../lib/use-quote-cart';
 import { businessContacts } from '../lib/contacts';
-const AboutContent=dynamic(()=>import('../components/about-content'));
 import type { Guide } from '../lib/guides';
-import type { PublicNews } from '../lib/news';
 import type { RequestKind } from '../lib/management-model';
 import Brand from '../components/brand';
 import SiteHeader from '../components/site-header';
@@ -27,10 +24,10 @@ const applications = [
 ];
 const quickCategories = [
   { id: 'glasswool', product: 'VN-1221', name: 'پشم شیشه', note: 'سقف، جداره و تأسیسات' },
+  { id: 'eps', product: 'EPS-SHEET', name: 'یونولیت ورقی و سقفی', note: 'ورق EPS و بلوک تیرچه و کرومیت' },
   { id: 'rockwool', product: 'VN-1220', name: 'پشم سنگ', note: 'کاربردهای حرارتی و صوتی' },
   { id: 'elastomeric', product: 'EL-R', name: 'عایق الاستومری', note: 'سرمایش، گرمایش و تهویه' },
   { id: 'polymer', product: 'VN-1218', name: 'فوم پلی‌اتیلن', note: 'زیرسازی و عایق‌کاری عمومی' },
-  { id: 'eps', product: 'EPS-SHEET', name: 'یونولیت ورقی و سقفی', note: 'ورق EPS و بلوک تیرچه و کرومیت' },
   { id: 'fasteners', product: 'RF-DRILL', name: 'پیچ شیروانی', note: 'سرمته‌ای، چوب و ساندویچ‌پانل' },
   { id: 'cord', product: 'PB-TWINE', name: 'نخ و طناب پلاستیکی', note: 'بستن عایق و ملزومات نصب' },
   { id: 'mesh', product: 'VN-1216', name: 'توری پلاستیکی و مرغی', note: 'نگهداری عایق و کاربردهای اجرایی' },
@@ -42,10 +39,9 @@ const questions = [
   { question: 'بعد از ثبت استعلام، چطور درخواست را پیگیری کنم؟', answer: 'پس از ثبت موفق، کد و پیوند اختصاصی پیگیری دریافت می‌کنید. از همان پیوند، وضعیت و خلاصه درخواست را ببینید یا چاپ کنید. برای هماهنگی بیشتر نیز می‌توانید با مدیران پاداش تماس بگیرید.' },
 ];
 
-type Props = { children?:ReactNode; news?: Pick<PublicNews, 'id' | 'title' | 'summary' | 'kind' | 'published_at'>[]; newsUnavailable?: boolean; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
-const plainClick=(event:MouseEvent<HTMLAnchorElement>)=>event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey;
+type Props = { children?:ReactNode; news?: ReactNode; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
 
-export default function Storefront({ news = [], featuredGuides = [], children }: Props) {
+export default function Storefront({ news, featuredGuides = [], children }: Props) {
   const { cart, setCart } = useQuoteCart();
   const [category, setCategory] = useState('all');
   const [catalogReset, setCatalogReset] = useState(0);
@@ -56,7 +52,6 @@ export default function Storefront({ news = [], featuredGuides = [], children }:
   const [compareOpen, setCompareOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteKind, setQuoteKind] = useState<RequestKind>('consultation');
-  const [info, setInfo] = useState<'privacy' | 'terms' | 'about' | null>(null);
   const [application, setApplication] = useState(0);
   const [toast, setToast] = useState('');
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -107,34 +102,35 @@ export default function Storefront({ news = [], featuredGuides = [], children }:
     <main id="main">
       <div className="hero-band" id="home-intro"><section className="hero container" aria-labelledby="hero-heading">
         <div className="hero-copy">
-          <div className="hero-kicker"><span/>بازرگانی پاداش · عایق و ملزومات پروژه</div>
-          <h1 id="hero-heading">تأمین و فروش <span>عایق حرارتی، برودتی و صوتی</span></h1>
-          <p>عایق مناسب را با توجه به کاربرد و شرایط پروژه بررسی کنید؛ محصولات و ملزومات را بشناسید، مقدار مورد نیاز را برآورد کنید و برای استعلام قیمت با پاداش در ارتباط باشید.</p>
-          <div className="hero-buttons"><a href="#catalog" className="button button-orange">مشاهده محصولات<ArrowLeft size={19}/></a><button className="button button-outline" onClick={() => openQuote('consultation')}><Headphones size={19}/>مشاوره انتخاب عایق</button></div>
+          <div className="hero-kicker"><span/>بازرگانی پاداش</div>
+          <h1 id="hero-heading">تأمین و فروش <span>عایق و ملزومات ساختمانی</span></h1>
+          <p>از پشم شیشه، پشم سنگ و یونولیت تا عایق‌های تأسیساتی و ملزومات نصب، محصول مناسب پروژه را پیدا کنید، مقدار مورد نیاز را برآورد کنید و استعلام قیمت بگیرید.</p>
+          <div className="hero-buttons"><Link href="/products" className="button button-orange">کاتالوگ محصولات</Link><button className="button button-outline" onClick={() => openQuote('consultation')}><Headphones size={19}/>مشاوره انتخاب عایق</button></div>
           <form className="hero-search" role="search" onSubmit={search}><Search size={20}/><input aria-label="جست‌وجوی سریع محصول" type="search" placeholder="دنبال چه محصولی می‌گردید؟" value={heroQuery} onChange={event => setHeroQuery(event.target.value)}/><button type="submit" aria-label="جست‌وجو در کاتالوگ"><ArrowLeft size={20}/></button></form>
-          <div className="hero-search-suggestions"><span>پرکاربرد:</span>{quickCategories.slice(0, 3).map(item => <button key={item.id} onClick={() => jumpFilter(item.id)}>{item.name}</button>)}</div>
+          <nav className="hero-category-links" aria-label="دسته‌های پرکاربرد">{quickCategories.slice(0, 3).map(item => <Link key={item.id} href={'/products/category/' + item.id} prefetch={false}>{item.name}</Link>)}</nav>
         </div>
         <MaterialShowcase/>
       </section></div>
+
+      <section className="category-section section container" aria-labelledby="categories-heading">
+        <div className="section-heading"><div><h2 id="categories-heading">دسته‌های محصولات</h2></div><Link className="text-button" href="/products">همه دسته‌ها</Link></div>
+        <div className="category-tiles">{quickCategories.map(item => <Link className="category-tile" key={item.id} href={'/products/category/'+item.id} prefetch={false}><span className="category-tile-image"><ProductMedia product={products.find(product => product.id === item.product)!} sizes="(max-width: 600px) 110px, 150px"/></span><span className="category-tile-copy"><strong>{item.name}</strong><small>{item.note}</small></span></Link>)}</div>
+      </section>
+
+      <section className="catalog section container" id="catalog" aria-labelledby="catalog-heading">
+        <div className="section-heading"><div><h2 id="catalog-heading" tabIndex={-1}>محصولات و استعلام قیمت</h2></div><Link className="text-button" href="/products">کاتالوگ کامل</Link></div>
+        <CatalogBrowser key={catalogReset} compact initialQuery={catalogQuery} category={category} onCategoryChange={setCategory} onInspect={setDetail} onCompare={toggleCompare} compared={compare}/>
+        <div className="catalog-help"><span className="catalog-help-icon"><Headphones size={26}/></span><div><h3>هنوز برای انتخاب مطمئن نیستید؟</h3><p>درباره کاربرد و شرایط پروژه‌تان بگویید؛ با هم گزینه‌ها را بررسی می‌کنیم.</p></div><button className="text-button" onClick={() => openQuote('consultation')}>درخواست مشاوره<ArrowLeft size={18}/></button></div>
+      </section>
 
       <section className="benefits container" aria-label="خدمات پاداش">{[
         { icon: Headphones, title: 'مشاوره برای انتخاب', note: 'متناسب با شرایط پروژه شما' },
         { icon: Layers3, title: 'مقایسه مشخصات', note: 'انتخاب آگاهانه پیش از سفارش' },
         { icon: FileText, title: 'پیش‌فاکتور روشن', note: 'قیمت و شرایط تأمین مشخص' },
         { icon: Truck, title: 'هماهنگی تأمین', note: 'با توجه به مقصد و زمان پروژه' },
-      ].map(item => <div key={item.title}><item.icon/><span><b>{item.title}</b><small>{item.note}</small></span></div>)}</section>
+      ].map(item => <div key={item.title}><item.icon aria-hidden="true"/><span><b>{item.title}</b><small>{item.note}</small></span></div>)}</section>
 
       {children}
-      <section className="category-section section container" aria-labelledby="categories-heading">
-        <div className="section-heading"><div><span className="section-kicker">خانواده محصولات</span><h2 id="categories-heading">متریال پروژه‌تان را پیدا کنید.</h2></div><Link className="text-button" href="/products">همه دسته‌بندی‌ها<ArrowLeft size={18}/></Link></div>
-        <div className="category-tiles">{quickCategories.map(item => <button className="category-tile" key={item.id} onClick={() => jumpFilter(item.id)}><span className="category-tile-image"><ProductMedia product={products.find(product => product.id === item.product)!} sizes="(max-width: 600px) 110px, 150px"/></span><span className="category-tile-copy"><strong>{item.name}</strong><small>{item.note}</small></span><ArrowUpLeft size={21}/></button>)}</div>
-      </section>
-
-      <section className="catalog section container" id="catalog" aria-labelledby="catalog-heading">
-        <div className="section-heading"><div><span className="section-kicker">کاتالوگ محصولات</span><h2 id="catalog-heading" tabIndex={-1}>چند انتخاب برای شروع.</h2><p>از جزئیات محصول تا استعلام؛ همه‌چیز در دسترس شماست.</p></div><Link className="text-button" href="/products">کاتالوگ کامل<ArrowLeft size={18}/></Link></div>
-        <CatalogBrowser key={catalogReset} compact initialQuery={catalogQuery} category={category} onCategoryChange={setCategory} onInspect={setDetail} onCompare={toggleCompare} compared={compare}/>
-        <div className="catalog-help"><span className="catalog-help-icon"><Headphones size={26}/></span><div><h3>هنوز برای انتخاب مطمئن نیستید؟</h3><p>درباره کاربرد و شرایط پروژه‌تان بگویید؛ با هم گزینه‌ها را بررسی می‌کنیم.</p></div><button className="text-button" onClick={() => openQuote('consultation')}>درخواست مشاوره<ArrowLeft size={18}/></button></div>
-      </section>
 
       <section className="project-section" id="solutions"><div className="container">
         <div className="section-heading"><div><span className="section-kicker">انتخاب بر اساس کاربرد</span><h2>برای کدام بخش پروژه عایق می‌خواهید؟</h2></div><span className="project-section-note">یک نقطه شروع برای انتخاب بهتر</span></div>
@@ -151,19 +147,26 @@ export default function Storefront({ news = [], featuredGuides = [], children }:
 
       <section className="faq-section section container" aria-labelledby="faq-heading"><div className="faq-intro"><span className="section-kicker">پاسخ چند سؤال رایج</span><h2 id="faq-heading">با خیال روشن‌تری<br/>تصمیم بگیرید.</h2><p>سؤال دیگری دارید؟<br/>برای گفت‌وگو درباره پروژه در کنارتان هستیم.</p><a className="text-button" href="#contact">ارتباط با پاداش<ArrowLeft size={18}/></a></div><div className="faq-list">{questions.map(item => <details key={item.question}><summary>{item.question}<ChevronDown size={20}/></summary><p>{item.answer}</p></details>)}</div></section>
 
-      {news.length > 0 && <section className="section container home-news" id="news"><div className="section-heading"><div><span className="section-kicker">تازه‌های پاداش</span><h2>اخبار و رویدادها</h2></div><Link href="/news" className="text-button">همه خبرها<ArrowLeft size={18}/></Link></div><div className="home-news-grid">{news.map(item => <article className="home-news-card" key={item.id}><span className="mini-label">{item.kind === 'event' ? 'رویداد' : 'خبر و اطلاعیه'}</span><time dateTime={item.published_at!}>{new Date(item.published_at!).toLocaleDateString('fa-IR', { timeZone: 'Asia/Tehran', dateStyle: 'medium' })}</time><h3><a href={'/news/' + item.id}>{item.title}</a></h3><p>{item.summary}</p><a className="text-button" href={'/news/' + item.id}>ادامه مطلب<ArrowLeft size={16}/></a></article>)}</div></section>}
+      {news}
 
-      <section className="business-contact section container" id="contact" aria-labelledby="contact-heading"><div className="contact-heading"><div><span className="section-kicker">یک گفت‌وگوی خوب، یک انتخاب بهتر</span><h2 id="contact-heading">درباره پروژه‌تان صحبت کنیم.</h2><p>برای مشاوره، استعلام قیمت و هماهنگی تأمین، مستقیم با ما در ارتباط باشید.</p></div><span className="contact-heading-icon"><Headphones size={40} strokeWidth={1.3}/></span></div><ol className="contact-process"><li><span>۰۱</span>انتخاب و تعیین مشخصات</li><li><span>۰۲</span>ثبت درخواست و دریافت کد پیگیری</li><li><span>۰۳</span>بررسی و اعلام شرایط تأمین</li></ol><div className="business-contact-grid">{businessContacts.map(contact => <a className="manager-card" href={contact.href} key={contact.phone} aria-label={'تماس با ' + contact.name + '، ' + contact.displayPhone}><span className="manager-icon"><Phone size={23}/></span><div className="manager-info"><h3>{contact.name}</h3><p>مشاوره و هماهنگی تأمین</p></div><div className="manager-call"><bdi className="manager-number">{contact.displayPhone}</bdi><span>تماس مستقیم<ArrowUpLeft size={16}/></span></div></a>)}</div><div className="contact-online"><span><ShieldCheck size={19}/>ترجیح می‌دهید نیاز پروژه را آنلاین بفرستید؟</span><button className="text-button" onClick={() => openQuote()}>ثبت درخواست و دریافت کد پیگیری<ArrowLeft size={18}/></button></div></section>
+      <section className="business-contact section container" id="contact" aria-labelledby="contact-heading"><div className="contact-heading"><div><span className="section-kicker">یک گفت‌وگوی خوب، یک انتخاب بهتر</span><h2 id="contact-heading">درباره پروژه‌تان صحبت کنیم.</h2><p>برای مشاوره، استعلام قیمت و هماهنگی تأمین، مستقیم با ما در ارتباط باشید.</p></div><span className="contact-heading-icon"><Headphones size={40} strokeWidth={1.3}/></span></div><ol className="contact-process"><li><span>۰۱</span>انتخاب و تعیین مشخصات</li><li><span>۰۲</span>ثبت درخواست و دریافت کد پیگیری</li><li><span>۰۳</span>بررسی و اعلام شرایط تأمین</li></ol><div className="business-contact-grid">{businessContacts.map(contact => <a className="manager-card" href={contact.href} key={contact.phone}><span className="manager-icon"><Phone size={23}/></span><div className="manager-info"><h3>{contact.name}</h3><p>مشاوره و هماهنگی تأمین</p></div><div className="manager-call"><bdi className="manager-number">{contact.displayPhone}</bdi><span>تماس مستقیم<ArrowUpLeft size={16}/></span></div></a>)}</div><div className="contact-online"><span><ShieldCheck size={19}/>ترجیح می‌دهید نیاز پروژه را آنلاین بفرستید؟</span><button className="text-button" onClick={() => openQuote()}>ثبت درخواست و دریافت کد پیگیری<ArrowLeft size={18}/></button></div></section>
     </main>
 
-    <footer className="footer"><div className="container footer-main"><div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی، برودتی و صوتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div><div><h4>محصولات پاداش</h4>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();jumpFilter(item.id);}}}>{item.name}</Link>)}</div><div><h4>همراه پروژه شما</h4><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about" prefetch={false} onClick={event=>{if(plainClick(event)){event.preventDefault();setInfo('about');}}}>درباره پاداش</Link></div><div className="footer-contact"><h4>شروع یک همکاری</h4><p>مشخصات پروژه را بفرستید تا گزینه‌های تأمین را بررسی کنیم.</p><button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><a href="#contact">تماس مستقیم با مدیران<ArrowUpLeft size={15}/></a></div></div><div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><button onClick={() => setInfo('privacy')}>حریم خصوصی</button><button onClick={() => setInfo('terms')}>شرایط استعلام</button><Link href="/management">ورود مدیریت</Link></div></div></footer>
+    <footer className="footer">
+      <div className="container footer-main">
+        <div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی، برودتی و صوتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div>
+        <div><h4>محصولات پاداش</h4>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false}>{item.name}</Link>)}</div>
+        <div><h4>همراه پروژه شما</h4><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about">درباره ما</Link></div>
+        <div className="footer-contact"><h4>شروع یک همکاری</h4><p>مشخصات پروژه را بفرستید تا گزینه‌های تأمین را بررسی کنیم.</p><button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><Link href="/contact">تماس با ما</Link></div>
+      </div>
+      <div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><Link href="/privacy">حریم خصوصی</Link><Link href="/quote-terms">شرایط استعلام</Link><Link href="/management">ورود مدیریت</Link></div></div>
+    </footer>
 
-    {showQuickActions && !quoteOpen && !detail && !compareOpen && !info && compare.length === 0 && <aside className="mobile-project-actions" aria-label="دسترسی سریع تماس و استعلام"><a href={businessContacts[0].href}><Phone size={20}/><span>تماس با پاداش</span></a><button className="button button-orange" onClick={() => openQuote()}><ClipboardList size={18}/>{cart.length ? 'سبد استعلام (' + fa(cart.length) + ')' : 'مشاوره و استعلام'}<ArrowLeft size={17}/></button></aside>}
+    {showQuickActions && !quoteOpen && !detail && !compareOpen && compare.length === 0 && <aside className="mobile-project-actions" aria-label="دسترسی سریع تماس و استعلام"><a href={businessContacts[0].href}><Phone size={20}/><span>تماس با پاداش</span></a><button className="button button-orange" onClick={() => openQuote()}><ClipboardList size={18}/>{cart.length ? 'سبد استعلام (' + fa(cart.length) + ')' : 'مشاوره و استعلام'}<ArrowLeft size={17}/></button></aside>}
     {compare.length > 0 && <aside className="compare-dock" aria-label="سبد مقایسه"><div><Scale size={20}/><span>{fa(compare.length)} محصول برای مقایسه</span></div><button className="button button-dark" disabled={compare.length < 2} onClick={() => setCompareOpen(true)}>{compare.length < 2 ? 'یک محصول دیگر انتخاب کنید' : 'مقایسه محصولات'}<ArrowLeft size={15}/></button><button className="icon-button" aria-label="پاک کردن مقایسه" onClick={() => setCompare([])}><X size={18}/></button></aside>}
     {toast && <div className="toast" role="status"><CheckCheck size={20}/>{toast}{cart.length > 0 && <button className="toast-action" onClick={() => { setToast(''); openQuote('order'); }}>مشاهده سبد<ArrowLeft size={16}/></button>}<button aria-label="بستن پیام" onClick={() => setToast('')}><X size={17}/></button></div>}
     {detail && <ProductModal product={detail} onClose={() => setDetail(null)} onAdd={add}/>}
     {quoteOpen && <QuoteModal initialKind={quoteKind} cart={cart} setCart={setCart} onClose={() => setQuoteOpen(false)}/>}
     {compareOpen && <Modal title="مقایسه محصولات" wide onClose={() => setCompareOpen(false)}><div className="compare-table-wrap"><table className="compare-table"><thead><tr><th>مشخصات</th>{compare.map(id => <th key={id}>{products.find(product => product.id === id)!.name}</th>)}</tr></thead><tbody>{[['material', 'جنس عایق'], ['form', 'شکل عرضه'], ['use', 'کاربرد عمومی'], ['cover', 'پوشش قابل درخواست'], ['thicknesses', 'ضخامت‌ها (میلی‌متر)'], ['unit', 'واحد سفارش']].map(([key, label]) => <tr key={key}><th>{label}</th>{compare.map(id => { const value = products.find(product => product.id === id)![key as keyof Product]; return <td key={id}>{Array.isArray(value) ? (value.length ? (value as number[]).map(fa).join('، ') : 'طبق مشخصات درخواست') : String(value ?? '—')}</td>; })}</tr>)}<tr><th>انتخاب</th>{compare.map(id => <td key={id}><button className="button button-orange" onClick={() => { setCompareOpen(false); setDetail(products.find(product => product.id === id)!); }}>جزئیات و استعلام</button></td>)}</tr></tbody></table></div><p className="modal-note">این مقایسه در سطح خانواده محصولات است؛ دمای مجاز، ضریب هدایت حرارتی و گواهی‌ها باید از دیتاشیت برند منتخب تأیید شوند.</p></Modal>}
-    {info && <Modal title={{ privacy: 'حریم خصوصی', terms: 'شرایط استعلام', about: 'درباره بازرگانی پاداش' }[info]} onClose={() => setInfo(null)}><div className="article-content">{info === 'about' ? <AboutContent headingLevel={3} idPrefix="about-dialog"/> : info === 'privacy' ? <><p>نام، شماره تماس، شهر و اطلاعات پروژه صرفاً برای ثبت و بررسی درخواست تأمین دریافت می‌شوند و در پایگاه داده سامانه نگهداری می‌شوند.</p><p>سبد استعلام در مرورگر شما ذخیره می‌شود؛ اطلاعات تماس در حافظه محلی مرورگر ذخیره نمی‌شوند. برای محدودکردن ارسال‌های تکراری، شناسه درهم‌سازی‌شده شبکه ذخیره می‌شود.</p><p>پیوند پیگیری درخواست محرمانه است؛ آن را فقط با افراد مرتبط با پروژه به اشتراک بگذارید. اطلاعات تماس در صفحه پیگیری عمومی نمایش داده نمی‌شود. پیش از بهره‌برداری عمومی، مسیر رسمی درخواست حذف یا اصلاح داده باید توسط شرکت معرفی شود.</p></> : <><p>ارسال درخواست به معنی خرید قطعی، رزرو موجودی یا تعهد به قیمت و زمان تحویل نیست.</p><p>قیمت، موجودی، برند، مشخصات فنی، هزینه حمل، مالیات و شرایط پرداخت در پیش‌فاکتور رسمی تأیید می‌شوند.</p><p>مقادیر ابزار برآورد و تصاویر محصولات جنبه راهنما دارند. تناسب محصول، ضخامت و پوشش با شرایط پروژه باید توسط مسئول فنی تأیید شود.</p></>}</div></Modal>}
   </>;
 }

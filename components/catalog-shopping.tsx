@@ -20,7 +20,7 @@ export default function CatalogShopping({product,initialCategory='all'}:{product
     setDetail(null);setQuoteOpen(true);
   }
   return <>
-    {product?<div className="product-inquiry-actions"><button className="button button-orange" disabled={!ready} onClick={()=>setDetail(product)}>ثبت مشخصات و استعلام<ArrowLeft size={18}/></button>{calculatorProfile(product.id)&&<a href={'/calculator?product='+encodeURIComponent(product.id.toLowerCase())} className="button button-outline">محاسبه مقدار مورد نیاز</a>}<Link href="/#contact" className="button button-outline">تماس با مدیران</Link></div>
+    {product?<div className="product-inquiry-actions"><button className="button button-orange" disabled={!ready} onClick={()=>setDetail(product)}>ثبت مشخصات و استعلام<ArrowLeft size={18}/></button>{calculatorProfile(product.id)&&<a href={'/calculator?product='+encodeURIComponent(product.id.toLowerCase())} className="button button-outline">محاسبه مقدار مورد نیاز</a>}<Link href="/contact" className="button button-outline">تماس با مدیران</Link></div>
       :<CatalogBrowser key={initialCategory} onInspect={setDetail} initialCategory={initialCategory} categoryLinks headingLevel={2}/>}
     {cart.length>0&&<div className="catalog-cart-summary"><span><ClipboardList size={19}/>{fa(cart.length)} قلم در سبد استعلام</span><button className="button button-dark" onClick={()=>setQuoteOpen(true)}>تکمیل درخواست<ArrowLeft size={16}/></button></div>}
     {detail&&<ProductModal product={detail} onAdd={add} onClose={()=>setDetail(null)}/>}

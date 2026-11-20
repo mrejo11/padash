@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   async redirects() {
     // Alias only public routes; management sessions and private receipts stay put.
-    const publicPaths = ['/', '/products/:path*', '/guides/:path*', '/calculator', '/news/:path*', '/about', '/contact', '/thermal-insulation', '/cold-insulation', '/sound-insulation', '/robots.txt', '/sitemap.xml'];
+    const publicPaths = ['/', '/products/:path*', '/guides/:path*', '/calculator', '/news/:path*', '/about', '/contact', '/privacy', '/quote-terms', '/thermal-insulation', '/cold-insulation', '/sound-insulation', '/robots.txt', '/sitemap.xml'];
     const aliases = ['padashgroup.ir', 'padash-five.vercel.app'].flatMap(host => publicPaths.map(source => ({
       source, has: [{type: 'host' as const, value: host}],
       destination: 'https://www.padashgroup.ir' + source, permanent: true,
