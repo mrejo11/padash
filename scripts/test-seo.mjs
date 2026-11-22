@@ -202,8 +202,10 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(pages.find(page=>page.path==='/products').title.includes('ملزومات ساختمانی'));
   const homeCategoryTiles=home.match(/<div class="category-tiles">([\s\S]*?)<\/div>/)?.[1]||'';
   const buyingCategories=[
+    {id:'rockwool', heading:'خرید پشم سنگ', products:['rw-s','vn-1220'], guide:'rock-wool-and-glass-wool'},
     {id:'glasswool', heading:'خرید پشم شیشه', products:['gw-f','vn-1221'], guide:'rock-wool-and-glass-wool'},
     {id:'eps', heading:'خرید یونولیت', products:['eps-sheet','eps-roof'], guide:'construction-material-quantities'},
+    {id:'polymer', heading:'خرید فوم پلی اتیلن', products:['pe-r','vn-1218'], guide:'polyethylene-and-elastomeric-foam'},
   ];
   for(const category of buyingCategories){
     const path='/products/category/'+category.id;
