@@ -40,9 +40,6 @@
 .insulation-sources h2 { font-size:16px; }
 .insulation-sources ul { padding-inline-start:20px; margin-top:12px; }
 .insulation-sources a { text-decoration:underline; text-underline-offset:4px; }
-.catalog-purchase-notes { margin-block:35px; border-block:1px solid var(--line); padding-block:25px; }
-.catalog-purchase-notes h2 { font-size:21px; margin-bottom:12px; }
-.catalog-purchase-notes p { max-width:900px; font-size:14px; color:var(--muted); line-height:2.2; }
 .guide-comparison { max-width:960px; margin-block:30px 40px; font-size:15px; line-height:2.3; }
 .guide-comparison h2 { font-size:23px; margin-bottom:12px; }
 .guide-comparison p { color:var(--muted); margin-bottom:12px; }

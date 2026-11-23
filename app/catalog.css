@@ -59,10 +59,11 @@
 .catalog-buying-guide h2 { font-size:clamp(1.25rem, 2vw, 1.5rem); line-height:1.7; margin-block-end:0.875rem; }
 .catalog-buying-guide p { max-width:70ch; font-size:1rem; line-height:2.15; color:var(--brand-muted); }
 .buying-option-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.buying-option:only-child { grid-column:1/-1; }
 .buying-option,.buying-quote { padding:clamp(1rem, 3vw, 2rem); border:1px solid var(--brand-line); border-radius:1rem; }
 .buying-option { display:flex; flex-direction:column; align-items:start; gap:0.5rem; background:#fff; }
 .buying-option h3 { font-size:1.0625rem; line-height:1.8; }
-.buying-option a,.catalog-purchase-notes a { color:var(--brand-blue); text-decoration:underline; text-underline-offset:0.25em; }
+.buying-option a { color:var(--brand-blue); text-decoration:underline; text-underline-offset:0.25em; }
 .buying-calculator { display:inline-flex; align-items:center; min-height:44px; margin-top:auto; font-size:0.9375rem; font-weight:650; }
 .buying-quote { margin-top:clamp(1rem, 4vw, 2.5rem); background:var(--brand-soft); }
 .buying-quote p + p { margin-top:0.625rem; }

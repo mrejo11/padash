@@ -202,24 +202,40 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(pages.find(page=>page.path==='/products').title.includes('ملزومات ساختمانی'));
   const homeCategoryTiles=home.match(/<div class="category-tiles">([\s\S]*?)<\/div>/)?.[1]||'';
   const buyingCategories=[
-    {id:'rockwool', heading:'خرید پشم سنگ', products:['rw-s','vn-1220'], guide:'rock-wool-and-glass-wool'},
+    {id:'rockwool', heading:'خرید پشم سنگ', products:['rw-s','vn-1220','rw-p'], guide:'rock-wool-and-glass-wool'},
     {id:'glasswool', heading:'خرید پشم شیشه', products:['gw-f','vn-1221'], guide:'rock-wool-and-glass-wool'},
     {id:'eps', heading:'خرید یونولیت', products:['eps-sheet','eps-roof'], guide:'construction-material-quantities'},
     {id:'polymer', heading:'خرید فوم پلی اتیلن', products:['pe-r','vn-1218'], guide:'polyethylene-and-elastomeric-foam'},
+    {id:'elastomeric', heading:'خرید عایق الاستومری', products:['el-r','el-t'], guide:'elastomeric-insulation-guide'},
+    {id:'facing', heading:'خرید فویل آلومینیومی', products:['vn-1219'], guide:'roll-insulation-quantity'},
+    {id:'mesh', heading:'خرید توری پلاستیکی', products:['vn-1216'], guide:'roll-insulation-quantity'},
+    {id:'sheets', heading:'خرید ورق کارتن‌پلاست', products:['vn-1213'], guide:'roll-insulation-quantity'},
+    {id:'cord', heading:'خرید نخ و طناب پلاستیکی', products:['pb-twine','pb-rope'], guide:'construction-material-quantities'},
+    {id:'fasteners', heading:'خرید پیچ شیروانی', products:['rf-drill','rf-timber','rf-panel'], guide:'construction-material-quantities'},
   ];
+  const featuredCategories=tags(homeCategoryTiles,'a').slice(0,4).map(link=>link.href);
+  for(const id of ['polymer','eps','rockwool','glasswool'])assert(featuredCategories.includes('/products/category/'+id),id+' is featured in the first group of homepage categories');
+  const productsWithoutCalculator=new Set(['el-t','rw-p']);
   for(const category of buyingCategories){
     const path='/products/category/'+category.id;
     const html=htmlByPath.get(path);
     assert(pages.find(page=>page.path===path).title.includes(category.heading));
     assert(html.match(/<h1[^>]*>([^<]+)/)?.[1].startsWith(category.heading));
-    assert(tags(homeCategoryTiles,'a').some(link=>link.href===path),'featured category is linked in home HTML: '+path);
     assert(tags(htmlByPath.get('/guides/'+category.guide),'a').some(link=>link.href===path),'guide links to the category: '+path);
     const buying=html.match(/<div class="catalog-buying-guide">([\s\S]*?)<\/main>/)?.[1]||'';
+    const links=tags(buying,'a');
     for(const id of category.products){
-      assert(tags(buying,'a').some(link=>link.href==='/products/'+id),'buying guide has product '+id);
-      assert(tags(buying,'a').some(link=>link.href==='/calculator?product='+id),'buying guide has calculator preset for '+id);
+      assert(links.some(link=>link.href==='/products/'+id),'buying guide has product '+id);
+      const product=pages.find(page=>page.path==='/products/'+id);
+      assert(product.title.startsWith('خرید '),product.path+' has a purchase title');
+      assert(htmlByPath.get(product.path).includes('اطلاعات لازم برای خرید '),product.path+' has visible purchase information');
+      assert.equal(links.some(link=>link.href==='/calculator?product='+id),!productsWithoutCalculator.has(id),'calculator preset support for '+id);
     }
-    assert(buying.includes('id="buying-price"')&&[...buying.matchAll(/<details\b/g)].length===3,'pricing and FAQs are rendered on the server');
+    assert(links.some(link=>link.href==='/contact')&&buying.includes('id="buying-price"')&&[...buying.matchAll(/<details\b/g)].length>=2,'quote contact and FAQs are rendered on the server');
+  }
+  for(const [source,target] of [['polymer','eps'],['eps','polymer']]){
+    const buying=htmlByPath.get('/products/category/'+source).match(/<div class="catalog-buying-guide">([\s\S]*?)<\/main>/)?.[1]||'';
+    assert(tags(buying,'a').some(link=>link.href==='/products/category/'+target),'buyers can navigate between rolling foam and EPS from the buying guide');
   }
   const categoryPaths=urls.map(url=>new URL(url).pathname).filter(path=>path.startsWith('/products/category/'));
   assert.equal(categoryPaths.length,10);

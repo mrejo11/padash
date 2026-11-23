@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const product = find((await params).slug);
   if (!product) notFound();
-  const path = '/products/' + product.id.toLowerCase();
+  const path = productPath(product);
   const related = guides.filter(guide => guide.relatedProducts.some(id=>id===product.id||product.relatedProducts?.includes(id)));
   const relatedProducts=products.filter(item=>item.id!==product.id&&(product.relatedProducts?.includes(item.id)||item.category===product.category)).slice(0,4);
   const category=findCatalogCategory(product.category);
@@ -39,7 +39,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <h2 id="product-specs">مشخصات محصول</h2>
       <dl className="product-spec-list"><div><dt>جنس</dt><dd>{product.material}</dd></div><div><dt>شکل عرضه</dt><dd>{product.form}</dd></div><div><dt>کاربرد عمومی</dt><dd>{product.use}</dd></div><div><dt>واحد درخواست اولیه</dt><dd>{product.unit}</dd></div><div><dt>پوشش قابل بررسی</dt><dd>{product.cover}</dd></div>{product.thicknesses.length>0&&<div><dt>ضخامت قابل استعلام</dt><dd>{product.thicknesses.map(fa).join('، ')} میلی‌متر</dd></div>}{product.specifications?.map(spec=><div key={spec.label}><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}</dl>
       <h2>پیش از درخواست این موارد را بررسی کنید</h2><ul className="product-checks">{product.notes.map(note => <li key={note}>{note}</li>)}</ul><p className="article-note">مشخصات بالا معرفی خانواده محصول است. تأیید برند، مدل، گواهی‌ها، موجودی و قیمت به استعلام و دیتاشیت نهایی نیاز دارد.</p>
-      <h2>اطلاعات لازم برای استعلام {product.name}</h2><p className="insulation-note">{product.requestHint||`شکل عرضهٔ ${product.form}، ضخامت و ${product.cover} را همراه با مقدار مورد نیاز به ${product.unit} اعلام کنید. محل مصرف ${product.use} و شرایط پروژه برای بررسی مدل نهایی اهمیت دارند.`}</p>
+      <h2>اطلاعات لازم برای خرید {product.name}</h2><p className="insulation-note">{product.requestHint||`شکل عرضهٔ ${product.form}، ضخامت و ${product.cover} را همراه با مقدار مورد نیاز به ${product.unit} اعلام کنید. محل مصرف ${product.use} و شرایط پروژه برای بررسی مدل نهایی اهمیت دارند.`}</p>
       </section>
     </article>
     <RelatedInsulation productIds={[product.id]}/>

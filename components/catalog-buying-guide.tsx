@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { productPath, type Product } from '../lib/catalog';
 import type { BuyingGuide } from '../lib/catalog-buying-guides';
+import { categoryPath } from '../lib/catalog-seo';
 import { calculatorProfile } from '../lib/estimate-products';
 import InquiryAction from './inquiry-action';
 
@@ -31,5 +32,10 @@ export default function CatalogBuyingGuide({ guide, categoryName, items }: { gui
       <h2 id="buying-faq">پرسش‌های خرید {categoryName}</h2>
       {guide.questions.map(item => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}
     </section>
+    {guide.relatedCategory && <section className="article-related">
+      <h2>محصول مرتبط</h2>
+      <p>{guide.relatedCategory.description}</p>
+      <Link href={categoryPath(guide.relatedCategory.id)}>{guide.relatedCategory.label}</Link>
+    </section>}
   </div>;
 }

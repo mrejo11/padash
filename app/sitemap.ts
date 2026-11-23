@@ -12,15 +12,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // A temporary news-store outage must not hide all of the stable catalogue URLs.
   const {items: news} = await publicNewsSnapshot();
   const contentUpdated='2026-11-19';
+  const catalogUpdated='2026-11-23';
   return [
-    ...['/', '/products'].map(path => ({ url: absoluteUrl(path), lastModified: '2026-11-20' })),
+    ...['/', '/products'].map(path => ({ url: absoluteUrl(path), lastModified: catalogUpdated })),
     { url: absoluteUrl('/guides'), lastModified: contentUpdated },
     { url: absoluteUrl('/calculator') },
     ...Object.values(companyPages).map(page => ({ url: absoluteUrl(page.path), lastModified: page.updated })),
     ...(news.length ? [{url:absoluteUrl('/news')}] : []),
     ...insulationTopics.map(topic=>({url:absoluteUrl(topic.path),lastModified:contentUpdated})),
-    ...catalogCategories.map(category => ({url: absoluteUrl(categoryPath(category.id)),lastModified:catalogBuyingGuides[category.id]?.updated ?? contentUpdated})),
-    ...products.map(product => ({ url: absoluteUrl('/products/' + product.id.toLowerCase()),lastModified:contentUpdated, ...(product.images?.length?{images:product.images.map(image=>absoluteUrl(image.src))}:{}) })),
+    ...catalogCategories.map(category => ({url: absoluteUrl(categoryPath(category.id)),lastModified:catalogBuyingGuides[category.id].updated})),
+    ...products.map(product => ({ url: absoluteUrl('/products/' + product.id.toLowerCase()),lastModified:catalogUpdated, ...(product.images?.length?{images:product.images.map(image=>absoluteUrl(image.src))}:{}) })),
     ...guides.map(guide => ({ url: absoluteUrl('/guides/' + guide.slug), lastModified: guide.modified + 'T12:00:00+03:30' })),
     ...news.map(item => ({ url: absoluteUrl('/news/' + item.id), lastModified: item.updated_at })),
   ];

@@ -23,11 +23,11 @@ const applications = [
   { title: 'صنعت و خطوط فرایند', icon: Factory, filter: 'rockwool', product: 'VN-1220', heading: 'برای شرایط کاری پروژه‌های صنعتی', description: 'برای تجهیزات و خطوط گرم، خانواده پشم سنگ را بررسی کنید. دمای فرایند، دانسیته و پوشش محافظ باید بر اساس مشخصات فنی مدل منتخب تأیید شوند.', tags: ['خطوط گرم', 'تجهیزات صنعتی', 'مخازن'] },
 ];
 const quickCategories = [
-  { id: 'glasswool', product: 'VN-1221', name: 'پشم شیشه', note: 'سقف، جداره و تأسیسات' },
+  { id: 'polymer', product: 'VN-1218', name: 'فوم پلی‌اتیلن رولی', note: 'فوم ساده، متالایز و فویل‌دار' },
   { id: 'eps', product: 'EPS-SHEET', name: 'یونولیت ورقی و سقفی', note: 'ورق EPS و بلوک تیرچه و کرومیت' },
+  { id: 'glasswool', product: 'VN-1221', name: 'پشم شیشه', note: 'سقف، جداره و تأسیسات' },
   { id: 'rockwool', product: 'VN-1220', name: 'پشم سنگ', note: 'کاربردهای حرارتی و صوتی' },
   { id: 'elastomeric', product: 'EL-R', name: 'عایق الاستومری', note: 'سرمایش، گرمایش و تهویه' },
-  { id: 'polymer', product: 'VN-1218', name: 'فوم پلی‌اتیلن', note: 'زیرسازی و عایق‌کاری عمومی' },
   { id: 'fasteners', product: 'RF-DRILL', name: 'پیچ شیروانی', note: 'سرمته‌ای، چوب و ساندویچ‌پانل' },
   { id: 'cord', product: 'PB-TWINE', name: 'نخ و طناب پلاستیکی', note: 'بستن عایق و ملزومات نصب' },
   { id: 'mesh', product: 'VN-1216', name: 'توری پلاستیکی و مرغی', note: 'نگهداری عایق و کاربردهای اجرایی' },

@@ -65,11 +65,21 @@ https://www.padashgroup.ir
 
 ۳. روش فعلی فایل HTML است: `https://www.padashgroup.ir/googlec8009b90c25c4c6c.html` باید با پاسخ 200 باقی بماند؛ سپس VERIFY را بزنید. روش اختیاری HTML tag نیز از متغیر عمومی `GOOGLE_SITE_VERIFICATION` پشتیبانی می‌کند. رمز مدیریت را در این متغیر قرار ندهید.
 
-۴. در بخش Sitemaps، آدرس `https://www.padashgroup.ir/sitemap.xml` را ارسال کنید. با URL Inspection، صفحه اصلی، یک راهنما، یک محصول و یک خبر واقعی را بررسی و در صورت نیاز درخواست ایندکس کنید.
+۴. در بخش Sitemaps، وضعیت `https://www.padashgroup.ir/sitemap.xml` را بررسی و در صورت نیاز آن را ارسال کنید. برای صفحات اولویت‌دار جدول، در URL Inspection با Test Live URL پاسخ و امکان ایندکس را بررسی کنید. پس از انتشار تغییرات، برای نشانی‌های تغییرکرده Request Indexing بزنید و در بررسی بعدی، canonical انتخاب‌شدهٔ گوگل را با نشانی جدول تطبیق دهید.
 
 ۵. با ابزارهای [Rich Results Test](https://search.google.com/test/rich-results) و [Schema Markup Validator](https://validator.schema.org/) داده‌ها را بررسی کنید. نبود قیمت و نظر در معرفی یک خانواده محصول عمداً با مقدار ساختگی جبران نشده است.
 
-۶. پس از جمع‌شدن داده واقعی، Impression، Click، CTR و Average position را برای نام برند و صفحه‌های مرتبط بررسی کنید. لینک سایت را در کانال‌ها و معرفی‌های واقعی شرکت یکسان نگه دارید. خرید لینک انبوه یا ساخت صفحات تکراری برای غلط‌های تایپی انجام ندهید.
+۶. در Performance → Search results، نوع جست‌وجو را Web بگذارید. ۲۸ روز اخیر را با ۲۸ روز قبل مقایسه کنید و در گزارش هر عبارت، تب Pages را ببینید تا معلوم شود کدام نشانی نمایش گرفته است. برای هر عبارت و صفحه، تعداد نمایش، کلیک، CTR و میانگین رتبه را ثبت کنید. اگر داده کم است، بازهٔ بلندتری بگیرید.
+
+| عبارت‌های اولویت‌دار | صفحهٔ هدف |
+| --- | --- |
+| خرید فوم، خرید فوم ساختمانی، خرید فوم پلی اتیلن رولی | [فوم پلی‌اتیلن](https://www.padashgroup.ir/products/category/polymer) |
+| خرید فوم رولی ساده یا متالایز، فوم ۱۰ میل | [فوم پلی‌اتیلن رولی](https://www.padashgroup.ir/products/pe-r) |
+| خرید فوم رولی فویل‌دار یا روکش‌دار | [فوم پلی‌اتیلن روکش‌دار](https://www.padashgroup.ir/products/vn-1218) |
+| خرید یونولیت، قیمت یونولیت، خرید پلاستوفوم | [یونولیت ورقی و سقفی](https://www.padashgroup.ir/products/category/eps) |
+| خرید ورق یونولیت، خرید یونولیت درز انقطاع | [ورق یونولیت](https://www.padashgroup.ir/products/eps-sheet) |
+| خرید یونولیت سقفی، قیمت فوم سقفی تیرچه | [بلوک یونولیت سقفی](https://www.padashgroup.ir/products/eps-roof) |
+| خرید پشم سنگ، خرید پشم شیشه، خرید عایق الاستومری | [پشم سنگ](https://www.padashgroup.ir/products/category/rockwool)، [پشم شیشه](https://www.padashgroup.ir/products/category/glasswool)، [عایق الاستومری](https://www.padashgroup.ir/products/category/elastomeric) |
 
 رتبه اول یا حتی ایندکس‌شدن با تغییر کد تضمین نمی‌شود. گوگل این محدودیت را در [راهنمای رسمی انتخاب خدمات سئو](https://developers.google.com/search/docs/fundamentals/do-i-need-seo) و [Search Essentials](https://developers.google.com/search/docs/essentials) توضیح داده است. هدف این پیاده‌سازی رفع موانع فنی، معرفی درست هویت پاداش و عرضه محتوای قابل اتکاست.
 

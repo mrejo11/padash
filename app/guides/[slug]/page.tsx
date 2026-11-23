@@ -6,7 +6,6 @@ import PublicPage from '../../../components/public-page';
 import JsonLd from '../../../components/json-ld';
 import { findGuide, guides } from '../../../lib/guides';
 import { products, fa, productPath } from '../../../lib/catalog';
-import { catalogBuyingGuides } from '../../../lib/catalog-buying-guides';
 import { catalogCategories, categoryPath } from '../../../lib/catalog-seo';
 import { absoluteUrl, breadcrumbs, organization, pageMetadata } from '../../../lib/seo';
 import { guideSearchTitle } from '../../../lib/seo-content';
@@ -23,7 +22,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   if (!guide) notFound();
   const path = '/guides/' + guide.slug;
   const relatedProducts = guide.relatedProducts.map(id => products.find(product => product.id === id)!);
-  const buyingCategories = catalogCategories.filter(category => catalogBuyingGuides[category.id] && relatedProducts.some(product => product.category === category.id));
+  const buyingCategories = catalogCategories.filter(category => relatedProducts.some(product => product.category === category.id));
   return <PublicPage><JsonLd value={breadcrumbs([{ name: 'صفحه اصلی', path: '/' }, { name: 'راهنماها', path: '/guides' }, { name: guide.title, path }])}/>
     <JsonLd value={{ '@context': 'https://schema.org', '@type': 'Article', headline: guide.title, description: guide.description,
       mainEntityOfPage: absoluteUrl(path), datePublished: guide.published + 'T12:00:00+03:30', dateModified: guide.modified + 'T12:00:00+03:30',

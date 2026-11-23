@@ -1,6 +1,6 @@
 import type { Product } from './catalog';
 
-// Search snippets only. Product descriptions and visible article headings stay unchanged.
+// Category titles cover the whole family; product titles identify the specific form.
 const productDescriptions:Record<string,string>={
   'PB-TWINE':'مشخصات و استعلام قیمت نخ پلاستیکی عایق‌بندی؛ تعیین جنس، نمره یا قطر، رنگ و طول واقعی کلاف و محاسبه تعداد کلاف برای درخواست از بازرگانی پاداش.',
   'PB-ROPE':'مشخصات و استعلام قیمت طناب پلاستیکی تابیده؛ انتخاب جنس PP یا PE، قطر، رنگ، تعداد رشته و طول واقعی کلاف و اعلام مقدار مورد نیاز به پاداش.',
@@ -23,17 +23,17 @@ const productDescriptions:Record<string,string>={
   'PE-R':'مشخصات و استعلام قیمت فوم پلی‌اتیلن رولی برای کاربردهای عمومی ساختمان؛ انتخاب ضخامت، ابعاد رول، پوشش ساده یا متالایز و مقدار مورد نیاز در پاداش.',
 };
 const productTitles:Record<string,string>={
-  'VN-1218':'خرید فوم پلی اتیلن رولی؛ مشخصات و استعلام قیمت',
-  'VN-1220':'خرید پشم سنگ؛ مشخصات و استعلام قیمت',
-  'RW-S':'خرید پشم سنگ تخته‌ای؛ مشخصات و استعلام قیمت',
-  'RW-P':'خرید پشم سنگ لوله‌ای؛ مشخصات و استعلام قیمت',
-  'VN-1221':'خرید پشم شیشه؛ مشخصات و استعلام قیمت',
-  'GW-F':'خرید پشم شیشه فویل‌دار؛ مشخصات و استعلام قیمت',
-  'EPS-SHEET':'خرید ورق یونولیت؛ مشخصات و استعلام قیمت',
-  'EPS-ROOF':'خرید یونولیت سقفی؛ مشخصات و استعلام قیمت',
+  'VN-1218':'خرید فوم پلی اتیلن رولی روکش‌دار؛ استعلام قیمت',
+  'PE-R':'خرید فوم پلی اتیلن رولی ساده و متالایز',
+  'VN-1220':'خرید پشم سنگ لحافی و ایزوبلانکت',
+  'VN-1221':'خرید پشم شیشه رولی، تخته‌ای و لوله‌ای',
+  'EPS-SHEET':'خرید ورق یونولیت و پلاستوفوم EPS؛ استعلام قیمت',
 };
 export function productSearchSnippet(product:Product){
-  return {title:productTitles[product.id]||product.name+'؛ مشخصات و استعلام قیمت',description:productDescriptions[product.id]||('مشخصات و استعلام قیمت '+product.name+' از بازرگانی پاداش؛ '+product.desc)};
+  return {
+    title: productTitles[product.id] ?? `خرید ${product.name}؛ استعلام قیمت`,
+    description: productDescriptions[product.id] ?? `استعلام قیمت ${product.name} از بازرگانی پاداش. ${product.desc}`,
+  };
 }
 const guideTitles:Record<string,string>={
   'roll-insulation-quantity':'محاسبه تعداد رول و ورق؛ فرمول و برنامه برش',
