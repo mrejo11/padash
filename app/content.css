@@ -55,7 +55,7 @@
 .article-meta { font-size:12px; color:#57778c; }
 .article-toc { background:#edf7fc; border-color:#cde5f2; gap:5px; }
 .article-toc a { min-height:36px; padding-block:4px; }
-.article-note { background:#fff5e4; border-color:var(--brand-amber); color:#795116; font-size:13px; }
+.article-note { background:#fff5e4; border-color:var(--brand-gold); color:#795116; font-size:13px; }
 .inline-sources { font-size:12px; }
 .inline-sources a { padding-block:4px; overflow-wrap:anywhere; }
 .article-sources li { font-size:13px; }
@@ -72,7 +72,7 @@
 .public-footer-contacts { min-width:310px; }
 .public-footer-contacts a { border-color:#305e7b; font-size:13px; min-height:52px; }
 .public-footer-contacts bdi { font-size:18px; color:white; }
-.public-footer-contacts svg { color:var(--brand-amber); }
+.public-footer-contacts svg { color:var(--brand-gold); }
 .product-detail-page > div { min-width:0; }
 .product-detail-art { background:#fff; border-radius:18px; top:125px; }
 .product-detail-art > small { font-size:12px; }

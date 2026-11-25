@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import { BRAND_THEME_COLOR } from '../lib/brand-assets';
 import { SITE_NAME, SITE_TITLE, SITE_URL, SOCIAL_IMAGE, absoluteUrl, isPreviewDeployment, organization, website } from '../lib/seo';
 import JsonLd from '../components/json-ld';
 import './globals.css';
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: { title: SITE_TITLE, description: 'از انتخاب فنی تا تأمین پروژه، همراه شما.', siteName: SITE_NAME, locale: 'fa_IR', type: 'website', images: [{ url: absoluteUrl(SOCIAL_IMAGE), width: 512, height: 512, alt: 'نشان بازرگانی پاداش' }] },
   twitter: { card: 'summary' },
 };
-export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#07375a' };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: BRAND_THEME_COLOR };
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   return <html lang="fa" dir="rtl" className={vazirmatn.variable}><body><JsonLd value={{'@context':'https://schema.org','@graph':[organization,website]}}/>{children}</body></html>;
 }

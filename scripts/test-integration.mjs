@@ -85,6 +85,7 @@ try {
   assert.match(receiptResponse.headers.get('cache-control'), /no-store/);
   assert.equal(receiptResponse.headers.get('referrer-policy'), 'no-referrer');
   const html = await receiptResponse.text();
+  assert(html.includes('padash-mark-blue-gold.webp'), 'the receipt uses the current brand emblem');
   assert(html.includes(receipt.id));
   for (const privateValue of [data.name, data.phone, data.message, data.company]) assert(!html.includes(privateValue), 'receipt must not contain customer details');
 

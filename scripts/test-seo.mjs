@@ -161,6 +161,11 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   assert(!/noindex/.test(faviconResponse.headers.get('x-robots-tag')||''));
   const faviconBytes=Buffer.from(await faviconResponse.arrayBuffer());
   assert.equal(faviconBytes.readUInt32BE(16),96);assert.equal(faviconBytes.readUInt32BE(20),96,'favicon is square and matches declared size');
+  const brandMark='/images/padash-mark-blue-gold.webp';
+  const brandLogo='/images/padash-logo-blue-gold.webp';
+  const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
+  assert.equal(new URL(hero.src,canonicalOrigin).searchParams.get('url'),brandLogo);
+  assert.equal(tags(home,'meta').find(tag=>tag.property==='og:image')?.content,canonicalOrigin+'/images/padash-share.png');
   const companyPages = ['/about', '/contact', '/privacy', '/quote-terms'];
   for(const path of companyPages)assert(htmlByPath.has(path),path+' is discoverable in the sitemap');
   for(const [path,html] of htmlByPath){
@@ -169,10 +174,11 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     const pageFooter=html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1]||'';
     for(const target of companyPages)assert(tags(pageFooter,'a').some(link=>link.href===target),path+' footer links to '+target);
     const siteHeader=html.match(/<header\b[^>]*class="[^"]*site-header[^"]*"[^>]*>([\s\S]*?)<\/header>/)?.[1]||'';
-    for(const region of [siteHeader,pageFooter])assert(tags(region,'img').some(image=>new URL(image.src,canonicalOrigin).searchParams.get('url')==='/images/padash-logo-warm.webp'),path+' uses the approved logo in header and footer');
+    for(const region of [siteHeader,pageFooter])assert(tags(region,'img').some(image=>new URL(image.src,canonicalOrigin).searchParams.get('url')===brandMark),path+' uses the approved emblem in header and footer');
   }
   assert(htmlByPath.get('/about').includes('"@type":"AboutPage"'));
   const about=htmlByPath.get('/about');
+  assert(tags(about,'img').some(image=>new URL(image.src,canonicalOrigin).searchParams.get('url')===brandLogo),'about uses the full logo');
   for(const text of ['ما فقط عایق نمی‌فروشیم','چرا بازرگانی پاداش؟','چشم‌انداز ما','هدف ما فراتر از فروش محصول است','فناوری، کیفیت و مسئولیت‌پذیری'])assert(about.includes(text),'owner-selected About copy is crawlable: '+text);
   const aboutNodes=[...about.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(match=>{const schema=JSON.parse(match[1]);return schema['@graph']||[schema];});
   const aboutSchema=aboutNodes.find(node=>node['@type']==='AboutPage');
@@ -183,7 +189,6 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const contactMain=contact.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1]||'';
   assert(contact.includes('"@type":"ContactPage"'));
   for(const phone of ['tel:+989112243632','tel:+989112286151'])assert(tags(contactMain,'a').some(link=>link.href===phone),'contact page includes both managers');
-  const hero=tags(home,'img').find(image=>image.alt==='لوگوی بازرگانی پاداش');
   assert(hero&&hero.loading==='eager'&&hero.fetchPriority==='high','the known homepage LCP image is eager and explicitly prioritized');
   assert(home.includes('تأمین و فروش')&&home.includes('عایق حرارتی، برودتی و صوتی'),'homepage explains the owner-confirmed business scope');
   const applicationPages=[['/thermal-insulation','/products/rw-p'],['/cold-insulation','/products/el-t'],['/sound-insulation','/products/rw-s']];
@@ -249,7 +254,7 @@ export async function auditSeo(origin,{baselineDirectory}={}){
     assert(htmlByPath.get(path).includes('"@type":"CollectionPage"'));
   }
   for(const [accept,mime] of [['image/webp','image/webp'],['image/avif,image/webp','image/avif']]){
-    const response=await request('/_next/image?url=%2Fimages%2Fpadash-logo-warm.webp&w=256&q=75',{headers:{Accept:accept}});
+    const response=await request('/_next/image?url='+encodeURIComponent(brandMark)+'&w=256&q=75',{headers:{Accept:accept}});
     assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),mime);
   }
   let unchangedBodies;

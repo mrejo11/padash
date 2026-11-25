@@ -21,7 +21,7 @@
   gap: clamp(1.25rem, 4vw, 4.5rem);
   padding: clamp(1.5rem, 4vw, 4rem);
   border: 1px solid var(--brand-line);
-  border-block-start: 4px solid var(--brand-amber);
+  border-block-start: 4px solid var(--brand-gold);
   border-radius: 1.25rem;
   background: linear-gradient(135deg, #fff 15%, var(--brand-soft));
 }
@@ -131,7 +131,7 @@
   height: 3rem;
   border-radius: 0.75rem;
   background: var(--brand-warm-soft);
-  color: var(--brand-orange-ink);
+  color: var(--brand-gold-ink);
 }
 
 .contactName { font-size: 1rem; font-weight: 700; }
@@ -139,7 +139,7 @@
 .onlinePanel > button { display: flex; margin-block: 1rem 0.375rem; max-width: 100%; white-space: normal; }
 .onlinePanel > button svg { flex: 0 0 auto; }
 .checklist { padding: 0; padding-inline-start: 1.2rem; margin-block: 0.5rem; }
-.checklist li::marker { color: var(--brand-orange-ink); }
+.checklist li::marker { color: var(--brand-gold-ink); }
 
 .policy { max-width: 54rem; margin-inline: auto; }
 .policy section + section { margin-block-start: 1.5rem; }

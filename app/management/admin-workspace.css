@@ -3,11 +3,11 @@
 .admin-shell-v2 .admin-sidebar nav { display:grid; gap:6px; }
 .admin-shell-v2 .admin-sidebar-label { color:#9ab3c3; font-size:11px; }
 .admin-shell-v2 .admin-sidebar-link { font-size:13px; min-height:48px; margin:0; color:#c3d4df; border:1px solid transparent; }
-.admin-shell-v2 .admin-sidebar-link.active { background:#0a527d; border-color:#477a9e; border-inline-start:3px solid var(--brand-amber); color:#fff; font-weight:650; }
+.admin-shell-v2 .admin-sidebar-link.active { background:var(--brand-blue); border-color:#537aa4; border-inline-start:3px solid var(--brand-gold); color:#fff; font-weight:650; }
 .admin-shell-v2 .admin-sidebar-link svg { flex-shrink:0; }
 .admin-shell-v2 .admin-sidebar-bottom { padding-top:18px; margin-top:auto; color:#a7bdca; }
 .admin-shell-v2 .admin-brand { padding:0 8px 25px; }
-.admin-shell-v2 .admin-brand .brand-text b { color:#ffc455; font-size:21px; }
+.admin-shell-v2 .admin-brand .brand-text b { color:var(--brand-gold-light); font-size:21px; }
 .admin-shell-v2 .admin-workspace { margin-inline-start:248px; width:calc(100% - 248px); }
 .admin-shell-v2 .admin-topbar { height:74px; background:white; border-color:#dce5eb; }
 .admin-shell-v2 .admin-content { max-width:1450px; padding:30px 32px 40px; }

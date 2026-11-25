@@ -1,10 +1,10 @@
 /* Shared product catalogue, with local partner photography and real enquiry controls. */
-.partner-introduction { display:flex; align-items:center; justify-content:space-between; gap:28px; padding:28px 32px; margin-bottom:28px; background:linear-gradient(110deg,#06486b,#063959); color:white; border-radius:18px; border-inline-start:4px solid var(--brand-amber); }
+.partner-introduction { display:flex; align-items:center; justify-content:space-between; gap:28px; padding:28px 32px; margin-bottom:28px; background:linear-gradient(110deg,var(--brand-blue),var(--brand-navy)); color:white; border-radius:18px; border-inline-start:4px solid var(--brand-gold); }
 .partner-kicker { display:block; direction:ltr; text-align:right; color:#9ed9ed; font:10px Arial,sans-serif; letter-spacing:2px; margin-bottom:10px; }
 .partner-introduction h3 { font-size:21px; font-weight:750; }
 .partner-introduction p { color:#c8deeb; font-size:13px; line-height:2.1; margin-top:8px; }
 .partner-intro-count { display:flex; flex-direction:column; align-items:center; flex-shrink:0; padding-inline-start:27px; border-inline-start:1px solid #43738d; font-size:11px; color:#b7d7e9; }
-.partner-intro-count b { color:#ffc45b; font-size:40px; line-height:1.5; }
+.partner-intro-count b { color:var(--brand-gold-light); font-size:40px; line-height:1.5; }
 .catalog-browser { min-width:0; }
 .catalog-tools { border-block-end:1px solid var(--brand-line); }
 .catalog-tools summary { display:flex; align-items:center; justify-content:space-between; min-height:48px; cursor:pointer; color:var(--brand-blue); font-size:14px; font-weight:600; }

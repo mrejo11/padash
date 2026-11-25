@@ -1,9 +1,16 @@
 # Logo refinement
 
+## Blue and gold emblem — 2026-11-25
+
+- The supplied PNG is preserved at `public/images/padash-logo-blue-gold.png`. Its transparent, lossless WebP is used on the homepage and About page.
+- The square `padash-mark-blue-gold.webp` uses the emblem from the same artwork. Compact layouts in the public header, footer, management panel and receipts present the Persian brand name as text beside it.
+- The favicon, Apple icon, sharing image and Organization logo use the new artwork. Existing metadata URLs remain stable. Run `node scripts/prepare-brand-assets.mjs` to regenerate the derivatives.
+- The primary interface colors are navy `#092a55`, blue `#075798` and gold `#edbd32`. Dark gold is used on light text surfaces and light gold on dark ones.
+
 ## Owner-supplied warm wordmark — 2026-11-19
 
-- Current approved source: `public/images/padash-logo-warm.png`, copied exactly from the owner's supplied `Warm Gradient Persian Logo Text.png`.
-- Current website asset: `public/images/padash-logo-warm.webp`. A new main asset URL prevents an old optimized-image cache from hiding the change. The earlier artwork remains in the repository.
+- Source for this revision: `public/images/padash-logo-warm.png`, copied exactly from the owner's supplied `Warm Gradient Persian Logo Text.png`.
+- Website asset for this revision: `public/images/padash-logo-warm.webp`.
 - No generative image edit was needed: the supplied image already contains the requested yellow-to-orange Persian wordmark, blue monogram, climate symbols and insulation layers. The WebP derivative is lossless and the asset script verifies visible pixel equality.
 - Updated the shared `Brand` component and homepage presentation, so header, footer, management and receipts use the current artwork.
 - Regenerated the existing 96px favicon, 180px Apple icon and 512px sharing/Organization image. The favicon URL remains stable for search crawlers.
