@@ -35,3 +35,17 @@ export const aboutProfile = {
     },
   ] satisfies AboutSection[],
 };
+
+type BusinessReference = { title: string; description: string; url?: string };
+
+export const businessReferences = {
+  projects: [] as BusinessReference[],
+  suppliers: [] as BusinessReference[],
+  credentials: [] as BusinessReference[],
+};
+
+export const businessServices = [
+  { title: 'تأسیسات و تهویه', description: 'کمک به انتخاب عایق برای لوله، کانال، سرمایش و گرمایش بر اساس شرایط نصب.' },
+  { title: 'ساختمان و پیمانکاری', description: 'معرفی عایق و ملزومات اجرایی و برآورد اولیه مقدار مورد نیاز بر اساس ابعاد پروژه.' },
+  { title: 'صنعت و تدارکات', description: 'بررسی درخواست تأمین با مشخصات فنی، مقدار و شهر تحویل، همراه با پیگیری وضعیت درخواست.' },
+];

@@ -33,6 +33,12 @@ export class BodyError extends Error {
 
 export async function readJson(request: Request, maxBytes: number): Promise<unknown> {
   if (!request.headers.get('content-type')?.includes('application/json')) throw new BodyError(415);
+  const bytes = await readBytes(request, maxBytes);
+  try { return JSON.parse(bytes.toString('utf8')); }
+  catch { throw new BodyError(400); }
+}
+
+export async function readBytes(request: Request, maxBytes: number) {
   if (Number(request.headers.get('content-length')) > maxBytes) throw new BodyError(413);
   const reader = request.body?.getReader();
   if (!reader) throw new BodyError(400);
@@ -45,6 +51,5 @@ export async function readJson(request: Request, maxBytes: number): Promise<unkn
     if (total > maxBytes) { await reader.cancel(); throw new BodyError(413); }
     chunks.push(value);
   }
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); }
-  catch { throw new BodyError(400); }
+  return Buffer.concat(chunks);
 }

@@ -2,16 +2,14 @@ import type { Metadata } from 'next';
 import { businessContacts } from './contacts';
 import type { ProductImage } from './catalog';
 import { aboutProfile } from './business-profile';
+import { SITE_URL } from './site-config';
 
-// Confirmed by the owner. Deployment-preview URLs must never become canonical.
-export const SITE_URL = 'https://www.padashgroup.ir';
+export { SITE_URL, isPreviewDeployment } from './site-config';
 export const SITE_NAME = 'بازرگانی پاداش';
 export const SITE_TITLE = `${SITE_NAME} | عایق و ملزومات ساختمانی`;
 export const SITE_SHORT_NAME = 'پاداش';
 export const SITE_ALTERNATE_NAMES = [SITE_SHORT_NAME, 'Padash Trading', 'Padash'];
 export const SOCIAL_IMAGE = '/images/padash-share.png';
-export const isPreviewDeployment = () => process.env.VERCEL_ENV === 'preview'
-  || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || '');
 export const absoluteUrl = (path = '/') => new URL(path, SITE_URL).toString();
 export function pageMetadata(title: string | { absolute: string }, description: string, path: string, picture?: ProductImage): Metadata {
   const image=picture||{src:SOCIAL_IMAGE,width:512,height:512,alt:'نشان بازرگانی پاداش؛ عایق و ملزومات پروژه'};

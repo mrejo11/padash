@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { isPreviewDeployment, SITE_URL } from "./lib/site-config";
 
 const nextConfig: NextConfig = {
   // Keep local development from generating extra agent instruction files.
@@ -11,16 +12,21 @@ const nextConfig: NextConfig = {
   async redirects() {
     // Alias only public routes; management sessions and private receipts stay put.
     const publicPaths = ['/', '/products/:path*', '/guides/:path*', '/calculator', '/news/:path*', '/about', '/contact', '/privacy', '/quote-terms', '/thermal-insulation', '/cold-insulation', '/sound-insulation', '/robots.txt', '/sitemap.xml'];
-    const aliases = ['padashgroup.ir', 'padash-five.vercel.app'].flatMap(host => publicPaths.map(source => ({
-      source, has: [{type: 'host' as const, value: host}],
-      destination: 'https://www.padashgroup.ir' + source, permanent: true,
-    })));
+    const canonicalHost = new URL(SITE_URL).hostname;
+    const hostAlias = canonicalHost.startsWith('www.') ? canonicalHost.slice(4) : 'www.' + canonicalHost;
+    const aliases = [hostAlias, 'padash-five.vercel.app'].filter(host => host !== canonicalHost)
+      .flatMap(host => publicPaths.flatMap(destination => (destination === '/' ? ['/'] : [destination + '/', destination])
+        .map(source => ({
+          source, has: [{type: 'host' as const, value: host.replaceAll('.', '\\.')}],
+          destination: SITE_URL + destination, statusCode: 301,
+        }))));
     return [...aliases, {source: '/:path+/', destination: '/:path+', permanent: true}];
   },
   async headers() {
     return [
+      ...(isPreviewDeployment() ? [{ source: '/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] }] : []),
       { source: '/management/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Cache-Control', value: 'private, no-store' }] },
-      { source: '/request/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Referrer-Policy', value: 'no-referrer' }] },
+      { source: '/request/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }, { key: 'Referrer-Policy', value: 'no-referrer' }, { key: 'Cache-Control', value: 'private, no-store' }] },
       { source: '/api/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
     ];
   },

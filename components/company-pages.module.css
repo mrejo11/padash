@@ -162,3 +162,19 @@
   .logoPlate { align-self: center; }
   .hero p { font-size: 1rem; }
 }
+.serviceList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+  padding: 0;
+  margin-block: 16px 0;
+  list-style: none;
+}
+
+.serviceList h3 {
+  margin-block-end: 8px;
+}
+
+.serviceList a {
+  text-decoration: underline;
+}

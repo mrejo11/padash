@@ -39,9 +39,9 @@ const questions = [
   { question: 'بعد از ثبت استعلام، چطور درخواست را پیگیری کنم؟', answer: 'پس از ثبت موفق، کد و پیوند اختصاصی پیگیری دریافت می‌کنید. از همان پیوند، وضعیت و خلاصه درخواست را ببینید یا چاپ کنید. برای هماهنگی بیشتر نیز می‌توانید با مدیران پاداش تماس بگیرید.' },
 ];
 
-type Props = { children?:ReactNode; news?: ReactNode; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
+type Props = { children?:ReactNode; news?: ReactNode; analyticsPreferences?: ReactNode; featuredGuides?: Pick<Guide, 'slug' | 'title' | 'category' | 'minutes'>[] };
 
-export default function Storefront({ news, featuredGuides = [], children }: Props) {
+export default function Storefront({ news, featuredGuides = [], children, analyticsPreferences }: Props) {
   const { cart, setCart } = useQuoteCart();
   const [category, setCategory] = useState('all');
   const [catalogReset, setCatalogReset] = useState(0);
@@ -155,11 +155,11 @@ export default function Storefront({ news, featuredGuides = [], children }: Prop
     <footer className="footer">
       <div className="container footer-main">
         <div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی، برودتی و صوتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div>
-        <div><h4>محصولات پاداش</h4>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false}>{item.name}</Link>)}</div>
-        <div><h4>همراه پروژه شما</h4><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about">درباره ما</Link></div>
-        <div className="footer-contact"><h4>شروع یک همکاری</h4><p>مشخصات پروژه را بفرستید تا گزینه‌های تأمین را بررسی کنیم.</p><button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><Link href="/contact">تماس با ما</Link></div>
+        <div><h2>محصولات پاداش</h2>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false}>{item.name}</Link>)}</div>
+        <div><h2>همراه پروژه شما</h2><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about">درباره ما</Link></div>
+        <div className="footer-contact"><h2>تماس و استعلام</h2>{businessContacts.map(contact => <a key={contact.phone} href={contact.href}>{contact.name} · <bdi>{contact.displayPhone}</bdi></a>)}<button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><Link href="/contact">همه راه‌های تماس</Link></div>
       </div>
-      <div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><Link href="/privacy">حریم خصوصی</Link><Link href="/quote-terms">شرایط استعلام</Link><Link href="/management">ورود مدیریت</Link></div></div>
+      <div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><Link href="/privacy">حریم خصوصی</Link><Link href="/quote-terms">شرایط استعلام</Link><a href="/management">ورود مدیریت</a>{analyticsPreferences}</div></div>
     </footer>
 
     {showQuickActions && !quoteOpen && !detail && !compareOpen && compare.length === 0 && <aside className="mobile-project-actions" aria-label="دسترسی سریع تماس و استعلام"><a href={businessContacts[0].href}><Phone size={20}/><span>تماس با پاداش</span></a><button className="button button-orange" onClick={() => openQuote()}><ClipboardList size={18}/>{cart.length ? 'سبد استعلام (' + fa(cart.length) + ')' : 'مشاوره و استعلام'}<ArrowLeft size={17}/></button></aside>}

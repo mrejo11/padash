@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useRef,useState,type ReactNode} from 'react';
-import {Activity,ArrowUpLeft,CalendarClock,ChevronLeft,ClipboardList,LayoutDashboard,LockKeyhole,LogOut,Menu,Newspaper} from 'lucide-react';
+import {Activity,ArrowUpLeft,CalendarClock,ChevronLeft,ClipboardList,LayoutDashboard,LockKeyhole,LogOut,Menu,Newspaper,Package} from 'lucide-react';
 import Brand from '../../components/brand';
 
 const sections=[
@@ -10,6 +10,7 @@ const sections=[
   {href:'/management/requests',label:'درخواست‌های مشتریان',icon:ClipboardList},
   {href:'/management/follow-ups',label:'پیگیری‌های امروز',icon:CalendarClock},
   {href:'/management/news',label:'اخبار و رویدادها',icon:Newspaper},
+  {href:'/management/products',label:'مشخصات فنی محصولات',icon:Package},
   {href:'/management/system',label:'وضعیت سامانه',icon:Activity},
 ];
 export default function AdminShell({children,authenticated,onSignedOut,logoutDisabled=false}:{children:ReactNode;authenticated:boolean;onSignedOut:()=>void;logoutDisabled?:boolean}){

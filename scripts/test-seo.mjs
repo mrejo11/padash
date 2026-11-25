@@ -140,12 +140,12 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   }
   for(const host of ['padashgroup.ir','padash-five.vercel.app'])for(const path of ['/','/about','/contact','/privacy','/quote-terms','/thermal-insulation','/cold-insulation','/sound-insulation','/products/el-r','/products/category/eps','/calculator?product=eps-sheet','/guides/elastomeric-insulation-guide','/sitemap.xml']){
     const response=await requestWithHost(origin,path,host);
-    assert.equal(response.status,308,host+path+' permanently redirects');
+    assert.equal(response.status,301,host+path+' permanently redirects');
     assert.equal(response.location,canonicalOrigin+path,'one hop, preserving path and query');
   }
   for(const host of ['padashgroup.ir','padash-five.vercel.app']){
     const response=await requestWithHost(origin,'/products/el-r/?utm_source=seo-audit',host);
-    assert.equal(response.status,308);assert.equal(response.location,canonicalOrigin+'/products/el-r?utm_source=seo-audit','host and trailing slash canonicalize in one hop');
+    assert.equal(response.status,301);assert.equal(response.location,canonicalOrigin+'/products/el-r?utm_source=seo-audit','host and trailing slash canonicalize in one hop');
     assert.equal((await requestWithHost(origin,'/management',host)).status,200,'private routes keep their original host');
   }
   const slash=await request('/products/el-r/',{redirect:'manual'});
@@ -229,6 +229,9 @@ export async function auditSeo(origin,{baselineDirectory}={}){
       const product=pages.find(page=>page.path==='/products/'+id);
       assert(product.title.startsWith('خرید '),product.path+' has a purchase title');
       assert(htmlByPath.get(product.path).includes('اطلاعات لازم برای خرید '),product.path+' has visible purchase information');
+      const productHtml=htmlByPath.get(product.path);
+      assert(tags(productHtml,'a').some(link=>link.href===path+'#buying-price'),product.path+' links to its category pricing guide');
+      if(category.id==='eps'||category.id==='polymer')assert(productHtml.includes('<strong>نمونهٔ سفارش</strong>'),product.path+' has a visible order example');
       assert.equal(links.some(link=>link.href==='/calculator?product='+id),!productsWithoutCalculator.has(id),'calculator preset support for '+id);
     }
     assert(links.some(link=>link.href==='/contact')&&buying.includes('id="buying-price"')&&[...buying.matchAll(/<details\b/g)].length>=2,'quote contact and FAQs are rendered on the server');

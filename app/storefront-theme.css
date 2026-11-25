@@ -161,7 +161,7 @@
 .storefront .footer .brand-text b { font-size:19px; }
 .storefront .footer-about p { color:#b8d1e2; font-size:12px; }
 .storefront .footer-en { color:#9dc2d8; font-size:8px; }
-.storefront .footer-main h4 { font-size:13px; color:#fff; }
+.storefront .footer-main h2 { font-size:13px; color:#fff; }
 .storefront .footer-main > div > :is(button,a):not(.brand) { color:#bcd6e7; font-size:12px; min-height:32px; }
 .storefront .footer-main > div > :is(a,button):hover { color:#ffc362; }
 .storefront .footer-contact { display:flex; flex-direction:column; align-items:stretch; }
@@ -236,7 +236,7 @@
   .storefront .solution-tabs button { font-size:12px; }
   .storefront .footer-main { grid-template-columns:1.2fr .8fr 1fr; gap:28px; }
   .storefront .footer-contact { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:8px 30px; border-top:1px solid #30516a; padding-top:23px; }
-  .storefront .footer-contact > :is(h4,p,.footer-small) { grid-column:1/-1; }
+  .storefront .footer-contact > :is(h2,p,.footer-small) { grid-column:1/-1; }
 }
 @media (max-width:900px) {
   .storefront .section { padding-block:64px; }
@@ -354,7 +354,7 @@
   .storefront .footer-main { grid-template-columns:repeat(2,minmax(0,1fr)); gap:30px; }
   .storefront .footer-about,.storefront .footer-contact { grid-column:1/-1; }
   .storefront .footer-contact { display:flex; gap:0; }
-  .storefront .footer-main h4 { font-size:14px; }
+  .storefront .footer-main h2 { font-size:14px; }
   .storefront .footer-main > div > :is(button,a):not(.brand) { font-size:13px; min-height:36px; }
   .storefront .footer-manager-contact bdi { font-size:18px; }
   .storefront .footer-contact .footer-manager-contact { min-height:52px; font-size:13px; }

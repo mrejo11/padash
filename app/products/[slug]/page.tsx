@@ -1,45 +1,58 @@
 
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { connection } from 'next/server';
 import PublicPage from '../../../components/public-page';
 import ProductGallery from '../../../components/product-gallery';
 import CatalogShopping from '../../../components/catalog-shopping';
+import ProductSpecifications from '../../../components/product-specifications';
+import BreadcrumbNavigation from '../../../components/breadcrumb-navigation';
 import JsonLd from '../../../components/json-ld';
-import { products, fa, productPath } from '../../../lib/catalog';
+import { findProductBySlug, products, productPath } from '../../../lib/catalog';
 import { categoryPath, findCatalogCategory } from '../../../lib/catalog-seo';
 import { guides } from '../../../lib/guides';
-import { absoluteUrl, breadcrumbs, imageObject, pageMetadata } from '../../../lib/seo';
+import { absoluteUrl, imageObject, pageMetadata } from '../../../lib/seo';
 import { productSearchSnippet } from '../../../lib/seo-content';
+import { publicProductSpecs } from '../../../lib/product-specs';
 import {RelatedInsulation} from '../../../components/insulation-links';
-const find = (slug: string) => products.find(product => product.id.toLowerCase() === slug);
-export function generateStaticParams() { return products.map(product => ({ slug: product.id.toLowerCase() })); }
+import { WhatsAppLink } from '../../../components/whatsapp-link';
+import { productWhatsAppUrl } from '../../../lib/whatsapp';
+import { ProductImpression } from '../../../components/analytics-impression';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const product = find((await params).slug);
+  const product = findProductBySlug((await params).slug);
   if(!product)return { title:'محصول پیدا نشد', robots:{index:false} };
   const snippet=productSearchSnippet(product);
   return pageMetadata(snippet.title,snippet.description,productPath(product),product.images?.[0]);
 }
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const product = find((await params).slug);
+  const product = findProductBySlug((await params).slug);
   if (!product) notFound();
+  await connection();
+  const verified = await publicProductSpecs(product.id);
   const path = productPath(product);
   const related = guides.filter(guide => guide.relatedProducts.some(id=>id===product.id||product.relatedProducts?.includes(id)));
   const relatedProducts=products.filter(item=>item.id!==product.id&&(product.relatedProducts?.includes(item.id)||item.category===product.category)).slice(0,4);
   const category=findCatalogCategory(product.category);
-  return <PublicPage><JsonLd value={breadcrumbs([{ name: 'صفحه اصلی', path: '/' }, { name: 'محصولات', path: '/products' }, ...(category?[{name:category.name,path:categoryPath(category.id)}]:[]), { name: product.name, path }])}/>
+  return <PublicPage>
+    <ProductImpression product={{ id: product.id, name: product.name, category: product.category }}/>
     <JsonLd value={{ '@context': 'https://schema.org', '@type': 'WebPage', '@id': absoluteUrl(path + '#webpage'), name: product.name, description: product.desc, url: absoluteUrl(path), inLanguage: 'fa-IR', about: { '@type': 'Thing', name: product.material }, isPartOf: { '@id': absoluteUrl('/#website') }, ...(product.images?.[0]?{primaryImageOfPage:imageObject(product.images[0]),image:product.images.map(imageObject)}:{}) }}/>
-    <nav className="content-breadcrumb" aria-label="مسیر صفحه"><Link href="/">پاداش</Link><span aria-hidden="true">/</span><Link href="/products">محصولات</Link><span aria-hidden="true">/</span>{category&&<><Link href={categoryPath(category.id)}>{category.name}</Link><span aria-hidden="true">/</span></>}<span aria-current="page">{product.name}</span></nav>
+    <BreadcrumbNavigation items={[{ name: 'صفحه اصلی', path: '/' }, { name: 'محصولات', path: '/products' }, ...(category ? [{ name: category.name, path: categoryPath(category.id) }] : []), { name: product.name, path }]}/>
     <article className="product-detail-page partner-detail-page">
       <div className="product-detail-intro">
         <header className="content-heading"><span className="eyebrow">کد محصول <bdi>{product.id}</bdi></span><h1>{product.name}</h1><p>{product.desc}</p></header>
-        <CatalogShopping product={product}/>
+        <CatalogShopping product={product} technicalModel={verified?.model}/>
+        <nav className="product-buying-links" aria-label="راهنمای خرید محصول">
+          <a href="#order-details">چه مشخصاتی برای خرید لازم است؟</a>
+          {category && <Link href={categoryPath(category.id) + '#buying-price'}>عوامل مؤثر بر قیمت {category.name}</Link>}
+          <WhatsAppLink href={productWhatsAppUrl(product, absoluteUrl(path))} label="استعلام این محصول در واتس‌اپ" productId={product.id}/>
+        </nav>
       </div>
       <div className="product-gallery-panel"><ProductGallery product={product} preload/></div>
       <section className="product-detail-specs" aria-labelledby="product-specs">
-      <h2 id="product-specs">مشخصات محصول</h2>
-      <dl className="product-spec-list"><div><dt>جنس</dt><dd>{product.material}</dd></div><div><dt>شکل عرضه</dt><dd>{product.form}</dd></div><div><dt>کاربرد عمومی</dt><dd>{product.use}</dd></div><div><dt>واحد درخواست اولیه</dt><dd>{product.unit}</dd></div><div><dt>پوشش قابل بررسی</dt><dd>{product.cover}</dd></div>{product.thicknesses.length>0&&<div><dt>ضخامت قابل استعلام</dt><dd>{product.thicknesses.map(fa).join('، ')} میلی‌متر</dd></div>}{product.specifications?.map(spec=><div key={spec.label}><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}</dl>
+      <ProductSpecifications product={product} verified={verified}/>
       <h2>پیش از درخواست این موارد را بررسی کنید</h2><ul className="product-checks">{product.notes.map(note => <li key={note}>{note}</li>)}</ul><p className="article-note">مشخصات بالا معرفی خانواده محصول است. تأیید برند، مدل، گواهی‌ها، موجودی و قیمت به استعلام و دیتاشیت نهایی نیاز دارد.</p>
-      <h2>اطلاعات لازم برای خرید {product.name}</h2><p className="insulation-note">{product.requestHint||`شکل عرضهٔ ${product.form}، ضخامت و ${product.cover} را همراه با مقدار مورد نیاز به ${product.unit} اعلام کنید. محل مصرف ${product.use} و شرایط پروژه برای بررسی مدل نهایی اهمیت دارند.`}</p>
+      <h2 id="order-details">اطلاعات لازم برای خرید {product.name}</h2><p className="insulation-note">{product.requestHint||`شکل عرضهٔ ${product.form}، ضخامت و ${product.cover} را همراه با مقدار مورد نیاز به ${product.unit} اعلام کنید. محل مصرف ${product.use} و شرایط پروژه برای بررسی مدل نهایی اهمیت دارند.`}</p>
+      {product.orderExample && <p className="product-order-example"><strong>نمونهٔ سفارش</strong> {product.orderExample}</p>}
       </section>
     </article>
     <RelatedInsulation productIds={[product.id]}/>

@@ -5,6 +5,8 @@ import { ArrowLeft, ClipboardList } from 'lucide-react';
 import { fa, products, validQuantity, type QuoteItem } from '../lib/catalog';
 import { useQuoteCart } from '../lib/use-quote-cart';
 import { ProductModal, QuoteModal } from './lazy-commerce';
+import { WhatsAppLink } from './whatsapp-link';
+import { whatsappUrl } from '../lib/whatsapp';
 
 export default function EstimateInquiry({ productId, quantity, note, headingLevel=3 }: { productId: string; quantity: number; note: string; headingLevel?:2|3 }) {
   const { cart, setCart, ready } = useQuoteCart();
@@ -26,6 +28,8 @@ export default function EstimateInquiry({ productId, quantity, note, headingLeve
     <Heading>از برآورد تا استعلام، یک قدم.</Heading>
     <p>{valid ? `${fa(quantity)} ${product.unit} ${product.name}؛ نتیجه و ابعاد به فرم منتقل می‌شود. مشخصات فنی را پیش از افزودن به سبد بررسی کنید.` : 'این مقدار از محدوده ثبت آنلاین خارج است؛ برای بررسی تأمین با پاداش تماس بگیرید.'}</p>
     <button className="button button-orange" disabled={!ready || !valid} onClick={() => setReviewOpen(true)}><ClipboardList size={18}/>بررسی و استعلام این برآورد<ArrowLeft size={18}/></button>
+    {valid && <WhatsAppLink label="ارسال مقدار برآورد در واتس‌اپ" productId={product.id}
+      href={whatsappUrl(`سلام، مقدار برآورد اولیهٔ من برای ${product.name} (کد ${product.id}) ${fa(quantity)} ${product.unit} است. لطفاً برای بررسی و اعلام قیمت راهنمایی کنید.`)}/>}
     {reviewOpen && <ProductModal product={product} initialQuantity={quantity} initialNote={note.slice(0, 300)} onAdd={add} onClose={() => setReviewOpen(false)}/>}
     {quoteOpen && <QuoteModal initialKind="order" cart={cart} setCart={setCart} onClose={() => setQuoteOpen(false)}/>}
   </div>;

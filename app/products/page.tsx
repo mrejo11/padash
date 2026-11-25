@@ -1,4 +1,5 @@
 import PublicPage from '../../components/public-page';
+import BreadcrumbNavigation from '../../components/breadcrumb-navigation';
 import CatalogShopping from '../../components/catalog-shopping';
 import JsonLd from '../../components/json-ld';
 import { products } from '../../lib/catalog';
@@ -10,11 +11,13 @@ const description = 'برای خرید عایق و ملزومات ساختمان
 export const metadata = pageMetadata('خرید عایق و ملزومات ساختمانی | کاتالوگ محصولات', description, '/products', picture);
 export default function ProductsPage() {
   const list={'@type':'ItemList','@id':absoluteUrl('/products#items'),numberOfItems:products.length,itemListElement:products.map((product,index)=>({'@type':'ListItem',position:index+1,name:product.name,url:absoluteUrl('/products/'+product.id.toLowerCase())}))};
-  const trail=breadcrumbs([{name:'صفحه اصلی',path:'/'},{name:'محصولات',path:'/products'}]);
+  const items = [{ name: 'صفحه اصلی', path: '/' }, { name: 'محصولات', path: '/products' }];
+  const trail = breadcrumbs(items);
   return <PublicPage><JsonLd value={{'@context':'https://schema.org','@graph':[
     {...trail,'@context':undefined,'@id':absoluteUrl('/products#breadcrumb')},list,
     {'@type':'CollectionPage','@id':absoluteUrl('/products#webpage'),url:absoluteUrl('/products'),name:title,description,inLanguage:'fa-IR',isPartOf:{'@id':absoluteUrl('/#website')},breadcrumb:{'@id':absoluteUrl('/products#breadcrumb')},mainEntity:{'@id':absoluteUrl('/products#items')},...(picture?{primaryImageOfPage:imageObject(picture)}:{})},
   ]}}/>
+    <BreadcrumbNavigation items={items} schema={false}/>
     <header className="catalog-page-heading"><div className="content-heading">
       <h1>{title}</h1><p>از فوم رولی و یونولیت تا عایق تأسیسات و ملزومات نصب، دستهٔ مورد نیاز را انتخاب کنید تا مشخصات خرید، محاسبهٔ مقدار و استعلام قیمت را ببینید.</p>
     </div></header>

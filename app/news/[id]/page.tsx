@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import PublicPage from '../../../components/public-page';
+import BreadcrumbNavigation from '../../../components/breadcrumb-navigation';
 import JsonLd from '../../../components/json-ld';
 import { getPublishedNews } from '../../../lib/news';
-import { absoluteUrl, breadcrumbs, organization, pageMetadata } from '../../../lib/seo';
+import { absoluteUrl, organization, pageMetadata } from '../../../lib/seo';
 export const dynamic = 'force-dynamic';
 const getNews = cache(getPublishedNews);
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -18,7 +19,7 @@ export default async function NewsDetail({ params }: { params: Promise<{ id: str
   const item = await getNews((await params).id);
   if (!item) notFound();
   const path = '/news/' + item.id;
-  return <PublicPage><JsonLd value={breadcrumbs([{ name: 'صفحه اصلی', path: '/' }, { name: 'اخبار', path: '/news' }, { name: item.title, path }])}/>
+  return <PublicPage><BreadcrumbNavigation items={[{ name: 'صفحه اصلی', path: '/' }, { name: 'اخبار و رویدادها', path: '/news' }, { name: item.title, path }]}/>
     <JsonLd value={{ '@context': 'https://schema.org', '@type': 'Article', headline: item.title, description: item.summary, datePublished: item.published_at,
       dateModified: item.updated_at, mainEntityOfPage: absoluteUrl(path), author: organization, publisher: organization, inLanguage: 'fa-IR' }}/>
     <article className="reading-article"><header className="content-heading"><span className="eyebrow">{item.kind === 'event' ? 'رویداد بازرگانی پاداش' : 'خبر و اطلاعیه بازرگانی پاداش'}</span><h1>{item.title}</h1>

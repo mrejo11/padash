@@ -1,10 +1,10 @@
 import { getStore } from '@netlify/blobs';
 
-export function storage() {
+export function storage(timeoutMs = 10000) {
   return getStore({
     name: `padash-${process.env.PADASH_STORE_NAMESPACE || 'local'}-v1`,
     consistency: 'strong',
-    fetch: (input, init) => fetch(input, { ...init, cache: 'no-store', signal: AbortSignal.timeout(10000) }),
+    fetch: (input, init) => fetch(input, { ...init, cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) }),
   });
 }
 

@@ -7,11 +7,11 @@ import {fa} from '../../../lib/catalog';
 type Status={checkedAt:string;storage:'ok'|'unavailable';platform:string;clientIdentification:string;limits:{quotes:number;quoteWindowHours:number;login:number;loginWindowMinutes:number}};
 export default function SystemStatus(){
   const [data,setData]=useState<Status|null>(null),[code,setCode]=useState(''),[loading,setLoading]=useState(true),[error,setError]=useState(''),[revision,setRevision]=useState(0);
-  const refresh=()=>setRevision(value=>value+1);
-  useEffect(()=>{const controller=new AbortController();setLoading(true);setError('');
+  const refresh=()=>{setLoading(true);setError('');setRevision(value=>value+1);};
+  useEffect(()=>{const controller=new AbortController();
     void fetch('/api/admin/status',{cache:'no-store',signal:controller.signal}).then(async response=>{const result=await response.json();if(controller.signal.aborted)return;if(!response.ok){if(result.code){setCode(result.code);setData(null);return;}throw new Error(result.error||'بررسی وضعیت انجام نشد.');}setData(result);setCode('');}).catch(error=>{if(!controller.signal.aborted)setError(error instanceof Error?error.message:'ارتباط برقرار نشد.');}).finally(()=>{if(!controller.signal.aborted)setLoading(false);});return()=>controller.abort();
   },[revision]);
-  return <AdminShell authenticated={Boolean(data&&!code)} onSignedOut={()=>{setData(null);setCode('signin');setRevision(value=>value+1);}}>
+  return <AdminShell authenticated={Boolean(data&&!code)} onSignedOut={()=>{setData(null);setCode('signin');refresh();}}>
     <div className="admin-page-heading"><div><span className="admin-eyebrow">سلامت و دسترسی</span><h1>وضعیت سامانه</h1><p>نتیجهٔ بررسی اتصال و حفاظت از فرم‌ها در همین لحظه.</p></div><button className="button button-outline" disabled={loading} onClick={refresh} aria-label="بررسی دوباره وضعیت"><RefreshCw size={17} className={loading?'spin':''}/>بررسی دوباره</button></div>
     {error&&<div className="admin-error" role="alert">{error}</div>}
     {!data||code?<AdminAccess loading={loading} code={code} onSuccess={refresh}/>:<>

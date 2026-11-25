@@ -37,5 +37,6 @@ npm.cmd run test:integration
 - [راهنمای Netlify و ذخیره اطلاعات](NETLIFY.md)
 - [راهنمای پنل مدیریت و سفارش‌ها](docs/management.md)
 - [راهنمای محتوا و سئو](docs/seo.md)
+- [گزارش فاز اول، تنظیمات انتشار و بازگشت](docs/phase-1-optimization-2026-11-25.md)
 - [منابع تصاویر و به‌روزرسانی کاتالوگ](docs/partner-catalog.md)
 - [راهنمای برآورد مصالح ساختمانی](docs/construction-product-estimates.md)

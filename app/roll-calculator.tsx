@@ -10,6 +10,7 @@ import { calculateMaterial, type MaterialEstimate } from '../lib/material-estima
 import { calculatorProfiles, calculatorProfile, estimateProfiles, estimateProfile } from '../lib/estimate-products';
 import AccessoryCalculator from '../components/accessory-calculator';
 import EstimateInquiry from '../components/estimate-inquiry';
+import useCalculatorAnalytics from '../components/use-calculator-analytics';
 
 const number=(value:string)=>{
   const normalized=normalizeDigits(value.trim()).replace(/٫/g,'.');
@@ -58,12 +59,13 @@ function SurfaceCalculator({onSelect,initialProductId='EL-R'}:{onSelect?:(id:str
   const inquiryNote=`برآورد اولیه؛ ${format(totalUnits)} ${unit} با ابعاد ${values.rollWidth} × ${values.rollLength} متر. ذخیره ${values.waste}٪؛ روش ${mode==='area'?'مساحت آماده':mode==='rectangle'?'سطح و برش':'دورپیچ'}. ${mode==='area'?`مساحت ${values.area} م²، ${values.layers} لایه`:mode==='rectangle'?`سطح ${values.surfaceWidth} × ${values.surfaceLength} متر، ${values.count} عدد، ${values.layers} لایه`:`دورپیچ ${values.wrapLength} متر، مسیر ${values.pipeLength} متر`}. مقدار نهایی نیازمند تأیید مشخصات محصول و اجراست.`;
   function field(key:keyof typeof values,label:string,unitLabel:string){return <label>{label}<span>{unitLabel}</span><input type="text" inputMode="decimal" dir="ltr" value={values[key]} maxLength={12}
     onChange={event=>{update(key,event.target.value);if(key==='rollWidth'||key==='rollLength')setPreset('custom');}}/></label>;}
-  return <div className="surface-estimator">
+  const analyticsHandlers = useCalculatorAnalytics(productId, Boolean(result && (!pipe || pipe.possible)));
+  return <div className="surface-estimator" {...analyticsHandlers}>
     <div className="material-selectors">
     <label className="roll-preset">شکل عرضه<select value={unitKind} onChange={event=>{const next=event.target.value as 'roll'|'sheet';setUnitKind(next);if(next==='sheet'&&mode==='pipe')setMode('rectangle');setPreset('custom');setValues(previous=>({...previous,rollWidth:'',rollLength:''}));}}>{profile.formats.map(kind=><option value={kind} key={kind}>{kind==='roll'?'رول':'ورق / تخته'}</option>)}</select></label></div>
     <div className={'roll-modes '+(!pipeAllowed?'two-modes':'')} role="group" aria-label="روش اندازه‌گیری">{[
       ['area','مساحت آماده'],['rectangle','سطح و برنامه برش'],...(pipeAllowed?[['pipe','دورپیچ لوله']]:[]),
-    ].map(([key,label])=><button type="button" key={key} aria-pressed={mode===key} className={mode===key?'active':''} onClick={()=>setMode(key as RollGeometry['kind'])}>{label}</button>)}</div>
+    ].map(([key,label])=><button type="button" key={key} data-calculator-input="" aria-pressed={mode===key} className={mode===key?'active':''} onClick={()=>setMode(key as RollGeometry['kind'])}>{label}</button>)}</div>
     <div className="calc-inputs">
       {mode==='area'&&field('area','مساحت خالص پس از کسر بازشوها','مترمربع')}
       {mode==='rectangle'&&<>{field('surfaceWidth','عرض هر سطح / ارتفاع حصار','متر')}{field('surfaceLength','طول هر سطح / مسیر حصار','متر')}{field('count','تعداد سطح یکسان','عدد صحیح')}</>}

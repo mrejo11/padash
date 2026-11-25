@@ -81,7 +81,10 @@ try {
   const receipts = await Promise.all(duplicateResponses.map(r => r.json()));
   receipts.forEach(r => assert.deepEqual(r, receipts[0]));
   const receipt = receipts[0];
-  const html = await (await request('/request/' + receipt.token)).text();
+  const receiptResponse = await request('/request/' + receipt.token);
+  assert.match(receiptResponse.headers.get('cache-control'), /no-store/);
+  assert.equal(receiptResponse.headers.get('referrer-policy'), 'no-referrer');
+  const html = await receiptResponse.text();
   assert(html.includes(receipt.id));
   for (const privateValue of [data.name, data.phone, data.message, data.company]) assert(!html.includes(privateValue), 'receipt must not contain customer details');
 
@@ -94,6 +97,50 @@ try {
   assert(setCookie.includes('HttpOnly') && setCookie.includes('SameSite=Strict'));
   const cookie = setCookie.split(';')[0];
   const sessionHeaders = { Cookie: cookie };
+  console.log('Checking technical specification and datasheet publication...');
+  const specPath = '/api/admin/product-specs/el-r';
+  const productPage = '/products/el-r';
+  const datasheetPath = productPage + '/datasheet';
+  const pdf = Buffer.from('%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF\n');
+  const specFields = { revision: null, status: 'draft', source: 'Integration-only manufacturer reference',
+    sourceUrl: '', manufacturer: 'Fixture Manufacturer', model: 'Fixture Model',
+    values: { density: { value: '42', unit: 'kg/m³' } }, removeDatasheet: false };
+  function saveSpecs(fields, bytes, headers = sessionHeaders) {
+    const requestBody = new FormData();
+    requestBody.set('fields', JSON.stringify(fields));
+    if (bytes) requestBody.set('datasheet', new Blob([bytes], { type: 'application/pdf' }), 'datasheet.pdf');
+    return request(specPath, { method: 'PUT', headers: { Origin: origin, ...headers }, body: requestBody });
+  }
+  assert.equal((await request(specPath)).status, 401);
+  assert.equal((await saveSpecs(specFields, pdf, { ...sessionHeaders, Origin: 'https://other.example' })).status, 403);
+  assert.equal((await saveSpecs(specFields, Buffer.from('not a PDF'))).status, 400);
+  assert.equal((await saveSpecs({ ...specFields, values: { meshOpening: { value: '1', unit: 'mm' } } })).status, 400);
+  assert.equal((await saveSpecs({ ...specFields, status: 'published', source: '' })).status, 400);
+  assert.equal((await request(datasheetPath)).status, 404);
+  assert.doesNotMatch(await (await request(productPage)).text(), /Fixture Model/);
+  const specDraft = await saveSpecs(specFields, pdf);
+  assert.equal(specDraft.status, 200);
+  assert.equal((await specDraft.json()).specs.revision, 0);
+  assert.equal((await request(datasheetPath)).status, 404);
+  assert.doesNotMatch(await (await request(productPage)).text(), /Fixture Model/);
+  const publishSpecs = { ...specFields, revision: 0, status: 'published' };
+  const edits = await Promise.all([saveSpecs(publishSpecs), saveSpecs(publishSpecs)]);
+  assert.deepEqual(edits.map(response => response.status).sort(), [200, 409]);
+  const productWithSpecs = await (await request(productPage)).text();
+  assert.match(productWithSpecs, /Fixture Model/);
+  assert.match(productWithSpecs, /kg\/m³/);
+  assert.match(productWithSpecs, /"@type":"Product"/);
+  assert.doesNotMatch(productWithSpecs, /"@type":"(?:Offer|Review|AggregateRating)"/);
+  const datasheet = await request(datasheetPath);
+  assert.equal(datasheet.status, 200);
+  assert.equal(datasheet.headers.get('content-type'), 'application/pdf');
+  assert.match(datasheet.headers.get('content-disposition'), /^attachment/);
+  assert.equal(datasheet.headers.get('x-robots-tag'), 'noindex, nofollow');
+  assert.deepEqual(Buffer.from(await datasheet.arrayBuffer()), pdf);
+  assert.equal((await saveSpecs({ ...specFields, revision: 1, removeDatasheet: true })).status, 200);
+  assert.equal((await request(datasheetPath)).status, 404);
+  assert.doesNotMatch(await (await request(productPage)).text(), /Fixture Model/);
+  assert.equal((await request('/management/products')).headers.get('x-robots-tag'), 'noindex, nofollow');
   console.log('Checking crawlable content, canonical URLs, calculator and news publishing...');
   for (const path of ['/guides', '/guides/roll-insulation-quantity', '/guides/rock-wool-and-glass-wool', '/products', '/products/el-r', '/calculator', '/news']) {
     const response = await request(path);

@@ -181,7 +181,7 @@
 .storefront .footer .brand-text b{font-size:20px;color:#ffc455}
 .storefront .footer-about p,.storefront .footer-contact p{font-size:12px;line-height:2.1;color:#b9cdd5}
 .storefront .footer-en{color:#99b8c5;font-size:8px}
-.storefront .footer-main h4{color:#fff;font-size:13px;margin-bottom:15px}
+.storefront .footer-main h2{color:#fff;font-size:13px;margin-bottom:15px}
 .storefront .footer-main>div>:is(a,button):not(.brand):not(.button){min-height:33px;color:#c3d5dd;font-size:12px}
 .storefront .footer-main>div>:is(a,button):hover{color:#ffd18a}
 .storefront .footer-contact .button{color:var(--brand-navy);font-size:13px;margin-block:14px 5px}

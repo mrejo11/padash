@@ -5,6 +5,8 @@ import { publicNewsSnapshot } from '../lib/public-news';
 import { guides } from '../lib/guides';
 import { SITE_TITLE, pageMetadata } from '../lib/seo';
 import {InsulationHub} from '../components/insulation-links';
+import { AnalyticsPreferences } from '../components/public-support';
+import { FloatingWhatsApp } from '../components/whatsapp-link';
 import './storefront-theme.css';
 import './content.css';
 import './catalog.css';
@@ -33,8 +35,10 @@ async function HomeNews() {
 export default function Home() {
   return <div className="storefront homepage">
     <Storefront featuredGuides={guides.slice(0, 3).map(({ slug, title, category, minutes }) => ({ slug, title, category, minutes }))}
+      analyticsPreferences={<AnalyticsPreferences/>}
       news={<Suspense fallback={null}><HomeNews/></Suspense>}>
       <InsulationHub home/>
     </Storefront>
+    <FloatingWhatsApp/>
   </div>;
 }

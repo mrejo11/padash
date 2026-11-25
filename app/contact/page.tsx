@@ -7,6 +7,8 @@ import PublicPage from '../../components/public-page';
 import { companyPages } from '../../lib/company-pages';
 import { businessContacts } from '../../lib/contacts';
 import { pageMetadata } from '../../lib/seo';
+import { WhatsAppLink } from '../../components/whatsapp-link';
+import { whatsappUrl } from '../../lib/whatsapp';
 
 const page = companyPages.contact;
 export const metadata = pageMetadata(page.seoTitle, page.description, page.path);
@@ -28,7 +30,8 @@ export default function ContactPage() {
       <section id="online-request" className={`${styles.panel} ${styles.onlinePanel}`} aria-labelledby="online-heading">
         <h2 id="online-heading">ثبت درخواست آنلاین</h2>
         <p>مشخصات پروژه را بفرستید. پس از ثبت موفق، کد و پیوند اختصاصی برای مشاهدهٔ وضعیت درخواست دریافت می‌کنید.</p>
-        <InquiryAction topic="مشاوره انتخاب و تأمین عایق" label="ثبت درخواست و دریافت کد پیگیری"/>
+        <InquiryAction topic="مشاوره انتخاب و تأمین عایق" label="ثبت درخواست و دریافت کد پیگیری" formSource="contact"/>
+        <WhatsAppLink href={whatsappUrl('سلام، برای مشاوره درباره انتخاب و تأمین عایق پیام می‌دهم.')} label="مشاوره در واتس‌اپ"/>
         <Link href="/quote-terms">مراحل و شرایط استعلام</Link>
       </section>
       <section className={styles.panel} aria-labelledby="contact-checklist">

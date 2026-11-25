@@ -8,6 +8,7 @@ import { normalizeDigits, products } from '../lib/catalog';
 import { type AccessoryKind } from '../lib/estimate-products';
 import { calculateCord, calculateFasteners, calculateRoofBlocks, type MeasuredRun, type PackageEstimate } from '../lib/accessory-estimate';
 import EstimateInquiry from './estimate-inquiry';
+import useCalculatorAnalytics from './use-calculator-analytics';
 
 const number = (value:string) => {
   const normalized = normalizeDigits(value.trim()).replace(/٫/g, '.');
@@ -53,11 +54,12 @@ export default function AccessoryCalculator({kind,productId,onSelect}:{kind:Acce
   const packageResult=fasteners||blocks;
   const result=cord||packageResult;
   const method = kind==='cord'?'طول مصرف و برش کلاف':kind==='fastener'?'شمارش اتصال و بسته‌بندی':'ردیف‌های خالص و برش بلوک سقفی';
+  const analyticsHandlers = useCalculatorAnalytics(productId, Boolean(result && (kind !== 'cord' || cord?.cutPlan)));
 
-  return <div className="accessory-estimator">
-    <div className="estimator-method"><div><span>روش متره</span><h2>{method}</h2></div><div><button type="button" onClick={loadExample}>بارگذاری مثال</button><button type="button" onClick={reset} aria-label="پاک کردن اندازه‌های متره"><RotateCcw size={15}/></button></div></div>
+  return <div className="accessory-estimator" {...analyticsHandlers}>
+    <div className="estimator-method"><div><span>روش متره</span><h2>{method}</h2></div><div><button type="button" data-calculator-input="" onClick={loadExample}>بارگذاری مثال</button><button type="button" onClick={reset} aria-label="پاک کردن اندازه‌های متره"><RotateCcw size={15}/></button></div></div>
     {kind!=='blocks'&&<div className={'roll-modes '+(kind==='fastener'?'two-modes':'')} role="group" aria-label="روش اندازه‌گیری">
-      {(kind==='cord'?[['ties','بست‌های شمرده‌شده'],['spaced','بست با فاصله معلوم'],['runs','مسیرهای مستقیم']]:[['count','ورق و تکیه‌گاه'],['spacing','ردیف اتصال با فاصله معلوم']]).map(([id,label])=><button key={id} type="button" aria-pressed={mode===id} className={mode===id?'active':''} onClick={()=>setMode(id)}>{label}</button>)}
+      {(kind==='cord'?[['ties','بست‌های شمرده‌شده'],['spaced','بست با فاصله معلوم'],['runs','مسیرهای مستقیم']]:[['count','ورق و تکیه‌گاه'],['spacing','ردیف اتصال با فاصله معلوم']]).map(([id,label])=><button key={id} type="button" data-calculator-input="" aria-pressed={mode===id} className={mode===id?'active':''} onClick={()=>setMode(id)}>{label}</button>)}
     </div>}
 
     {kind==='cord'&&<>

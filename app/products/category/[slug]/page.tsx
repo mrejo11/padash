@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import PublicPage from '../../../../components/public-page';
 import CatalogBuyingGuide from '../../../../components/catalog-buying-guide';
 import CatalogShopping from '../../../../components/catalog-shopping';
+import InquiryAction from '../../../../components/inquiry-action';
 import JsonLd from '../../../../components/json-ld';
 import { products, productPath } from '../../../../lib/catalog';
 import { catalogCategories, categoryPath, findCatalogCategory } from '../../../../lib/catalog-seo';
@@ -40,7 +41,7 @@ export default async function CategoryPage({params}: {params: Promise<{slug: str
     <header className="catalog-page-heading"><div className="content-heading">
       <h1>{heading}</h1><p>{category.intro}</p>
       <div className="buying-actions">
-        <a className="button button-orange" href="#buying-price">استعلام قیمت</a>
+        <InquiryAction topic={category.name} label="استعلام قیمت"/>
         <a className="button button-outline" href="#buying-options">انتخاب محصول و محاسبه مقدار</a>
       </div>
     </div></header>

@@ -1,0 +1,59 @@
+.whatsapp-float {
+  position: fixed;
+  inset-inline-end: max(16px, env(safe-area-inset-left));
+  inset-block-end: max(16px, env(safe-area-inset-bottom));
+  z-index: 31;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  color: white;
+  background: #176b48;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px #05283838;
+}
+
+.whatsapp-float:hover { background: #115238; }
+
+body:has(.analytics-prompt, .compare-dock, dialog[open], .toast) .whatsapp-float {
+  visibility: hidden;
+}
+
+.estimate-inquiry .button + .button { margin-inline-start: 8px; }
+.product-buying-links .button { white-space: normal; }
+
+.analytics-preference-link {
+  padding: 6px 0;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 12px;
+}
+
+.analytics-prompt {
+  position: fixed;
+  inset-inline-end: min(16px, 4vw);
+  inset-block-end: max(16px, env(safe-area-inset-bottom));
+  z-index: 70;
+  width: min(390px, 92vw);
+  padding: 14px 16px;
+  background: #fff;
+  color: #173951;
+  border: 1px solid #b8cbd8;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px #05283830;
+  line-height: 1.8;
+}
+
+.storefront .analytics-prompt p { color: inherit; font-size: 13px; margin: 0; }
+.storefront .analytics-prompt a { display: inline; color: inherit; text-decoration: underline; margin: 0; font-size: inherit; }
+.analytics-prompt > div { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 8px; }
+.analytics-prompt .button { min-height: 42px; }
+
+@media (max-width: 700px) {
+  body:has(.mobile-project-actions, .compare-dock) :is(.whatsapp-float, .analytics-prompt) {
+    inset-block-end: calc(126px + env(safe-area-inset-bottom));
+  }
+  .estimate-inquiry .button + .button { margin-inline-start: 0; margin-block-start: 8px; }
+}

@@ -18,7 +18,7 @@ export const companyPages = {
     seoTitle: aboutProfile.seoTitle,
     description: aboutProfile.description,
     schemaType: 'AboutPage',
-    updated: '2026-11-20',
+    updated: '2026-11-25',
   },
   contact: {
     path: '/contact',
@@ -27,16 +27,16 @@ export const companyPages = {
     seoTitle: 'تماس با ما برای مشاوره و استعلام عایق',
     description: 'با مهندس پاداشی و مهندس فرجی برای انتخاب عایق، استعلام قیمت و هماهنگی تأمین پروژه تماس بگیرید یا درخواست خود را آنلاین ثبت کنید.',
     schemaType: 'ContactPage',
-    updated: '2026-11-20',
+    updated: '2026-11-25',
   },
   privacy: {
     path: '/privacy',
     label: 'حریم خصوصی',
     title: 'حریم خصوصی در بازرگانی پاداش',
     seoTitle: 'حریم خصوصی و اطلاعات درخواست استعلام',
-    description: 'بخوانید هنگام ثبت استعلام چه اطلاعاتی دریافت می‌شود، سبد استعلام کجا ذخیره می‌شود و چه اطلاعاتی در رسید پیگیری نمایش داده می‌شود.',
+    description: 'درباره اطلاعات ثبت و پیگیری استعلام، نگهداری سبد، انتخاب تنظیمات آمار بازدید و پیوندهای واتس‌اپ در بازرگانی پاداش بخوانید.',
     schemaType: 'WebPage',
-    updated: '2026-11-20',
+    updated: '2026-11-25',
   },
   terms: {
     path: '/quote-terms',

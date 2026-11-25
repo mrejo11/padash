@@ -4,6 +4,7 @@ import { SITE_NAME, SITE_TITLE, SITE_URL, SOCIAL_IMAGE, absoluteUrl, isPreviewDe
 import JsonLd from '../components/json-ld';
 import './globals.css';
 import './brand-system.css';
+import './public-support.css';
 const vazirmatn = localFont({ src: '../public/fonts/Vazirmatn.woff2', display: 'swap', variable: '--font-vazirmatn', weight: '100 900' });
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

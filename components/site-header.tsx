@@ -15,9 +15,11 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
   const menuId = useId();
   const header = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLElement>(null);
   const home = Boolean(onQuote);
   useEffect(() => {
     if (!open) return;
+    menu.current?.querySelector('a')?.focus();
     function escape(event: KeyboardEvent) {
       if (event.key === 'Escape') { setOpen(false); toggle.current?.focus(); }
     }
@@ -37,7 +39,9 @@ export default function SiteHeader({ onQuote, cartCount = 0 }: { onQuote?: () =>
   }, [open]);
   return <header className="header site-header" ref={header}><ContactStrip/><div className="container header-inner">
     <Brand/>
-    <nav id={menuId} className={'nav' + (open ? ' mobile-open' : '')} aria-label="منوی اصلی" onClick={() => setOpen(false)}>
+    <nav id={menuId} ref={menu} className={'nav' + (open ? ' mobile-open' : '')} aria-label="منوی اصلی" onClick={() => setOpen(false)} onBlur={event => {
+      if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget) && event.relatedTarget !== toggle.current) setOpen(false);
+    }}>
       <Link href="/products" aria-current={pathname.startsWith('/products')?'page':undefined}>محصولات</Link>
       <a href={home ? '#solutions' : '/#solutions'}>انتخاب بر اساس کاربرد</a>
       <Link href="/calculator" aria-current={pathname==='/calculator'?'page':undefined}>محاسبه مقدار</Link>

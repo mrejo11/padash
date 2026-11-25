@@ -25,15 +25,19 @@ export default function NewsManager() {
   const formRef = useRef<HTMLFormElement>(null);
   const generation=useRef(0);
   function expireSession(){generation.current++;setAuthenticated(false);setCode('signin');setItems([]);setSelected(null);setFields(blank);setShowEditor(false);setError('');setMessage('');}
-  const refresh=useCallback(async()=>{
-    const current=++generation.current;setLoading(true);
-    try{const response=await fetch('/api/admin/news',{cache:'no-store'});const result=await response.json() as {items:NewsRecord[];error?:string;code?:string};if(current!==generation.current)return;
+  const refresh=useCallback(async(signal?:AbortSignal)=>{
+    const current=++generation.current;
+    try{const response=await fetch('/api/admin/news',{cache:'no-store',signal});const result=await response.json() as {items:NewsRecord[];error?:string;code?:string};if(signal?.aborted||current!==generation.current)return;
       if(!response.ok){if(result.code){setCode(result.code);setAuthenticated(false);setItems([]);setShowEditor(false);setSelected(null);setFields(blank);return;}throw new Error(result.error||'دریافت اطلاعات انجام نشد.');}
       setItems(result.items);setAuthenticated(true);setCode('');
-    }catch(error){if(current===generation.current)setError(error instanceof Error?error.message:'ارتباط برقرار نشد.');}
-    finally{if(current===generation.current)setLoading(false);}
+    }catch(error){if(!signal?.aborted&&current===generation.current)setError(error instanceof Error?error.message:'ارتباط برقرار نشد.');}
+    finally{if(!signal?.aborted&&current===generation.current)setLoading(false);}
   },[]);
-  useEffect(()=>{void refresh();return()=>{generation.current++;};},[refresh]);
+  useEffect(()=>{
+    const controller=new AbortController();
+    queueMicrotask(()=>{if(!controller.signal.aborted)void refresh(controller.signal);});
+    return()=>controller.abort();
+  },[refresh]);
   async function reload() {
     setLoading(true); setError('');
     await refresh();
