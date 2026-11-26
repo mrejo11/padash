@@ -42,7 +42,7 @@ function validateSchemas(html,path){
     }
     if(node['@type']==='Organization'){
       assert.equal(node.name,'بازرگانی پاداش');assert.equal(node.url,canonicalOrigin);
-      assert.equal(node.contactPoint.length,2);assert.equal(node.contactPoint[0].telephone,'+989112243632');
+      assert.deepEqual(node.contactPoint.map(point=>point.telephone),['+989112243632','+989117746592']);
     }
     if(node['@type']==='ItemList'){
       assert.equal(node.numberOfItems,node.itemListElement.length);
@@ -188,7 +188,14 @@ export async function auditSeo(origin,{baselineDirectory}={}){
   const contact=htmlByPath.get('/contact');
   const contactMain=contact.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1]||'';
   assert(contact.includes('"@type":"ContactPage"'));
-  for(const phone of ['tel:+989112243632','tel:+989112286151'])assert(tags(contactMain,'a').some(link=>link.href===phone),'contact page includes both managers');
+  const contactNumbers=tags(contactMain,'a').map(link=>link.href).filter(href=>href?.startsWith('tel:'));
+  assert.deepEqual(contactNumbers,['tel:+989112243632','tel:+989117746592']);
+  assert(contactMain.includes('خط اصلی')&&contactMain.includes('خط دوم'),'contact page distinguishes both lines');
+  for(const page of [home,contactMain]){
+    const card=page.match(/<section\b[^>]*aria-labelledby="direct-contact-name"[^>]*>([\s\S]*?)<\/section>/)?.[1]||'';
+    assert.equal([...card.matchAll(/>مهندس پاداشی</g)].length,1,'the contact card shows one name');
+    assert.deepEqual(tags(card,'a').map(link=>link.href),contactNumbers,'both lines are grouped in the same card');
+  }
   assert(hero&&hero.loading==='eager'&&hero.fetchPriority==='high','the known homepage LCP image is eager and explicitly prioritized');
   assert(home.includes('تأمین و فروش')&&home.includes('عایق حرارتی، برودتی و صوتی'),'homepage explains the owner-confirmed business scope');
   const applicationPages=[['/thermal-insulation','/products/rw-p'],['/cold-insulation','/products/el-t'],['/sound-insulation','/products/rw-s']];

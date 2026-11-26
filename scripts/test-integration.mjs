@@ -152,7 +152,8 @@ try {
   const home = await (await request('/')).text();
   assert(home.includes('"@type":"WebSite"') && home.includes('"@type":"Organization"'));
   assert(home.includes('href="/guides/roll-insulation-quantity"') && home.includes('href="/products/vn-1221"'), 'public content exposes crawlable guide and featured catalogue product links');
-  assert(home.includes('tel:+989112286151') && home.includes('tel:+989112243632'));
+  assert(home.includes('tel:+989112243632') && home.includes('tel:+989117746592'));
+  assert(!home.includes('tel:+989112286151'), 'the former number is removed from the homepage');
   const robots = await (await request('/robots.txt')).text();
   assert(robots.includes('Sitemap: https://www.padashgroup.ir/sitemap.xml'));
   assert.equal((await request('/management')).headers.get('x-robots-tag'), 'noindex, nofollow');

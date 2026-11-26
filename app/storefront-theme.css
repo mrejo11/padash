@@ -135,16 +135,6 @@
 .storefront .business-contact { padding-top:0; }
 .business-contact-intro { max-width:720px; }
 .business-contact-intro > p { color:var(--muted); font-size:14px; line-height:2.2; margin-top:12px; }
-.business-contact-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
-.storefront .manager-card { display:flex; flex-wrap:wrap; align-items:center; gap:20px; padding:30px; background:#fff; border:1px solid #cfe0eb; border-radius:18px; position:relative; }
-.storefront .manager-card:first-child { border-color:#85bddb; background:#f0f8fd; }
-.storefront .manager-card:hover { border-color:var(--brand-blue); box-shadow:0 12px 36px #0639590d; transform:translateY(-3px); }
-.manager-icon { display:grid; place-items:center; width:58px; height:58px; flex-shrink:0; border-radius:17px; color:var(--brand-blue); background:#e6f3fb; }
-.manager-info { min-width:0; }
-.manager-info h3 { font-size:19px; font-weight:750; }
-.manager-info p { font-size:12px; color:#56768b; margin-top:3px; }
-.manager-number { display:block; direction:ltr; text-align:right; font-size:28px; font-weight:700; color:var(--brand-blue); letter-spacing:.8px; margin-top:9px; line-height:1.7; }
-.manager-call { display:flex; align-items:center; gap:8px; margin-inline-start:auto; align-self:flex-end; color:#496e85; font-size:11px; white-space:nowrap; min-height:44px; }
 .business-contact-note { display:flex; align-items:start; gap:8px; color:#57768b; font-size:11px; line-height:2; margin-top:19px; }
 .business-contact-note svg { flex-shrink:0; color:#a96208; margin-top:3px; }
 .storefront .cta { background:linear-gradient(110deg,#075789,#063959); border-radius:18px; padding:42px; border:1px solid #20658d; }
@@ -168,7 +158,6 @@
 .storefront .footer-contact p { color:#b5cede; font-size:12px; }
 .storefront .footer-contact .footer-manager-contact { display:flex; align-items:center; gap:10px; padding-block:11px; border-bottom:1px solid #30516a; font-size:11px; min-height:48px; }
 .storefront .footer-manager-contact bdi { margin-inline-start:auto; direction:ltr; font-size:16px; font-weight:600; color:#fff; letter-spacing:.2px; }
-.storefront .footer-manager-contact svg { color:var(--brand-gold); flex-shrink:0; }
 .storefront .footer-small { color:#a9c5d9; font-size:10px; }
 .storefront .footer-bottom { border-color:#2b526d; color:#acc9dc; font-size:10px; }
 .storefront .footer-bottom button,.storefront .footer-bottom a { color:#acc9dc; font-size:10px; min-height:36px; display:inline-flex; align-items:center; }
@@ -262,8 +251,6 @@
   .storefront .guide-grid { gap:20px; }
   .storefront .guide-card h3 { font-size:15px; }
   .storefront .guide-meta { font-size:10px; }
-  .storefront .manager-card { padding:24px; gap:14px; }
-  .manager-call { flex-basis:100%; margin-inline-start:72px; }
   .storefront .cta { flex-direction:column; align-items:start; gap:24px; }
   .storefront .cta h2 { font-size:26px; }
 }
@@ -340,13 +327,8 @@
   .storefront .guide-card h3 { font-size:15px; margin-top:0; }
   .storefront .guide-more { margin-top:0; font-size:11px; }
   .storefront .guide-meta { font-size:10px; gap:3px 10px; }
-  .business-contact-grid { grid-template-columns:minmax(0,1fr); gap:16px; }
   .storefront .business-contact { padding-top:0; }
   .business-contact-intro > p { font-size:13px; }
-  .storefront .manager-card { padding:25px 22px 18px; gap:17px; }
-  .manager-info h3 { font-size:18px; }
-  .manager-number { font-size:29px; }
-  .manager-call { margin-inline-start:75px; }
   .storefront .cta { padding:30px 25px; gap:24px; border-radius:16px; }
   .storefront .cta h2 { font-size:26px; }
   .storefront .cta p { font-size:13px; }
@@ -381,12 +363,6 @@
   .storefront .product-spec { display:flex; font-size:12px; }
   .storefront .product-spec > b { margin-top:0; }
   .storefront .product-en { font-size:9px; }
-  .storefront .manager-card { gap:13px; padding-inline:19px; }
-  .manager-icon { width:48px; height:48px; border-radius:13px; }
-  .manager-info h3 { font-size:17px; }
-  .manager-info p { font-size:11px; }
-  .manager-number { font-size:27px; }
-  .manager-call { margin-inline-start:61px; }
 }
 @media (max-width:360px) {
   .storefront .hero h1 > span { font-size:35px; }
@@ -403,7 +379,5 @@
   .storefront .guide-card { grid-template-columns:85px minmax(0,1fr); column-gap:12px; }
   .storefront .guide-card h3 { font-size:14px; }
   .storefront .calculator { padding:17px; }
-  .storefront .manager-card { padding-inline:16px; }
-  .manager-number { font-size:25px; }
   .storefront .footer-contact .footer-manager-contact { font-size:12px; }
 }

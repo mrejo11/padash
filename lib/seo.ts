@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { businessContacts } from './contacts';
+import { businessContactName, businessContacts } from './contacts';
 import type { ProductImage } from './catalog';
 import { aboutProfile } from './business-profile';
 import { SITE_URL } from './site-config';
@@ -26,7 +26,7 @@ export const organization = {
   alternateName: SITE_ALTERNATE_NAMES,
   url: SITE_URL, logo: absoluteUrl(SOCIAL_IMAGE),
   description: aboutProfile.description,
-  contactPoint: businessContacts.map(contact => ({ '@type': 'ContactPoint', name: contact.name,
+  contactPoint: businessContacts.map(contact => ({ '@type': 'ContactPoint', name: `${businessContactName} (${contact.label})`,
     telephone: contact.href.slice(4), contactType: 'sales', availableLanguage: 'Persian' })),
 };
 export const website = {

@@ -6,10 +6,11 @@ import { useEffect, useState, type FormEvent, type KeyboardEvent, type ReactNode
 import { ArrowLeft, ArrowUpLeft, BookOpen, Building2, Calculator, CheckCheck, ChevronDown, ClipboardList, Factory, FileText, Headphones, Layers3, Phone, Scale, Search, ShieldCheck, Truck, Wind, X } from 'lucide-react';
 import { products, categories, fa, type Product, type QuoteItem } from '../lib/catalog';
 import { useQuoteCart } from '../lib/use-quote-cart';
-import { businessContacts } from '../lib/contacts';
+import { businessContactName, businessContacts } from '../lib/contacts';
 import type { Guide } from '../lib/guides';
 import type { RequestKind } from '../lib/management-model';
 import Brand from '../components/brand';
+import ContactLines from '../components/contact-lines';
 import SiteHeader from '../components/site-header';
 import MaterialShowcase from '../components/material-showcase';
 import ProductMedia from '../components/product-media';
@@ -149,7 +150,12 @@ export default function Storefront({ news, featuredGuides = [], children, analyt
 
       {news}
 
-      <section className="business-contact section container" id="contact" aria-labelledby="contact-heading"><div className="contact-heading"><div><span className="section-kicker">یک گفت‌وگوی خوب، یک انتخاب بهتر</span><h2 id="contact-heading">درباره پروژه‌تان صحبت کنیم.</h2><p>برای مشاوره، استعلام قیمت و هماهنگی تأمین، مستقیم با ما در ارتباط باشید.</p></div><span className="contact-heading-icon"><Headphones size={40} strokeWidth={1.3}/></span></div><ol className="contact-process"><li><span>۰۱</span>انتخاب و تعیین مشخصات</li><li><span>۰۲</span>ثبت درخواست و دریافت کد پیگیری</li><li><span>۰۳</span>بررسی و اعلام شرایط تأمین</li></ol><div className="business-contact-grid">{businessContacts.map(contact => <a className="manager-card" href={contact.href} key={contact.phone}><span className="manager-icon"><Phone size={23}/></span><div className="manager-info"><h3>{contact.name}</h3><p>مشاوره و هماهنگی تأمین</p></div><div className="manager-call"><bdi className="manager-number">{contact.displayPhone}</bdi><span>تماس مستقیم<ArrowUpLeft size={16}/></span></div></a>)}</div><div className="contact-online"><span><ShieldCheck size={19}/>ترجیح می‌دهید نیاز پروژه را آنلاین بفرستید؟</span><button className="text-button" onClick={() => openQuote()}>ثبت درخواست و دریافت کد پیگیری<ArrowLeft size={18}/></button></div></section>
+      <section className="business-contact section container" id="contact" aria-labelledby="contact-heading">
+        <div className="contact-heading"><div><span className="section-kicker">یک گفت‌وگوی خوب، یک انتخاب بهتر</span><h2 id="contact-heading">درباره پروژه‌تان صحبت کنیم.</h2><p>برای مشاوره، استعلام قیمت و هماهنگی تأمین، مستقیم با ما در ارتباط باشید.</p></div><span className="contact-heading-icon"><Headphones size={40} strokeWidth={1.3}/></span></div>
+        <ol className="contact-process"><li><span>۰۱</span>انتخاب و تعیین مشخصات</li><li><span>۰۲</span>ثبت درخواست و دریافت کد پیگیری</li><li><span>۰۳</span>بررسی و اعلام شرایط تأمین</li></ol>
+        <ContactLines heading="h3"/>
+        <div className="contact-online"><span><ShieldCheck size={19}/>ترجیح می‌دهید نیاز پروژه را آنلاین بفرستید؟</span><button className="text-button" onClick={() => openQuote()}>ثبت درخواست و دریافت کد پیگیری<ArrowLeft size={18}/></button></div>
+      </section>
     </main>
 
     <footer className="footer">
@@ -157,7 +163,15 @@ export default function Storefront({ news, featuredGuides = [], children, analyt
         <div className="footer-about"><Brand/><p>همراه انتخاب و تأمین عایق‌های حرارتی، برودتی و صوتی؛<br/>برای آسایش امروز و انرژی فردا.</p><span className="footer-en" dir="ltr">BETTER MATERIALS. BETTER BUILDING.</span></div>
         <div><h2>محصولات پاداش</h2>{categories.slice(1).map(item => <Link key={item.id} href={"/products/category/"+item.id} prefetch={false}>{item.name}</Link>)}</div>
         <div><h2>همراه پروژه شما</h2><Link href="/calculator">محاسبه مقدار عایق</Link><Link href="/guides">راهنمای خرید</Link><Link href="/news">اخبار و رویدادها</Link><Link href="/about">درباره ما</Link></div>
-        <div className="footer-contact"><h2>تماس و استعلام</h2>{businessContacts.map(contact => <a key={contact.phone} href={contact.href}>{contact.name} · <bdi>{contact.displayPhone}</bdi></a>)}<button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button><Link href="/contact">همه راه‌های تماس</Link></div>
+        <div className="footer-contact">
+          <h2>تماس و استعلام</h2>
+          <p>{businessContactName}</p>
+          {businessContacts.map(contact => <a className="footer-manager-contact" key={contact.phone} href={contact.href} aria-label={contact.callLabel}>
+            <span>{contact.label}</span><bdi dir="ltr">{contact.displayPhone}</bdi>
+          </a>)}
+          <button className="button button-orange" onClick={() => openQuote()}>ثبت استعلام<ArrowLeft size={18}/></button>
+          <Link href="/contact">همه راه‌های تماس</Link>
+        </div>
       </div>
       <div className="container footer-bottom"><span>© بازرگانی پاداش · تمامی حقوق محفوظ است.</span><div><Link href="/privacy">حریم خصوصی</Link><Link href="/quote-terms">شرایط استعلام</Link><a href="/management">ورود مدیریت</a>{analyticsPreferences}</div></div>
     </footer>

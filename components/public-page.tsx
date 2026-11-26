@@ -1,9 +1,8 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { Phone } from 'lucide-react';
 import { companyPages } from '../lib/company-pages';
-import { businessContacts } from '../lib/contacts';
+import { businessContactName, businessContacts } from '../lib/contacts';
 import SiteHeader from './site-header';
 import Brand from './brand';
 import {insulationTopics} from '../lib/insulation-topics';
@@ -25,7 +24,12 @@ export default function PublicPage({ children, tracking = true }: { children: Re
       <nav className="insulation-footer-links" aria-label="کاربردهای عایق">{insulationTopics.map(topic=><Link href={topic.path} key={topic.id}>{topic.name}</Link>)}</nav>
       {tracking && <AnalyticsPreferences/>}
     </div>
-      <div className="public-footer-contacts">{businessContacts.map(contact => <a key={contact.phone} href={contact.href}><Phone size={15}/><span>{contact.name}</span><bdi>{contact.displayPhone}</bdi></a>)}</div></div></footer>
+      <div className="public-footer-contacts">
+        <b>{businessContactName}</b>
+        {businessContacts.map(contact => <a key={contact.phone} href={contact.href} aria-label={contact.callLabel}>
+          <span>{contact.label}</span><bdi dir="ltr">{contact.displayPhone}</bdi>
+        </a>)}
+      </div></div></footer>
     <FloatingWhatsApp/>
   </div>;
 }
